@@ -30,14 +30,14 @@ interface ManagementPageProps {
 }
 
 const PRESET_AVIANCES = [
-  { label: 'Richard Backhouse (CEO)', path: '/src/assets/aviance_images/ceo and stakeholders/1787739001941.jpg' },
-  { label: 'Dominic Adjei-Badu (Finance)', path: '/src/assets/aviance_images/ceo and stakeholders/1787739002168.jpg' },
-  { label: 'Michaela Walker (Ops Director)', path: '/src/assets/aviance_images/1788350257403.jpg' },
-  { label: 'Ebenezer Darko (GM Ops)', path: '/src/assets/aviance_images/1791968160594.jpg' },
-  { label: 'Erasmus Twentor (GM HR)', path: '/src/assets/aviance_images/1791796139946.jpg' },
-  { label: 'Passenger Services Specialist', path: '/src/assets/aviance_images/1776164623557.jpg' },
-  { label: 'Cargo Terminal Manager', path: '/src/assets/aviance_images/1780574568846.jpg' },
-  { label: 'Lounge Executive Hostess', path: '/src/assets/aviance_images/1791796145150.jpg' },
+  { label: 'Richard Backhouse (CEO)', path: '/assets/aviance_images/ceo and stakeholders/1787739001941.jpg' },
+  { label: 'Dominic Adjei-Badu (Finance)', path: '/assets/aviance_images/ceo and stakeholders/1787739002168.jpg' },
+  { label: 'Michaela Walker (Ops Director)', path: '/assets/aviance_images/1788350257403.jpg' },
+  { label: 'Ebenezer Darko (GM Ops)', path: '/assets/aviance_images/1791968160594.jpg' },
+  { label: 'Erasmus Twentor (GM HR)', path: '/assets/aviance_images/1791796139946.jpg' },
+  { label: 'Passenger Services Specialist', path: '/assets/aviance_images/1776164623557.jpg' },
+  { label: 'Cargo Terminal Manager', path: '/assets/aviance_images/1780574568846.jpg' },
+  { label: 'Lounge Executive Hostess', path: '/assets/aviance_images/1791796145150.jpg' },
 ];
 
 export const ManagementPage: React.FC<ManagementPageProps> = ({ team, onNavigate }) => {

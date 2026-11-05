@@ -142,81 +142,81 @@ export const NewsDetailPage: React.FC<NewsDetailPageProps> = ({ article, allNews
   const secondaryPhotos: Record<string, { src: string; caption: string }[]> = {
     'aviance-ghana-walks-for-breast-cancer-awareness-in-asante-mampong': [
       {
-        src: '/src/assets/aviance_images/news/breast_cancer_walk_2.jpg',
+        src: '/assets/aviance_images/news/breast_cancer_walk_2.jpg',
         caption: 'Aviance Ghana delegation marching through Asante Mampong with Delta Air Lines.'
       },
       {
-        src: '/src/assets/aviance_images/news/breast_cancer_walk_3.jpg',
+        src: '/assets/aviance_images/news/breast_cancer_walk_3.jpg',
         caption: 'Community gathering and addresses led by Dr. Beatrice Wiafe Addai.'
       }
     ],
     'aviance-ghana-emerges-as-overall-champions-at-tf-group-games': [
       {
-        src: '/src/assets/aviance_images/news/tf_games_trophy.jpg',
+        src: '/assets/aviance_images/news/tf_games_trophy.jpg',
         caption: 'Overall Champions Trophy presentation to Team Aviance Ghana.'
       },
       {
-        src: '/src/assets/aviance_images/news/tf_games_action.jpg',
+        src: '/assets/aviance_images/news/tf_games_action.jpg',
         caption: 'Volleyball and athletics tournament action.'
       },
       {
-        src: '/src/assets/aviance_images/news/tf_games_team.jpg',
+        src: '/assets/aviance_images/news/tf_games_team.jpg',
         caption: 'Colleagues and supporters celebrating team honours.'
       }
     ],
     'aviance-ghana-hosts-uk-parliamentary-delegation': [
       {
-        src: '/src/assets/aviance_images/news/uk_delegation_tour.jpg',
+        src: '/assets/aviance_images/news/uk_delegation_tour.jpg',
         caption: 'UK MPs touring cargo terminal logistics hub with BII and GIP Ghana.'
       }
     ],
     'aviance-ghana-supports-the-orbis-flying-eye-hospital-programme': [
       {
-        src: '/src/assets/aviance_images/csr/f52640_648176d3c119477aa1e0d49b314d4e39~mv2.jpg',
+        src: '/assets/aviance_images/csr/f52640_648176d3c119477aa1e0d49b314d4e39~mv2.jpg',
         caption: 'Aviance apron operations team facilitating medical aircraft logistics.'
       },
       {
-        src: '/src/assets/aviance_images/csr/f52640_f8ef59f1440d4978b12d7af42b0b0782~mv2.jpg',
+        src: '/assets/aviance_images/csr/f52640_f8ef59f1440d4978b12d7af42b0b0782~mv2.jpg',
         caption: 'Medical team and aviation crews collaborating at Kotoka International Airport.'
       }
     ],
     'aviance-ghana-at-2024-asogli-yam-festival': [
       {
-        src: '/src/assets/aviance_images/csr/f52640_1fecac509d4c4c9faed3422942694808~mv2.jpg',
+        src: '/assets/aviance_images/csr/f52640_1fecac509d4c4c9faed3422942694808~mv2.jpg',
         caption: 'Aviance delegation celebrating with traditional leadership in the Volta Region.'
       }
     ],
     'aviance-ghana-commences-domestic-operations': [
       {
-        src: '/src/assets/aviance_images/news/eb15b6_127a64f8960f48a9a8dc9b32421dc9e3~mv2.avif',
+        src: '/assets/aviance_images/news/eb15b6_127a64f8960f48a9a8dc9b32421dc9e3~mv2.avif',
         caption: 'Prempeh I International Airport Kumasi apron and passenger turnaround.'
       },
       {
-        src: '/src/assets/aviance_images/news/eb15b6_26e9017c0b6a4cfe85e6b8f4c6f7f4d8~mv2.avif',
+        src: '/assets/aviance_images/news/eb15b6_26e9017c0b6a4cfe85e6b8f4c6f7f4d8~mv2.avif',
         caption: 'Tamale International Airport domestic aircraft ground handling operations.'
       }
     ],
     'we-are-expanding-our-horizons': [
       {
-        src: '/src/assets/aviance_images/news/eb15b6_1539f417f02649fc91fefd7a1a8cfcea~mv2.avif',
+        src: '/assets/aviance_images/news/eb15b6_1539f417f02649fc91fefd7a1a8cfcea~mv2.avif',
         caption: 'Africa World Airlines domestic handling at regional aerodromes.'
       }
     ],
     'aviance-ghana-wins-best-growing-company-cargo-ground-handler-of-the-year-air-2024': [
       {
-        src: '/src/assets/aviance_images/news/eb15b6_1fe510959ba04838842b578659b4d7f9~mv2.avif',
+        src: '/assets/aviance_images/news/eb15b6_1fe510959ba04838842b578659b4d7f9~mv2.avif',
         caption: 'Ghana Shippers Awards ceremony and trophy recognition in Accra.'
       }
     ],
     'celebrating-25-years': [
       {
-        src: '/src/assets/aviance_images/news/f52640_7e25c3acb4f84688ae7b9d46952c9ad9~mv2.avif',
+        src: '/assets/aviance_images/news/f52640_7e25c3acb4f84688ae7b9d46952c9ad9~mv2.avif',
         caption: 'Quarter-century milestone celebrations at Kotoka International Airport.'
       }
     ],
     'remembrance-day-at-aviance': [
       {
-        src: '/src/assets/aviance_images/news/f52640_cd6f8d6c86e54e43959ea022faadbd2b~mv2.avif',
+        src: '/assets/aviance_images/news/f52640_cd6f8d6c86e54e43959ea022faadbd2b~mv2.avif',
         caption: 'Aviance colleagues honouring service men and women.'
       }
     ]

@@ -63,7 +63,7 @@ const CONDUCT_PAGES = [
 ];
 
 const CONDUCT_PDF_FALLBACK =
-  '/src/assets/aviance_images/code of conduct pdf/f52640_777584ab2e854a3688a773626ca1e61c.pdf';
+  '/assets/aviance_images/code of conduct pdf/f52640_777584ab2e854a3688a773626ca1e61c.pdf';
 
 export const LegalPages: React.FC<LegalPageProps> = ({ type, onNavigate }) => {
   const [currentPage, setCurrentPage] = useState<number>(0);

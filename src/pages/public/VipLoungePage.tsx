@@ -98,7 +98,7 @@ export const VipLoungePage: React.FC<VipLoungePageProps> = ({ onNavigate, onOpen
       }`}>
         <div className="absolute inset-0 opacity-15">
           <img
-            src="/src/assets/aviance_images/1791796145150.jpg"
+            src="/assets/aviance_images/1791796145150.jpg"
             alt="Adinkra Lounge interior at Kotoka Terminal 3"
             className="w-full h-full object-cover object-center"
           />

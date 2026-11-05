@@ -205,42 +205,42 @@ export const NewsIndexPage: React.FC<NewsIndexPageProps> = ({ news, onNavigate }
   // Authentic gallery moments linking directly to their official news articles
   const galleryMoments = [
     {
-      src: '/src/assets/aviance_images/news/f52640_3541ea8b139048598ab2e7f7d9ae5640~mv2.avif',
+      src: '/assets/aviance_images/news/f52640_3541ea8b139048598ab2e7f7d9ae5640~mv2.avif',
       title: 'Overall Champions Trophy Celebration',
       caption: 'Aviance Ghana celebrates five championship honours at the TF Group Games.',
       tag: 'Sports & Culture',
       slug: 'aviance-ghana-emerges-as-overall-champions-at-tf-group-games'
     },
     {
-      src: '/src/assets/aviance_images/news/f52640_c3752bde8d064779a837d707b09b7a17~mv2.avif',
+      src: '/assets/aviance_images/news/f52640_c3752bde8d064779a837d707b09b7a17~mv2.avif',
       title: 'Walk for the Cure — Asante Mampong',
       caption: 'Aviance Ghana and Delta Air Lines delegation supporting Breast Care International.',
       tag: 'CSR & Health',
       slug: 'aviance-ghana-walks-for-breast-cancer-awareness-in-asante-mampong'
     },
     {
-      src: '/src/assets/aviance_images/news/f52640_63a8306e1fd7482096064138a694854c~mv2.avif',
+      src: '/assets/aviance_images/news/f52640_63a8306e1fd7482096064138a694854c~mv2.avif',
       title: 'UK Parliamentary Delegation Engagement',
       caption: 'Showcasing airside ground handling and cargo facilities to British stakeholders.',
       tag: 'Trade & Diplomacy',
       slug: 'aviance-ghana-hosts-uk-parliamentary-delegation'
     },
     {
-      src: '/src/assets/aviance_images/news/richard_backhouse_ceo.jpg',
+      src: '/assets/aviance_images/news/richard_backhouse_ceo.jpg',
       title: 'Chief Executive Officer Appointment',
       caption: 'Welcoming Richard Backhouse to guide Aviance Ghana’s next phase of development.',
       tag: 'Leadership',
       slug: 'aviance-ghana-welcomes-richard-backhouse-as-chief-executive-officer'
     },
     {
-      src: '/src/assets/aviance_images/news/f52640_7e25c3acb4f84688ae7b9d46952c9ad9~mv2.avif',
+      src: '/assets/aviance_images/news/f52640_7e25c3acb4f84688ae7b9d46952c9ad9~mv2.avif',
       title: 'Celebrating 25 Years of Ground Handling',
       caption: 'A quarter century of airline handling excellence at Kotoka International Airport.',
       tag: 'Heritage',
       slug: 'celebrating-25-years'
     },
     {
-      src: '/src/assets/aviance_images/news/f52640_cd6f8d6c86e54e43959ea022faadbd2b~mv2.avif',
+      src: '/assets/aviance_images/news/f52640_cd6f8d6c86e54e43959ea022faadbd2b~mv2.avif',
       title: 'Remembrance Day Commemoration at Aviance',
       caption: 'Honouring veterans and celebrating dedicated airport operational teams.',
       tag: 'Community',

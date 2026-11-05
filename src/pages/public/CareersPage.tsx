@@ -115,7 +115,7 @@ export const CareersPage: React.FC<CareersPageProps> = ({ onNavigate }) => {
           <div className="lg:col-span-7">
             <div className="relative group rounded-2xl sm:rounded-3xl overflow-hidden border border-slate-200 bg-slate-100 shadow-xl shadow-slate-200/50">
               <img
-                src="/src/assets/aviance_images/careers_team.jpg"
+                src="/assets/aviance_images/careers_team.jpg"
                 alt="Aviance Ghana Customer Services & Ramp Operations Team"
                 className="w-full h-[320px] sm:h-[420px] lg:h-[480px] object-cover object-center group-hover:scale-102 transition-transform duration-700 ease-out"
                 loading="eager"
