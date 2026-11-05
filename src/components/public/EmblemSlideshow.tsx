@@ -261,7 +261,7 @@ export const EmblemSlideshow: React.FC = () => {
   return (
     <div className="relative flex flex-col items-center select-none w-full">
       {/* Dynamic Aviance Emblem Showcase with True Aerodynamic Curves & Gentle Flight Levitation */}
-      <div className="relative w-[86%] sm:w-[80%] md:w-[75%] lg:w-full max-w-[340px] sm:max-w-[480px] md:max-w-[560px] lg:max-w-[620px] xl:max-w-[690px] 2xl:max-w-[740px] animate-gentle-float hover:[animation-play-state:paused] transition-transform duration-700 ease-out">
+      <div className="relative w-[98%] xs:w-[95%] sm:w-[88%] md:w-[82%] lg:w-full max-w-[440px] xs:max-w-[480px] sm:max-w-[540px] md:max-w-[600px] lg:max-w-[640px] xl:max-w-[700px] 2xl:max-w-[750px] animate-gentle-float hover:[animation-play-state:paused] transition-transform duration-700 ease-out">
         <svg
           viewBox="0 0 1926 1378"
           className="w-full h-auto drop-shadow-[0_22px_55px_rgba(4,36,156,0.18)] overflow-visible"

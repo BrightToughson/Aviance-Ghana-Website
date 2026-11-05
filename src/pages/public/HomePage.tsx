@@ -574,7 +574,7 @@ export const HomePage: React.FC<HomePageProps> = ({
             <div className="animate-fade-in-right animation-delay-200 lg:col-span-7 xl:col-span-7 flex flex-col items-center lg:items-end xl:items-center justify-center relative py-2 lg:py-4 pl-0 lg:pl-8 xl:pl-12 w-full mt-6 sm:mt-8 lg:mt-0">
               
               {/* Mobile Floating Micro-Badges with Gentle Levitation */}
-              <div className="lg:hidden w-full flex items-center justify-between px-3 max-w-[360px] mb-3 pointer-events-none">
+              <div className="lg:hidden w-full flex items-center justify-between px-2 max-w-[440px] xs:max-w-[480px] mb-3 pointer-events-none">
                 <div className="animate-float-slow px-2.5 py-1 rounded-full bg-white/90 backdrop-blur-md border border-slate-200/90 shadow-md flex items-center gap-1.5 text-[10px] font-bold text-slate-800">
                   <span className="w-1.5 h-1.5 rounded-full bg-[#72BF44] animate-pulse" />
                   <span>100% Safety Standard</span>
