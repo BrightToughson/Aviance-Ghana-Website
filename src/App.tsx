@@ -77,6 +77,8 @@ function parseUrl(url: string): { fullPath: string; cleanPath: string; hash: str
   if (pathPart === '/management-team') pathPart = '/management';
   if (pathPart === '/certifications-licenses' || pathPart === '/licenses' || pathPart === '/accreditations') pathPart = '/certifications';
   if (pathPart === '/conduct') pathPart = '/code-of-conduct';
+  if (pathPart === '/privacy' || pathPart === '/privacy-policy') pathPart = '/privacy-policy';
+  if (pathPart === '/terms-of-use' || pathPart === '/terms-and-conditions' || pathPart === '/disclaimer') pathPart = '/terms';
   if (pathPart === '/services/training') pathPart = '/training';
   if (pathPart.startsWith('/post/')) pathPart = pathPart.replace('/post/', '/news/');
 

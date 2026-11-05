@@ -259,6 +259,9 @@ ${formData.message}
                 />
               </div>
 
+              <p className="text-[11px] text-slate-400 leading-tight pt-1">
+                Note: Submitting this form constitutes an operational handling enquiry and does not create an Air Waybill (AWB) contract of carriage until confirmed in writing by Aviance Cargo Operations and the operating carrier.
+              </p>
               <div className="pt-2 flex justify-end gap-3">
                 <button
                   type="button"

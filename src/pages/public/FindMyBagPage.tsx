@@ -254,6 +254,12 @@ ${enquiryForm.description}
             </h3>
             <p className={`text-xs mt-1 ${isLight ? 'text-slate-600' : 'text-slate-400'}`}>
               {t('pages.baggage.claimDesc', 'Our arrivals baggage resolution team is on-duty 24/7 inside Terminal 3. Submit your flight and baggage details for urgent tracing.')}
+            <div className="mt-3.5 p-3 rounded-xl bg-blue-50/70 border border-blue-200/80 text-[11px] text-slate-700 leading-relaxed flex items-start gap-2">
+              <ShieldCheck className="w-4 h-4 text-[#204696] shrink-0 mt-0.5" />
+              <span>
+                <strong>Carrier Liability Notice:</strong> Aviance Ghana operates baggage handling and WorldTracer tracing as an independent ground service provider on behalf of contracting air carriers. In accordance with the Montreal Convention and IATA SGHA, passenger carriage contracts and all baggage compensation liability remain exclusively with your contracting airline.
+              </span>
+            </div>
             </p>
           </div>
 

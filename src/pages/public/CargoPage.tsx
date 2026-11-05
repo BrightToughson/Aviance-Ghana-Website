@@ -304,6 +304,15 @@ export const CargoPage: React.FC<CargoPageProps> = ({ onNavigate: _onNavigate, o
             </span>
           </div>
 
+          <div className="p-4 rounded-2xl bg-blue-50/70 border border-blue-200/80 text-xs text-slate-700 leading-relaxed space-y-1 mb-4">
+            <div className="flex items-center gap-2 font-bold text-slate-900">
+              <ShieldCheck className="w-4 h-4 text-[#204696]" />
+              <span>Aviation Regulatory & Cargo Carriage Limits</span>
+            </div>
+            <p>
+              Aviance Ghana Limited provides air cargo handling, cold vault warehousing, and tarmac transfer as an independent ground service provider under IATA Standard Ground Handling Agreements (SGHA). All carriage contracts, liability limitations for cargo loss, damage or delay, and Air Waybill (AWB) conditions are governed strictly by the contracting air carrier, the Montreal Convention 1999, the Warsaw Convention, and Ghana Customs (GRA ICUMS) statutes.
+            </p>
+          </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 text-xs">
             <div className={`p-4 rounded-xl border space-y-1.5 ${
               isLight ? 'bg-slate-50 border-slate-200' : 'bg-slate-950 border-slate-800'

@@ -286,7 +286,7 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
           isLight ? 'text-slate-600' : 'text-slate-400'
         }`}>
           <div>
-            &copy; {new Date().getFullYear()} Aviance Ghana Limited. Kotoka International Airport Terminal 3, Accra, Ghana. {t('footer.copyright', 'All rights reserved.')}
+            &copy; {new Date().getFullYear()} Aviance Ghana Limited. Kotoka International Airport Terminal 3, Accra, Ghana. {t('footer.copyright', 'All rights reserved.')}  All third-party airline logos and marks are property of their respective owners and displayed under commercial ground handling service arrangements.
           </div>
           <div className="flex flex-wrap items-center gap-4 sm:gap-6">
             <button onClick={() => onNavigate('/privacy-policy')} className={`transition-colors ${

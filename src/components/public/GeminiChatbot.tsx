@@ -672,6 +672,9 @@ export const GeminiChatbot: React.FC = () => {
                 <Send className="w-4 h-4 text-white" />
               </button>
             </form>
+            <p className="text-[10px] text-slate-400 text-center pt-2 leading-tight">
+              AI Concierge provides automated guidance. Carrier flight, baggage & cargo terms remain governed by airline agreements.
+            </p>
           </div>
         </div>
       )}
