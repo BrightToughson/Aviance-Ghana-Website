@@ -528,17 +528,6 @@ export const HomePage: React.FC<HomePageProps> = ({
             {/* Left Column: Exactly on Solid Royal Blue Canvas */}
             <div className="lg:col-span-5 xl:col-span-5 space-y-4 sm:space-y-6 text-center lg:text-left flex flex-col items-center lg:items-start relative z-20">
 
-              {/* Animated Live Status Badge (Pulsing Radar Motion for Mobile Viewers) */}
-              <div className="animate-blur-reveal inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/12 border border-white/20 backdrop-blur-md shadow-xs mb-0.5">
-                <span className="relative flex h-2 w-2">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#72BF44] opacity-80" />
-                  <span className="relative inline-flex rounded-full h-2 w-2 bg-[#72BF44]" />
-                </span>
-                <span className="text-[11px] sm:text-xs font-bold text-white tracking-wider uppercase">
-                  ISAGO Certified · Accra · Kumasi · Tamale
-                </span>
-              </div>
-
               {/* Main Display Headline: Confident, Big & Impactful on Mobile */}
               <h1 className="animate-blur-reveal animation-delay-100 text-[28px] xs:text-[32px] sm:text-4xl md:text-5xl lg:text-4xl xl:text-5xl font-black tracking-tight text-white leading-[1.18] sm:leading-[1.12]">
                 Ground Handling & Cargo Operations <br className="hidden sm:inline" />
