@@ -6,6 +6,10 @@ import { analyticsService } from '../../services/analyticsService';
 import { useTheme } from '../../context/ThemeContext';
 import { useLanguage } from '../../context/LanguageContext';
 
+// Authentic Aviance Baggage Makeup Hall & Airside Operations
+import BAGGAGE_IMG from '../../assets/aviance_images/services/find_my_bag.jpg'; // Baggage makeup hall sortation
+import RAMP_LOADING_IMG from '../../assets/aviance_images/image_show/1759758700331.jpg'; // Ramp hold loading
+
 interface FindMyBagPageProps {
   onNavigate: (path: string) => void;
 }
@@ -54,9 +58,9 @@ ${enquiryForm.description}
   };
 
   return (
-    <div className="pt-24 pb-20 space-y-16">
+    <div className="pb-24 sm:pb-32 space-y-16 sm:space-y-24 lg:space-y-32">
       {/* Hero Header in Official Aviance Blue */}
-      <div className={`py-14 border-b text-center relative overflow-hidden transition-colors ${
+      <div className={`py-14 sm:py-20 lg:py-24 border-b text-center relative overflow-hidden transition-colors ${
         isLight
           ? 'bg-gradient-to-b from-blue-50 via-slate-50 to-white border-slate-200'
           : 'bg-gradient-to-b from-[#11244C] via-[#0C1933] to-[#08101E] border-[#204696]/30'
@@ -64,13 +68,24 @@ ${enquiryForm.description}
         <div className={`absolute top-0 left-1/2 -translate-x-1/2 w-3/4 h-36 blur-3xl pointer-events-none rounded-full ${
           isLight ? 'bg-[#204696]/5' : 'bg-[#204696]/20'
         }`} />
+        <div className="absolute inset-0 opacity-15 pointer-events-none">
+          <img
+            src={BAGGAGE_IMG}
+            alt="Aviance Baggage Hall sortation"
+            className="w-full h-full object-cover object-center"
+          />
+        </div>
+
         <div className="relative z-10 max-w-4xl mx-auto px-4 space-y-3">
-          <div className="flex flex-wrap items-center justify-center gap-2">
-            <span className={`inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider ${
-              isLight ? 'text-[#0284C7]' : 'text-[#58C1EB]'
+          <div className="flex items-center justify-center gap-2.5">
+            <span className="w-1.5 h-6 rounded-full bg-gradient-to-b from-[#204696] via-[#009EE0] to-[#72BF44]" />
+            <h2 className={`text-xs sm:text-sm font-extrabold uppercase tracking-widest ${
+              isLight ? 'text-[#204696]' : 'text-[#58C1EB]'
             }`}>
-              <Luggage className="w-4 h-4" /> {t('pages.baggage.kicker', 'Kotoka International Airport Terminal 3 · Baggage Services')}
-            </span>
+              Kotoka International Airport Terminal 3 <span className="text-[#009EE0]">·</span> <span className={isLight ? 'text-[#3B7A1C]' : 'text-[#72BF44]'}>Baggage Services</span>
+            </h2>
+          </div>
+          <div className="flex items-center justify-center gap-2">
             <span className="px-2.5 py-0.5 rounded text-[10px] font-mono font-bold bg-[#72BF44]/15 text-[#72BF44] border border-[#72BF44]/35">
               LIVE TELEMETRY
             </span>
@@ -93,9 +108,79 @@ ${enquiryForm.description}
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-16">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-16 sm:space-y-24 lg:space-y-32">
         {/* The Live Baggage Tracker Component */}
         <BaggageTracker onOpenEnquiry={() => _setEnquiryOpen(true)} />
+
+        {/* Baggage Operations Field Showcase */}
+        <div className={`border rounded-2xl p-6 sm:p-8 space-y-6 shadow-xl transition-all ${
+          isLight ? 'bg-white border-slate-200/90 shadow-slate-200/50' : 'bg-[#0C1933]/90 border-[#204696]/35 shadow-[#204696]/10'
+        }`}>
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+            {/* Visual Photo Card */}
+            <div className="lg:col-span-7 overflow-hidden rounded-xl border border-slate-200 dark:border-[#204696]/40 shadow-lg relative group">
+              <div className="relative aspect-[16/10] overflow-hidden bg-slate-950">
+                <img
+                  src={BAGGAGE_IMG}
+                  alt="Aviance Baggage Makeup Hall at Kotoka Terminal 3"
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-transparent pointer-events-none" />
+                <div className="absolute top-3 left-3 bg-[#204696]/90 backdrop-blur-md text-white text-[10px] font-bold uppercase tracking-wider px-3 py-1 rounded-full border border-[#58C1EB]/40 flex items-center gap-1.5 shadow">
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#72BF44] animate-pulse" />
+                  Terminal 3 Baggage Makeup Hall
+                </div>
+                <div className="absolute bottom-3 left-4 right-4">
+                  <p className="text-white text-xs sm:text-sm font-bold drop-shadow">
+                    Aviance Baggage Handlers Sorting & Barcode Tag Scanning (Kotoka T3)
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Operational Text & Specifications */}
+            <div className="lg:col-span-5 space-y-4">
+              <div className="space-y-1.5">
+                <div className="flex items-center gap-2">
+                  <span className="w-1.5 h-4 rounded-full bg-gradient-to-b from-[#204696] via-[#009EE0] to-[#72BF44]" />
+                  <span className={`text-xs font-extrabold uppercase tracking-wider ${
+                    isLight ? 'text-[#204696]' : 'text-[#58C1EB]'
+                  }`}>
+                    WorldTracer Reconciliation
+                  </span>
+                </div>
+                <h3 className={`text-xl font-bold ${isLight ? 'text-slate-900' : 'text-white'}`}>
+                  Precision Bag Reconciliation & Rapid Delivery
+                </h3>
+              </div>
+
+              <p className={`text-xs leading-relaxed ${isLight ? 'text-slate-600' : 'text-slate-300'}`}>
+                From the moment aircraft wheels touch down at Kotoka, Aviance ramp teams offload belly holds onto container dollies, transporting checked luggage directly to the Terminal 3 automated makeup hall.
+              </p>
+
+              <div className="space-y-2.5 pt-1 text-xs">
+                <div className="flex items-start gap-2.5">
+                  <CheckCircle2 className="w-4 h-4 shrink-0 text-[#72BF44] mt-0.5" />
+                  <span className={isLight ? 'text-slate-700' : 'text-slate-300'}>
+                    <strong>Barcoded Handheld Scanners:</strong> Every baggage tag stub is scanned to confirm receipt before conveyor induction.
+                  </span>
+                </div>
+                <div className="flex items-start gap-2.5">
+                  <CheckCircle2 className="w-4 h-4 shrink-0 text-[#72BF44] mt-0.5" />
+                  <span className={isLight ? 'text-slate-700' : 'text-slate-300'}>
+                    <strong>Rush & Delayed Bag Expediting:</strong> Direct liaison with partner airlines to reconnect separated luggage within hours.
+                  </span>
+                </div>
+                <div className="flex items-start gap-2.5">
+                  <CheckCircle2 className="w-4 h-4 shrink-0 text-[#72BF44] mt-0.5" />
+                  <span className={isLight ? 'text-slate-700' : 'text-slate-300'}>
+                    <strong>24/7 Arrivals Helpdesk:</strong> Immediate PIR (Property Irregularity Report) creation directly at Carousel 2.
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
 
         {/* Operational Baggage Desks & Info */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">

@@ -1,7 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
 import {
-  MessageSquare,
-  Sparkles,
   X,
   Send,
   RotateCcw,
@@ -9,15 +7,9 @@ import {
   Check,
   User,
   AlertCircle,
-  Minimize2,
-  ChevronDown,
   Plane,
   Shield,
   Luggage,
-  Zap,
-  HelpCircle,
-  Clock,
-  Gauge,
 } from 'lucide-react';
 import { AvianceLogo } from '../ui/AvianceLogo';
 
@@ -38,20 +30,18 @@ const ROLE_CONFIGS: Record<
     name: string;
     icon: any;
     recommendedModel: GeminiModel;
-    modelBadge: string;
     description: string;
     welcomeMessage: string;
     suggestedPrompts: string[];
   }
 > = {
   general: {
-    name: 'General Ground Concierge',
+    name: 'General Concierge',
     icon: Plane,
     recommendedModel: 'gemini-3.1-flash-lite',
-    modelBadge: 'Instant · gemini-3.1-flash-lite',
-    description: 'Instant assistance for Kotoka T3, Kumasi & Tamale stations, contacts, and flight support.',
+    description: 'Assistance for Kotoka T3, Kumasi & Tamale stations, contacts, and flight support.',
     welcomeMessage:
-      'Welcome to Aviance Ghana Limited. I am your Ground Operations Concierge. How may I assist you with passenger handling, executive lounge access, or airport station information?',
+      'Welcome to Aviance Ghana Limited. I am your 24/7 Ground Operations Concierge. How may I assist you with passenger handling, executive lounge access, or flight operations today?',
     suggestedPrompts: [
       'What are the contact details for Kotoka Terminal 3 head office?',
       'Where does Aviance Ghana operate across Ghanaian aerodromes?',
@@ -62,10 +52,9 @@ const ROLE_CONFIGS: Record<
     name: 'Operations & Cargo Specialist',
     icon: Shield,
     recommendedModel: 'gemini-3.1-flash-lite',
-    modelBadge: 'Fast Dispatch · gemini-3.1-flash-lite',
     description: 'Technical analysis for IATA ISAGO turnaround, EU Cargo RA3 cold chain, and SGHA handling.',
     welcomeMessage:
-      'Aviance Flight Operations & Cargo Specialist ready. I can provide turnaround GSE sequencing, cold chain storage specifications (+2°C to +8°C), and ramp safety protocols.',
+      'Aviance Flight Operations & Cargo Specialist ready. How may I assist with turnaround GSE, cold chain specs, or airside ramp safety?',
     suggestedPrompts: [
       'What are the temperature limits and security controls for EU Cargo RA3?',
       'Explain the B777-300ER turnaround GSE sequencing (GPU, ambulift, pushback).',
@@ -76,10 +65,9 @@ const ROLE_CONFIGS: Record<
     name: 'Passenger & Baggage Guide',
     icon: Luggage,
     recommendedModel: 'gemini-3.1-flash-lite',
-    modelBadge: 'Instant Tracing · gemini-3.1-flash-lite',
     description: 'Rapid assistance for baggage reconciliation, lost property tracing, and arrival desks.',
     welcomeMessage:
-      'Hello traveler. I am your Passenger & Baggage Guide. I can assist with baggage claim carousels, delayed bag tracing at Terminal 3 (Carousel 2), and Lost & Found procedures.',
+      'Hello traveler. I am your Passenger & Baggage Guide. I can assist with carousel locations, delayed bag tracing at Terminal 3, and Lost & Found procedures.',
     suggestedPrompts: [
       'Where is the Terminal 3 Baggage Services Office located?',
       'How does Aviance trace delayed baggage using SITA WorldTracer?',
@@ -88,11 +76,236 @@ const ROLE_CONFIGS: Record<
   },
 };
 
+interface InlineToken {
+  type: 'bold' | 'italic' | 'email' | 'phone' | 'text';
+  value: string;
+}
+
+function tokenizeInline(text: string): InlineToken[] {
+  // Split by bold **...**
+  const boldChunks = text.split(/(\*\*[^*]+\*\*)/g);
+  const tokens: InlineToken[] = [];
+
+  for (const chunk of boldChunks) {
+    if (chunk.startsWith('**') && chunk.endsWith('**') && chunk.length >= 4) {
+      tokens.push({
+        type: 'bold',
+        value: chunk.slice(2, -2),
+      });
+    } else if (chunk) {
+      // Split for email, phone, and italics
+      const subChunks = chunk.split(/([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}|\+233[\s\d-]+|\*[^*]+\*)/g);
+      for (const sc of subChunks) {
+        if (!sc) continue;
+        if (/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(sc)) {
+          tokens.push({ type: 'email', value: sc });
+        } else if (/^\+233[\s\d-]+$/.test(sc) && sc.replace(/\D/g, '').length >= 9) {
+          tokens.push({ type: 'phone', value: sc });
+        } else if (sc.startsWith('*') && sc.endsWith('*') && sc.length >= 3) {
+          tokens.push({ type: 'italic', value: sc.slice(1, -1) });
+        } else {
+          tokens.push({ type: 'text', value: sc });
+        }
+      }
+    }
+  }
+
+  return tokens;
+}
+
+const renderInline = (text: string): React.ReactNode => {
+  const tokens = tokenizeInline(text);
+  return (
+    <>
+      {tokens.map((token, idx) => {
+        if (token.type === 'bold') {
+          // Check if bold token is an email
+          if (/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(token.value)) {
+            return (
+              <a
+                key={idx}
+                href={`mailto:${token.value}`}
+                className="font-bold text-[#204696] underline hover:text-[#009EE0] transition-colors"
+              >
+                {token.value}
+              </a>
+            );
+          }
+          // Check if bold token is phone
+          if (/^\+233[\s\d-]+$/.test(token.value) && token.value.replace(/\D/g, '').length >= 9) {
+            return (
+              <a
+                key={idx}
+                href={`tel:${token.value.replace(/\s+/g, '')}`}
+                className="font-bold text-[#204696] underline hover:text-[#009EE0] transition-colors"
+              >
+                {token.value}
+              </a>
+            );
+          }
+          return (
+            <strong key={idx} className="font-semibold text-slate-900">
+              {token.value}
+            </strong>
+          );
+        }
+        if (token.type === 'italic') {
+          return (
+            <em key={idx} className="italic text-slate-600">
+              {token.value}
+            </em>
+          );
+        }
+        if (token.type === 'email') {
+          return (
+            <a
+              key={idx}
+              href={`mailto:${token.value}`}
+              className="font-medium text-[#204696] underline hover:text-[#009EE0] transition-colors"
+            >
+              {token.value}
+            </a>
+          );
+        }
+        if (token.type === 'phone') {
+          return (
+            <a
+              key={idx}
+              href={`tel:${token.value.replace(/\s+/g, '')}`}
+              className="font-medium text-[#204696] underline hover:text-[#009EE0] transition-colors"
+            >
+              {token.value}
+            </a>
+          );
+        }
+        return <span key={idx}>{token.value}</span>;
+      })}
+    </>
+  );
+};
+
+export const FormattedChatMessage: React.FC<{ content: string; isUser: boolean }> = ({ content, isUser }) => {
+  if (isUser) {
+    return <div className="whitespace-pre-wrap">{content}</div>;
+  }
+
+  const lines = content.split('\n');
+  const blocks: React.ReactNode[] = [];
+  let currentList: { type: 'ul' | 'ol'; items: string[] } | null = null;
+
+  const flushList = () => {
+    if (currentList) {
+      if (currentList.type === 'ul') {
+        blocks.push(
+          <ul key={`ul-${blocks.length}`} className="my-2 space-y-1.5 pl-0.5">
+            {currentList.items.map((item, idx) => (
+              <li key={idx} className="flex items-start gap-2 text-xs sm:text-[13px] leading-relaxed text-slate-700">
+                <span className="w-1.5 h-1.5 rounded-full bg-[#204696] shrink-0 mt-2" />
+                <span className="flex-1">{renderInline(item)}</span>
+              </li>
+            ))}
+          </ul>
+        );
+      } else {
+        blocks.push(
+          <ol key={`ol-${blocks.length}`} className="my-2 space-y-1.5 pl-0.5">
+            {currentList.items.map((item, idx) => (
+              <li key={idx} className="flex items-start gap-2 text-xs sm:text-[13px] leading-relaxed text-slate-700">
+                <span className="w-4 h-4 rounded-full bg-blue-50 text-[#204696] text-[10px] font-bold flex items-center justify-center shrink-0 mt-0.5 border border-[#204696]/20">
+                  {idx + 1}
+                </span>
+                <span className="flex-1">{renderInline(item)}</span>
+              </li>
+            ))}
+          </ol>
+        );
+      }
+      currentList = null;
+    }
+  };
+
+  for (let i = 0; i < lines.length; i++) {
+    const rawLine = lines[i];
+    const line = rawLine.trim();
+
+    if (!line) {
+      flushList();
+      continue;
+    }
+
+    // Footnote / Grounded source note
+    if ((line.startsWith('*(') && line.endsWith(')*')) || (line.startsWith('(') && line.endsWith(')') && line.includes('Grounded in'))) {
+      flushList();
+      const cleanNote = line.replace(/^\*\(/, '').replace(/\)\*$/, '').replace(/^\(/, '').replace(/\)$/, '');
+      blocks.push(
+        <div
+          key={`foot-${i}`}
+          className="mt-2.5 pt-2 border-t border-slate-100 text-[10.5px] font-mono text-slate-400 italic flex items-center gap-1.5"
+        >
+          <span className="w-1.5 h-1.5 rounded-full bg-[#72BF44] shrink-0" />
+          <span>{cleanNote}</span>
+        </div>
+      );
+      continue;
+    }
+
+    // Bullet list item: starts with '- ' or '* '
+    const bulletMatch = line.match(/^[-*]\s+(.*)$/);
+    if (bulletMatch) {
+      if (!currentList || currentList.type !== 'ul') {
+        flushList();
+        currentList = { type: 'ul', items: [] };
+      }
+      currentList.items.push(bulletMatch[1]);
+      continue;
+    }
+
+    // Numbered list item: starts with '1. ', '2. ', etc.
+    const numberedMatch = line.match(/^\d+\.\s+(.*)$/);
+    if (numberedMatch) {
+      if (!currentList || currentList.type !== 'ol') {
+        flushList();
+        currentList = { type: 'ol', items: [] };
+      }
+      currentList.items.push(numberedMatch[1]);
+      continue;
+    }
+
+    // Not a list item
+    flushList();
+
+    // Check for bold title line like **Welcome to Aviance Ghana Limited** 👋
+    const boldHeaderMatch = line.match(/^\*\*([^*]+)\*\*(.*)$/);
+    if (boldHeaderMatch && (!line.includes(':') || line.length < 50)) {
+      blocks.push(
+        <div
+          key={`h-${i}`}
+          className="text-sm font-bold text-[#204696] tracking-tight flex items-center gap-1.5 my-1"
+        >
+          <span>{boldHeaderMatch[1]}</span>
+          {boldHeaderMatch[2] && <span>{boldHeaderMatch[2]}</span>}
+        </div>
+      );
+      continue;
+    }
+
+    // Regular text paragraph
+    blocks.push(
+      <p key={`p-${i}`} className="my-1 text-xs sm:text-[13px] leading-relaxed text-slate-700">
+        {renderInline(line)}
+      </p>
+    );
+  }
+
+  flushList();
+
+  return <div className="space-y-1">{blocks}</div>;
+};
+
 export const GeminiChatbot: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const [role, setRole] = useState<ChatRole>('general');
-  const [model, setModel] = useState<GeminiModel>('gemini-3.1-flash-lite');
-  const [fastMode, setFastMode] = useState<boolean>(true);
+  const [role] = useState<ChatRole>('general');
+  const [model] = useState<GeminiModel>('gemini-3.1-flash-lite');
   const [lastUserPrompt, setLastUserPrompt] = useState<string>('');
   const [messages, setMessages] = useState<ChatMessage[]>(() => {
     try {
@@ -114,7 +327,6 @@ export const GeminiChatbot: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [copiedId, setCopiedId] = useState<string | null>(null);
-  const [settingsOpen, setSettingsOpen] = useState(false);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -131,23 +343,6 @@ export const GeminiChatbot: React.FC = () => {
       localStorage.setItem('aviance_chat_history', JSON.stringify(messages));
     } catch {}
   }, [messages]);
-
-  // Handle role switch: auto-set recommended model if not manually overridden
-  const handleRoleChange = (newRole: ChatRole) => {
-    setRole(newRole);
-    const recModel = ROLE_CONFIGS[newRole].recommendedModel;
-    setModel(recModel);
-
-    // Add persona transition system notice
-    const notice: ChatMessage = {
-      id: `msg-switch-${Date.now()}`,
-      role: 'assistant',
-      content: ROLE_CONFIGS[newRole].welcomeMessage,
-      timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-      modelUsed: recModel,
-    };
-    setMessages((prev) => [...prev, notice]);
-  };
 
   const handleClearHistory = () => {
     const welcome: ChatMessage = {
@@ -182,10 +377,10 @@ export const GeminiChatbot: React.FC = () => {
     setIsLoading(true);
 
     try {
-      // Build conversation history for multi-turn chat (excluding error messages or welcome duplicates)
+      // Build conversation history for multi-turn chat
       const historyPayload = newMessages
-        .slice(-6) // Keep last 6 turns for optimal token processing & fast response
-        .slice(0, -1) // Exclude current user prompt
+        .slice(-6)
+        .slice(0, -1)
         .map((m) => ({
           role: m.role,
           content: m.content,
@@ -201,7 +396,7 @@ export const GeminiChatbot: React.FC = () => {
           history: historyPayload,
           model,
           role,
-          fast: fastMode,
+          fast: true,
         }),
       });
 
@@ -222,7 +417,7 @@ export const GeminiChatbot: React.FC = () => {
       setMessages((prev) => [...prev, assistantMessage]);
     } catch (err: any) {
       console.error('Chat error:', err);
-      setError(err?.message || 'Unable to connect to the Gemini API assistant. Please check connection.');
+      setError(err?.message || 'Unable to connect to the Aviance Concierge. Please check your connection.');
     } finally {
       setIsLoading(false);
     }
@@ -235,57 +430,50 @@ export const GeminiChatbot: React.FC = () => {
   };
 
   const currentRoleConfig = ROLE_CONFIGS[role];
-  const RoleIcon = currentRoleConfig.icon;
 
   return (
     <>
-      {/* Floating Trigger Launcher Button with Official Aviance Logo */}
+      {/* Floating Trigger Launcher Button */}
       {!isOpen && (
-        <div className="fixed bottom-5 right-5 z-40 flex items-center gap-3 group select-none">
-          {/* Subtle sliding pill tooltip on hover */}
-          <div className="hidden sm:flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-slate-950/95 text-white border border-[#204696]/60 shadow-2xl backdrop-blur-md text-xs font-semibold opacity-0 group-hover:opacity-100 transition-all duration-300 translate-x-2 group-hover:translate-x-0 pointer-events-none">
-            <span className="w-2 h-2 rounded-full bg-[#72BF44] animate-pulse"></span>
-            <span className="tracking-tight font-medium">Aviance AI Concierge</span>
-            <span className="font-mono text-[9px] text-[#58C1EB] bg-[#204696]/30 px-1.5 py-0.5 rounded font-bold border border-[#58C1EB]/40">
-              ⚡ Instant
+        <div className="fixed bottom-6 right-6 z-50 flex items-center gap-3 group select-none">
+          {/* Executive Tooltip on Hover */}
+          <div className="hidden sm:flex items-center gap-2.5 px-3.5 py-2 rounded-full bg-white/95 text-slate-800 border border-slate-200/90 shadow-xl backdrop-blur-md text-xs font-semibold opacity-0 group-hover:opacity-100 transition-all duration-300 translate-x-2 group-hover:translate-x-0 pointer-events-none">
+            <span className="w-2 h-2 rounded-full bg-[#72BF44] animate-pulse shrink-0"></span>
+            <span className="font-semibold text-slate-800">Aviance Concierge</span>
+            <span className="text-[10px] text-[#204696] bg-blue-50 px-2 py-0.5 rounded-full font-bold border border-[#204696]/20">
+              Online 24/7
             </span>
           </div>
 
-          {/* Perfectly Round, Minimal & Modern Animated AI Button with Official Aviance Logo */}
+          {/* Floating Transparent Trigger Launcher Button with Bold Logo */}
           <button
             onClick={() => setIsOpen(true)}
-            className="relative w-14 h-14 sm:w-16 sm:h-16 aspect-square rounded-full flex items-center justify-center p-0 text-white shadow-2xl transition-all duration-300 transform hover:scale-108 active:scale-95 group focus:outline-none focus:ring-4 focus:ring-[#58C1EB]/40 cursor-pointer animate-ai-breathe"
+            className="relative w-16 h-16 sm:w-18 sm:h-18 flex items-center justify-center p-0 bg-transparent transition-all duration-300 transform hover:scale-115 active:scale-95 group focus:outline-none cursor-pointer"
             aria-label="Open Aviance AI Concierge"
           >
-            {/* Outer expanding pulsing radar wave */}
-            <span className="absolute inset-0 rounded-full bg-[#58C1EB]/30 animate-ai-wave pointer-events-none" />
+            {/* Soft ambient aura on hover */}
+            <span className="absolute inset-0 rounded-full bg-[#009EE0]/10 scale-90 group-hover:scale-110 opacity-0 group-hover:opacity-100 blur-md transition-all duration-300 pointer-events-none" />
 
-            {/* Subtle rotating brand halo aura (Cobalt, Cyan, Green) */}
-            <span className="absolute -inset-1 rounded-full bg-gradient-to-tr from-[#204696] via-[#58C1EB] to-[#72BF44] opacity-80 blur-xs animate-ai-spin-slow pointer-events-none" />
-
-            {/* Inner perfectly circular tactile button surface in Aviance Navy/Cobalt */}
-            <div className="relative w-full h-full rounded-full bg-gradient-to-tr from-[#081224] via-[#102754] to-[#204696] flex items-center justify-center overflow-hidden border-2 border-[#58C1EB]/80 shadow-inner">
-              {/* Soft interior highlight */}
-              <div className="absolute inset-0 rounded-full bg-radial from-white/35 via-transparent to-black/25 pointer-events-none" />
-
-              {/* Shimmer sweep effect on hover */}
-              <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/40 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 ease-in-out pointer-events-none" />
-
-              {/* Official Aviance Logo Emblem in Center */}
-              <div className="relative flex items-center justify-center transition-transform duration-300 group-hover:scale-110">
-                <AvianceLogo variant="mark-only" size="sm" markSize={35} className="drop-shadow-[0_2px_8px_rgba(0,0,0,0.6)]" />
-
-                {/* Modern "AI" Badge */}
-                <span className="absolute -bottom-1 -right-1 px-1 py-0.2 rounded-full bg-[#081224] text-[8.5px] font-mono font-black text-[#58C1EB] border border-[#58C1EB]/70 leading-none shadow-md">
-                  AI
-                </span>
-              </div>
+            {/* Official Aviance Logo Mark - Bold, Vibrant, Crisp with Drop Shadow */}
+            <div className="relative flex items-center justify-center transition-transform duration-300 group-hover:scale-108 drop-shadow-[0_6px_14px_rgba(32,70,150,0.3)]">
+              <AvianceLogo
+                variant="mark-only"
+                size="lg"
+                markSize={54}
+                strokeWidth={4.5}
+                className="w-full h-full object-contain filter drop-shadow-[0_2px_4px_rgba(0,0,0,0.12)]"
+              />
             </div>
 
-            {/* Status Beacon Pip (Online 24/7 in Official Leaf Green) */}
-            <span className="absolute top-0 right-0 flex h-3.5 w-3.5">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#72BF44] opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-3.5 w-3.5 bg-[#72BF44] border-2 border-slate-950 shadow-sm"></span>
+            {/* Online Status Beacon */}
+            <span className="absolute top-1 right-1 flex h-3.5 w-3.5">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#72BF44] opacity-80"></span>
+              <span className="relative inline-flex rounded-full h-3.5 w-3.5 bg-[#72BF44] border-2 border-white shadow-md"></span>
+            </span>
+
+            {/* AI Pill Badge */}
+            <span className="absolute bottom-0 right-0 px-1.5 py-0.5 rounded-full bg-white text-[9px] font-mono font-black text-[#204696] border border-slate-200 leading-none shadow-md">
+              AI
             </span>
           </button>
         </div>
@@ -294,190 +482,52 @@ export const GeminiChatbot: React.FC = () => {
       {/* Expandable Chat Dialog Window */}
       {isOpen && (
         <div
-          className="fixed bottom-5 right-5 z-50 w-[95vw] sm:w-[460px] h-[640px] max-h-[85vh] bg-[#0A162C] border border-[#204696]/50 rounded-3xl shadow-2xl flex flex-col overflow-hidden animate-in slide-in-from-bottom-4 duration-200"
+          className="fixed bottom-5 right-5 z-50 w-[95vw] sm:w-[420px] md:w-[440px] h-[580px] max-h-[85vh] bg-white border border-slate-200/90 rounded-3xl shadow-2xl flex flex-col overflow-hidden animate-in slide-in-from-bottom-4 duration-200"
           role="dialog"
           aria-modal="true"
-          aria-label="Aviance AI Multi-Turn Chatbot"
+          aria-label="Aviance Ground Concierge"
         >
-          {/* Header with Official Aviance Logo */}
-          <div className="p-4 bg-[#071120] border-b border-[#204696]/40 flex flex-col gap-2 shrink-0">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                {/* Official Aviance Brand Logo */}
-                <div className="p-1 rounded-xl bg-[#0C1933] border border-[#204696]/60 shadow-sm">
-                  <AvianceLogo variant="on-dark" size="sm" showSubtitle={false} />
-                </div>
-                <div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-xs font-bold text-white tracking-tight">AI Concierge</span>
-                    <button
-                      onClick={() => setFastMode(!fastMode)}
-                      className={`text-[9px] font-mono px-2 py-0.5 rounded-full border font-bold flex items-center gap-1 transition-colors ${
-                        fastMode
-                          ? 'bg-emerald-500/15 border-emerald-400/40 text-emerald-400'
-                          : 'bg-[#58C1EB]/15 border-[#58C1EB]/40 text-[#58C1EB]'
-                      }`}
-                      title={fastMode ? 'Turbo Fast Response Active (<1s)' : 'Deep Reasoning Mode Active'}
-                    >
-                      <Zap className="w-2.5 h-2.5" />
-                      <span>{fastMode ? 'Turbo (<1s)' : 'Deep AI'}</span>
-                    </button>
-                  </div>
-                  <div className="text-[11px] text-slate-400 flex items-center gap-1.5">
-                    <span className="w-1.5 h-1.5 rounded-full bg-[#72BF44]"></span>
-                    <span>{currentRoleConfig.name}</span>
-                  </div>
-                </div>
-              </div>
+          {/* Top Brand Tri-Color Accent Line */}
+          <div className="h-1 w-full bg-gradient-to-r from-[#204696] via-[#009EE0] to-[#72BF44] shrink-0" />
 
-              {/* Action Buttons: Options, Reset, Close */}
-              <div className="flex items-center gap-1">
-                <button
-                  onClick={() => setSettingsOpen(!settingsOpen)}
-                  className={`p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors ${
-                    settingsOpen ? 'bg-[#204696]/30 text-[#58C1EB]' : ''
-                  }`}
-                  title="Configure Model & Persona"
-                  aria-label="Model and persona settings"
-                >
-                  <ChevronDown className="w-4 h-4" />
-                </button>
-                <button
-                  onClick={handleClearHistory}
-                  className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
-                  title="Clear conversation history"
-                  aria-label="Clear chat history"
-                >
-                  <RotateCcw className="w-4 h-4" />
-                </button>
-                <button
-                  onClick={() => setIsOpen(false)}
-                  className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
-                  title="Minimize chat"
-                  aria-label="Minimize chat window"
-                >
-                  <Minimize2 className="w-4 h-4" />
-                </button>
+          {/* Simple, Clean Executive Header */}
+          <div className="px-4 py-3.5 bg-gradient-to-r from-[#0F2E53] via-[#163469] to-[#204696] text-white shrink-0 shadow-sm flex items-center justify-between">
+            <div className="flex items-center gap-2.5">
+              <div className="w-8 h-8 rounded-xl bg-white/10 backdrop-blur-xs border border-white/20 flex items-center justify-center p-1 shrink-0">
+                <AvianceLogo variant="mark-only" size="sm" markSize={24} />
+              </div>
+              <div>
+                <h3 className="text-sm font-bold text-white tracking-tight leading-tight">Aviance Concierge</h3>
+                <div className="text-[11px] text-slate-300 flex items-center gap-1.5 mt-0.5">
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#72BF44]"></span>
+                  <span>Online · 24/7 Ground Operations</span>
+                </div>
               </div>
             </div>
 
-            {/* Role Persona & Speed Configuration Bar / Dropdown */}
-            {settingsOpen && (
-              <div className="p-3 mt-1 bg-[#081224] border border-[#204696]/40 rounded-2xl space-y-3 text-xs animate-in fade-in duration-100">
-                {/* Speed Mode Selector */}
-                <div>
-                  <label className="block text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-1.5">
-                    Response Speed Mode
-                  </label>
-                  <div className="grid grid-cols-2 gap-2">
-                    <button
-                      onClick={() => setFastMode(true)}
-                      className={`p-2 rounded-xl text-left border flex items-center gap-2 transition-colors ${
-                        fastMode
-                          ? 'bg-emerald-500/15 border-emerald-400 text-emerald-300 font-semibold'
-                          : 'bg-[#0A162C] border-slate-800 text-slate-400'
-                      }`}
-                    >
-                      <Zap className="w-3.5 h-3.5 text-emerald-400" />
-                      <div>
-                        <div className="text-[11px]">⚡ Turbo Fast</div>
-                        <div className="text-[9px] text-slate-400">&lt; 1s instant replies</div>
-                      </div>
-                    </button>
-                    <button
-                      onClick={() => setFastMode(false)}
-                      className={`p-2 rounded-xl text-left border flex items-center gap-2 transition-colors ${
-                        !fastMode
-                          ? 'bg-[#204696]/30 border-[#58C1EB] text-[#58C1EB] font-semibold'
-                          : 'bg-[#0A162C] border-slate-800 text-slate-400'
-                      }`}
-                    >
-                      <Gauge className="w-3.5 h-3.5 text-[#58C1EB]" />
-                      <div>
-                        <div className="text-[11px]">🧠 Deep Reasoning</div>
-                        <div className="text-[9px] text-slate-400">Multi-step analysis</div>
-                      </div>
-                    </button>
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-1.5">
-                    Select Specialist Persona
-                  </label>
-                  <div className="grid grid-cols-1 gap-1.5">
-                    {(Object.keys(ROLE_CONFIGS) as ChatRole[]).map((rKey) => {
-                      const cfg = ROLE_CONFIGS[rKey];
-                      const Icon = cfg.icon;
-                      const isSelected = role === rKey;
-                      return (
-                        <button
-                          key={rKey}
-                          onClick={() => handleRoleChange(rKey)}
-                          className={`p-2 rounded-xl text-left border flex items-center justify-between transition-colors ${
-                            isSelected
-                              ? 'bg-[#58C1EB]/10 border-[#58C1EB]/40 text-[#58C1EB] font-semibold'
-                              : 'bg-[#0A162C] border-slate-800/80 text-slate-300 hover:border-slate-700'
-                          }`}
-                        >
-                          <div className="flex items-center gap-2">
-                            <Icon className="w-3.5 h-3.5" />
-                            <span>{cfg.name}</span>
-                          </div>
-                          <span className="text-[10px] font-mono text-slate-500">{cfg.recommendedModel}</span>
-                        </button>
-                      );
-                    })}
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-1.5">
-                    Underlying Gemini Model
-                  </label>
-                  <div className="grid grid-cols-2 gap-2 text-center font-mono text-[10px]">
-                    <button
-                      onClick={() => setModel('gemini-3.1-flash-lite')}
-                      className={`p-2 rounded-lg border transition-colors ${
-                        model === 'gemini-3.1-flash-lite'
-                          ? 'bg-[#204696] text-white border-[#58C1EB] font-bold'
-                          : 'bg-[#0A162C] border-slate-800 text-slate-400 hover:text-white'
-                      }`}
-                    >
-                      3.1-flash-lite
-                      <span className="block text-[9px] font-sans font-normal opacity-80">High Speed (Recommended)</span>
-                    </button>
-                    <button
-                      onClick={() => setModel('gemini-3.8-flash')}
-                      className={`p-2 rounded-lg border transition-colors ${
-                        model === 'gemini-3.8-flash'
-                          ? 'bg-[#204696] text-white border-[#58C1EB] font-bold'
-                          : 'bg-[#0A162C] border-slate-800 text-slate-400 hover:text-white'
-                      }`}
-                    >
-                      3.8-flash
-                      <span className="block text-[9px] font-sans font-normal opacity-80">Comprehensive Reasoning</span>
-                    </button>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* Model active indicator pill */}
-            <div className="flex items-center justify-between text-[10px] text-slate-400 font-mono">
-              <span className="flex items-center gap-1.5">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
-                <span>Active Model: <strong className="text-slate-200">{model}</strong></span>
-              </span>
-              <span className="text-slate-400 flex items-center gap-1">
-                <Clock className="w-3 h-3 text-[#58C1EB]" />
-                <span>{fastMode ? 'Latency: <1s' : 'Full Gemini Mode'}</span>
-              </span>
+            {/* Simple Actions: Reset & Close */}
+            <div className="flex items-center gap-1">
+              <button
+                onClick={handleClearHistory}
+                className="p-1.5 rounded-lg text-white/70 hover:text-white hover:bg-white/15 transition-colors cursor-pointer"
+                title="Clear conversation"
+                aria-label="Clear conversation"
+              >
+                <RotateCcw className="w-4 h-4" />
+              </button>
+              <button
+                onClick={() => setIsOpen(false)}
+                className="p-1.5 rounded-lg text-white/70 hover:text-white hover:bg-white/15 transition-colors cursor-pointer"
+                title="Close chat"
+                aria-label="Close chat"
+              >
+                <X className="w-4 h-4" />
+              </button>
             </div>
           </div>
 
           {/* Scrollable Message Thread */}
-          <div className="flex-1 overflow-y-auto p-4 space-y-4">
+          <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-gradient-to-b from-slate-50/50 via-white to-slate-50/30">
             {messages.map((m) => {
               const isUser = m.role === 'user';
               return (
@@ -487,8 +537,13 @@ export const GeminiChatbot: React.FC = () => {
                 >
                   {/* Official Aviance Logo Avatar for Assistant Responses */}
                   {!isUser && (
-                    <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-[#081224] to-[#163470] border border-[#204696]/60 flex items-center justify-center shrink-0 mt-0.5 shadow-md p-1.5">
-                      <AvianceLogo variant="mark-only" size="sm" markSize={24} className="w-full h-full object-contain" />
+                    <div className="w-8 h-8 rounded-xl bg-white border border-slate-200/90 shadow-xs flex items-center justify-center shrink-0 mt-0.5 p-1">
+                      <AvianceLogo
+                        variant="mark-only"
+                        size="sm"
+                        markSize={24}
+                        className="w-full h-full object-contain"
+                      />
                     </div>
                   )}
 
@@ -496,26 +551,23 @@ export const GeminiChatbot: React.FC = () => {
                     <div
                       className={`p-3.5 rounded-2xl text-xs sm:text-[13px] leading-relaxed ${
                         isUser
-                          ? 'bg-[#204696] text-white border border-[#58C1EB]/40 font-medium rounded-tr-sm shadow-md'
-                          : 'bg-[#071120] text-slate-200 border border-[#204696]/30 rounded-tl-sm shadow-md whitespace-pre-wrap'
+                          ? 'bg-[#204696] text-white rounded-tr-sm shadow-sm font-medium'
+                          : 'bg-white text-slate-800 border border-slate-200/90 rounded-tl-sm shadow-xs'
                       }`}
                     >
-                      {m.content}
+                      <FormattedChatMessage content={m.content} isUser={isUser} />
                     </div>
 
-                    <div className="flex items-center gap-2 px-1 text-[10px] text-slate-500 font-mono">
+                    <div className={`flex items-center gap-2 px-1 text-[10px] text-slate-400 font-mono ${isUser ? 'justify-end' : 'justify-start'}`}>
                       <span>{m.timestamp}</span>
-                      {!isUser && m.modelUsed && (
-                        <span>· {m.modelUsed}</span>
-                      )}
                       {!isUser && (
                         <button
                           onClick={() => handleCopy(m.id, m.content)}
-                          className="hover:text-[#58C1EB] transition-colors ml-1"
+                          className="hover:text-[#204696] transition-colors ml-0.5 cursor-pointer opacity-60 hover:opacity-100"
                           title="Copy reply text"
                         >
                           {copiedId === m.id ? (
-                            <Check className="w-3 h-3 text-emerald-400" />
+                            <Check className="w-3 h-3 text-emerald-600" />
                           ) : (
                             <Copy className="w-3 h-3" />
                           )}
@@ -525,7 +577,7 @@ export const GeminiChatbot: React.FC = () => {
                   </div>
 
                   {isUser && (
-                    <div className="w-8 h-8 rounded-xl bg-slate-800 text-slate-300 flex items-center justify-center shrink-0 mt-0.5">
+                    <div className="w-8 h-8 rounded-xl bg-[#204696] text-white flex items-center justify-center shrink-0 mt-0.5 shadow-xs">
                       <User className="w-4 h-4" />
                     </div>
                   )}
@@ -533,28 +585,33 @@ export const GeminiChatbot: React.FC = () => {
               );
             })}
 
-            {/* Fast Loading / Typing indicator with animated Aviance Logo */}
+            {/* Loading / Typing indicator */}
             {isLoading && (
               <div className="flex gap-2.5 justify-start">
-                <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-[#081224] to-[#163470] border border-[#204696]/60 flex items-center justify-center shrink-0 shadow-md p-1.5 animate-pulse">
-                  <AvianceLogo variant="mark-only" size="sm" markSize={24} className="w-full h-full object-contain" />
+                <div className="w-8 h-8 rounded-xl bg-white border border-slate-200/90 shadow-xs flex items-center justify-center shrink-0 p-1 animate-pulse">
+                  <AvianceLogo
+                    variant="mark-only"
+                    size="sm"
+                    markSize={24}
+                    className="w-full h-full object-contain"
+                  />
                 </div>
-                <div className="p-3.5 bg-[#071120] border border-[#204696]/30 rounded-2xl rounded-tl-sm flex items-center gap-2 text-xs text-slate-400">
-                  <div className="w-1.5 h-1.5 rounded-full bg-[#58C1EB] animate-bounce"></div>
-                  <div className="w-1.5 h-1.5 rounded-full bg-[#204696] animate-bounce [animation-delay:0.2s]"></div>
+                <div className="p-3 bg-white border border-slate-200/90 rounded-2xl rounded-tl-sm flex items-center gap-2 text-xs text-slate-600 shadow-xs">
+                  <div className="w-1.5 h-1.5 rounded-full bg-[#204696] animate-bounce"></div>
+                  <div className="w-1.5 h-1.5 rounded-full bg-[#009EE0] animate-bounce [animation-delay:0.2s]"></div>
                   <div className="w-1.5 h-1.5 rounded-full bg-[#72BF44] animate-bounce [animation-delay:0.4s]"></div>
-                  <span className="ml-1.5 font-mono text-[10px] text-[#58C1EB]">Retrieving Aviance station operations...</span>
+                  <span className="ml-1 text-[11px] text-slate-500 font-medium">Typing response...</span>
                 </div>
               </div>
             )}
 
             {/* Error display */}
             {error && (
-              <div className="p-3.5 rounded-2xl bg-rose-500/10 border border-rose-500/30 text-rose-300 text-xs flex items-start gap-3 shadow-lg">
-                <AlertCircle className="w-4 h-4 text-rose-400 shrink-0 mt-0.5" />
+              <div className="p-3.5 rounded-2xl bg-rose-50 border border-rose-200 text-rose-800 text-xs flex items-start gap-3 shadow-xs">
+                <AlertCircle className="w-4 h-4 text-rose-600 shrink-0 mt-0.5" />
                 <div className="flex-1 space-y-1.5">
-                  <div className="font-semibold text-rose-200">Processing Notice</div>
-                  <div className="text-[11px] text-rose-300/90 leading-relaxed">{error}</div>
+                  <div className="font-bold text-rose-900">Notice</div>
+                  <div className="text-[11px] text-rose-700 leading-relaxed">{error}</div>
                   <button
                     onClick={() => {
                       const retryText =
@@ -562,10 +619,10 @@ export const GeminiChatbot: React.FC = () => {
                         messages.filter((m) => m.role === 'user').slice(-1)[0]?.content;
                       if (retryText) handleSendMessage(retryText);
                     }}
-                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#204696] text-white border border-[#58C1EB]/40 font-bold text-[11px] hover:bg-[#183878] transition-colors shadow-sm"
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#204696] hover:bg-[#183878] text-white font-bold text-[11px] transition-colors shadow-xs cursor-pointer"
                   >
                     <RotateCcw className="w-3.5 h-3.5" />
-                    <span>Retry Last Query</span>
+                    <span>Retry</span>
                   </button>
                 </div>
               </div>
@@ -575,13 +632,13 @@ export const GeminiChatbot: React.FC = () => {
           </div>
 
           {/* Quick Suggested Prompts Chips */}
-          {messages.length <= 3 && !isLoading && (
-            <div className="px-4 py-2 bg-[#071120]/80 border-t border-[#204696]/30 flex flex-wrap gap-1.5 text-[11px]">
+          {messages.length <= 2 && !isLoading && (
+            <div className="px-3.5 py-2 bg-slate-50/80 border-t border-slate-100 flex flex-wrap gap-1.5 text-xs shrink-0">
               {currentRoleConfig.suggestedPrompts.map((prompt, i) => (
                 <button
                   key={i}
                   onClick={() => handleSendMessage(prompt)}
-                  className="px-2.5 py-1 rounded-full bg-[#0A162C] border border-[#204696]/40 hover:border-[#58C1EB] text-slate-300 hover:text-[#58C1EB] transition-colors text-left"
+                  className="px-2.5 py-1 rounded-full bg-white border border-slate-200 hover:border-[#204696] text-slate-600 hover:text-[#204696] hover:bg-blue-50/50 text-[11px] font-medium transition-all shadow-2xs text-left cursor-pointer"
                 >
                   {prompt}
                 </button>
@@ -589,8 +646,8 @@ export const GeminiChatbot: React.FC = () => {
             </div>
           )}
 
-          {/* Input Bar */}
-          <div className="p-3 bg-[#071120] border-t border-[#204696]/40">
+          {/* Clean Input Bar */}
+          <div className="p-3 bg-white border-t border-slate-200 shrink-0">
             <form
               onSubmit={(e) => {
                 e.preventDefault();
@@ -602,23 +659,19 @@ export const GeminiChatbot: React.FC = () => {
                 type="text"
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
-                placeholder={`Ask ${currentRoleConfig.name}...`}
+                placeholder="Ask a question..."
                 disabled={isLoading}
-                className="flex-1 bg-[#0A162C] border border-[#204696]/50 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-[#58C1EB] transition-colors disabled:opacity-50"
+                className="flex-1 bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:bg-white focus:border-[#204696] focus:ring-2 focus:ring-[#204696]/15 transition-all disabled:opacity-50"
               />
               <button
                 type="submit"
                 disabled={isLoading || !input.trim()}
-                className="p-2.5 bg-gradient-to-r from-[#204696] to-[#153472] hover:from-[#2653b0] hover:to-[#1a3d85] text-white border border-[#58C1EB]/40 rounded-xl transition-all disabled:opacity-40 disabled:cursor-not-allowed shadow-md shrink-0 cursor-pointer"
+                className="p-2.5 bg-gradient-to-r from-[#204696] to-[#009EE0] hover:from-[#183878] hover:to-[#0089c4] text-white rounded-xl shadow-md transition-all disabled:opacity-40 disabled:cursor-not-allowed shrink-0 cursor-pointer"
                 aria-label="Send message"
               >
-                <Send className="w-4 h-4 text-[#58C1EB]" />
+                <Send className="w-4 h-4 text-white" />
               </button>
             </form>
-            <div className="mt-1.5 flex items-center justify-between text-[10px] text-slate-500 font-mono px-1">
-              <span>Enter to send · Instant Station Knowledge</span>
-              <span className="text-[#58C1EB]/80 font-bold">Aviance Ghana</span>
-            </div>
           </div>
         </div>
       )}

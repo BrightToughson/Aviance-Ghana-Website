@@ -12,12 +12,137 @@ import { Service } from '../../types';
 import { useTheme } from '../../context/ThemeContext';
 import { useLanguage } from '../../context/LanguageContext';
 
+// Authentic Aviance Ground Operations Imagery
+import PASSENGER_IMG from '../../assets/aviance_images/services/vip_charter.jpg'; // Real DCS check-in agent at Kotoka T3
+import PASSENGER_TEAM_IMG from '../../assets/aviance_images/careers_team.jpg'; // Real customer service frontline concourse team
+import PASSENGER_CREW_IMG from '../../assets/aviance_images/1776164623557.jpg'; // Ethiopian Airlines celebration & flight crew
+
+import RAMP_IMG from '../../assets/aviance_images/1791968160594.jpg'; // Heavy pushback tractor at B787 nose
+import RAMP_CARGO_IMG from '../../assets/aviance_images/image_show/1759758700331.jpg'; // Ramp container loading onto dolly
+import RAMP_TRACTOR_IMG from '../../assets/aviance_images/services/flight_ops.jpg'; // Airside tug mobility
+
+import VIP_IMG from '../../assets/aviance_images/1788350257403.jpg'; // SolitAir charter aircraft with flight captains & ground crew
+import VIP_LOUNGE_IMG from '../../assets/aviance_images/services/lounge_services.jpg'; // Executive Adinkra lounge
+
+import GSE_IMG from '../../assets/aviance_images/services/gse_maintenance.jpg'; // Certified GSE workshop engineering
+import CARGO_IMG from '../../assets/aviance_images/services/cargo_services.jpg'; // Cold room & screening facility
+import CARGO_WH_IMG from '../../assets/aviance_images/services/passenger_services.jpg'; // Warehouse pallet rack inspection
+import BAGGAGE_IMG from '../../assets/aviance_images/services/find_my_bag.jpg'; // Baggage makeup hall sortation
+import OCC_IMG from '../../assets/aviance_images/image_show/ee4669f3-9945-4b97-a86e-d28b9860138a.png'; // Headset turnaround intercom
+import TRAINING_IMG from '../../assets/aviance_images/image_show/1740561240681.jpg'; // Training room & instructors
+
+interface ServiceVisuals {
+  primary: string;
+  primaryCaption: string;
+  secondary?: Array<{ img: string; title: string; desc: string }>;
+}
+
+const getServiceVisuals = (slug: string): ServiceVisuals => {
+  switch (slug) {
+    case 'passenger-services':
+      return {
+        primary: PASSENGER_IMG,
+        primaryCaption: 'Kotoka Terminal 3 DCS Check-In Counters & Frontline Passenger Handling',
+        secondary: [
+          {
+            img: PASSENGER_TEAM_IMG,
+            title: 'Frontline Customer Service Team',
+            desc: 'Dedicated passenger liaison, boarding gate supervisors, and PRM mobility care.'
+          },
+          {
+            img: PASSENGER_CREW_IMG,
+            title: 'Flight Crew & Partner Facilitation',
+            desc: 'Close turnaround collaboration with international airline flight captains and crews.'
+          }
+        ]
+      };
+    case 'ramp-handling':
+      return {
+        primary: RAMP_IMG,
+        primaryCaption: 'Heavy Apron Turnaround: SCHOPF F300 Towbarless Pushback Tractor at Boeing 787',
+        secondary: [
+          {
+            img: RAMP_CARGO_IMG,
+            title: 'Precision Aircraft Cargo & Baggage Loading',
+            desc: 'Aviance Tug TR-52 staging containerized cargo dollies for lower-deck loading.'
+          },
+          {
+            img: RAMP_TRACTOR_IMG,
+            title: 'Airside Fleet Mobility & Marshalling',
+            desc: 'Strict IATA ISAGO compliance across ramp corridors and airside maneuvering areas.'
+          }
+        ]
+      };
+    case 'vip-charter':
+      return {
+        primary: VIP_IMG,
+        primaryCaption: 'Executive Charter Aircraft Ground Handling & Diplomatic Flight Protocol',
+        secondary: [
+          {
+            img: VIP_LOUNGE_IMG,
+            title: 'Executive Apron Escort & Lounge Hospitality',
+            desc: 'Fast-track customs, immigration coordination, and private tarmac passenger transfers.'
+          }
+        ]
+      };
+    case 'gse-fleet-maintenance':
+      return {
+        primary: GSE_IMG,
+        primaryCaption: 'Certified GSE Heavy Maintenance Engineering Workshop & Equipment Overhauls',
+        secondary: [
+          {
+            img: RAMP_IMG,
+            title: 'Modern Eco-Friendly GSE Fleet',
+            desc: '$1M+ investment in high-efficiency pushback tractors, GPUs, and belt loaders.'
+          },
+          {
+            img: RAMP_TRACTOR_IMG,
+            title: '24/7 Mobile Airside Breakdown Response',
+            desc: 'Immediate ramp-side troubleshooting and preventive hydraulic/electrical inspections.'
+          }
+        ]
+      };
+    case 'cargo':
+      return {
+        primary: CARGO_IMG,
+        primaryCaption: 'Aviance Cold Room Storage & EU RA3 Certified Screening Infrastructure',
+        secondary: [
+          {
+            img: CARGO_WH_IMG,
+            title: 'Air Cargo Warehouse Pallet Inspection',
+            desc: 'Temperature-controlled perishables handling and customs bonded warehouse staging.'
+          }
+        ]
+      };
+    case 'baggage':
+      return {
+        primary: BAGGAGE_IMG,
+        primaryCaption: 'Kotoka Terminal 3 Baggage Makeup Hall & WorldTracer Reconciliation Desk'
+      };
+    case 'operations':
+      return {
+        primary: OCC_IMG,
+        primaryCaption: '24/7 Operations Control Centre & Turnaround Intercom Coordination'
+      };
+    case 'training':
+      return {
+        primary: TRAINING_IMG,
+        primaryCaption: 'Aviance Ghana Certified Aviation Training Academy Classroom'
+      };
+    default:
+      return {
+        primary: RAMP_IMG,
+        primaryCaption: 'Aviance Ghana ISAGO Certified Ground Operations'
+      };
+  }
+};
+
 interface ServiceDetailPageProps {
   service: Service;
   allServices: Service[];
   onNavigate: (path: string) => void;
   onOpenCargoModal: () => void;
-  onOpenVipModal: () => void;
+  onOpenVipModal?: () => void;
 }
 
 export const ServiceDetailPage: React.FC<ServiceDetailPageProps> = ({
@@ -25,7 +150,7 @@ export const ServiceDetailPage: React.FC<ServiceDetailPageProps> = ({
   allServices,
   onNavigate,
   onOpenCargoModal,
-  onOpenVipModal,
+  onOpenVipModal: _onOpenVipModal,
 }) => {
   const { isLight } = useTheme();
   const { t } = useLanguage();
@@ -65,11 +190,12 @@ export const ServiceDetailPage: React.FC<ServiceDetailPageProps> = ({
     .slice(0, 2);
 
   const fallbackRelated = relatedServices.length > 0 ? relatedServices : allServices.filter((s) => s.id !== service.id).slice(0, 2);
+  const visuals = getServiceVisuals(service.slug);
 
   return (
-    <div className="pt-24 pb-20 space-y-16">
+    <div className="pb-24 sm:pb-32 space-y-16 sm:space-y-24 lg:space-y-32">
       {/* Hero Header in Official Aviance Blue */}
-      <div className={`relative py-16 border-b overflow-hidden transition-colors ${
+      <div className={`relative py-14 sm:py-20 lg:py-24 border-b overflow-hidden transition-colors ${
         isLight
           ? 'bg-gradient-to-b from-blue-50 via-slate-50 to-white border-slate-200'
           : 'bg-gradient-to-b from-[#11244C] via-[#0C1933] to-[#08101E] border-[#204696]/30'
@@ -77,9 +203,9 @@ export const ServiceDetailPage: React.FC<ServiceDetailPageProps> = ({
         <div className={`absolute top-0 right-1/4 w-96 h-96 rounded-full blur-3xl pointer-events-none ${
           isLight ? 'bg-[#204696]/5' : 'bg-[#204696]/20'
         }`} />
-        <div className="absolute inset-0 opacity-15">
+        <div className="absolute inset-0 opacity-20">
           <img
-            src={service.heroImage || '/src/assets/images/hero_aviance_turnaround_1791329957957.jpg'}
+            src={visuals.primary}
             alt={service.title}
             referrerPolicy="no-referrer"
             className="w-full h-full object-cover object-center"
@@ -97,14 +223,13 @@ export const ServiceDetailPage: React.FC<ServiceDetailPageProps> = ({
             <span>Back to Services</span>
           </button>
 
-          <div className={`flex flex-wrap items-center gap-2 text-xs font-mono ${
-            isLight ? 'text-[#0284C7]' : 'text-[#58C1EB]'
-          }`}>
-            <span>{service.category}</span>
-            <span aria-hidden="true">·</span>
-            <span>IATA ISAGO Compliant</span>
-            <span aria-hidden="true">·</span>
-            <span>{service.operatingHours}</span>
+          <div className="flex items-center gap-2.5">
+            <span className="w-1.5 h-6 rounded-full bg-gradient-to-b from-[#204696] via-[#009EE0] to-[#72BF44]" />
+            <h2 className={`text-xs sm:text-sm font-extrabold uppercase tracking-widest ${
+              isLight ? 'text-[#204696]' : 'text-[#58C1EB]'
+            }`}>
+              {service.category} <span className="text-[#009EE0]">·</span> <span className={isLight ? 'text-[#3B7A1C]' : 'text-[#72BF44]'}>IATA ISAGO Compliant</span> <span className="text-[#009EE0]">·</span> <span className="text-slate-500 font-medium">{service.operatingHours}</span>
+            </h2>
           </div>
 
           <h1 className={`text-3xl sm:text-5xl font-extrabold tracking-tight text-balance ${
@@ -138,6 +263,35 @@ export const ServiceDetailPage: React.FC<ServiceDetailPageProps> = ({
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
           {/* Left 2 Cols: Detailed Scope & Features */}
           <div className="lg:col-span-2 space-y-12">
+            
+            {/* Primary Visual Showcase Card */}
+            <div className={`overflow-hidden rounded-2xl border shadow-xl relative transition-all ${
+              isLight ? 'bg-white border-slate-200/90 shadow-slate-200/60' : 'bg-[#0C1933] border-[#204696]/40 shadow-[#204696]/10'
+            }`}>
+              <div className="relative aspect-[16/9] w-full overflow-hidden bg-slate-950">
+                <img
+                  src={visuals.primary}
+                  alt={visuals.primaryCaption}
+                  className="w-full h-full object-cover object-center hover:scale-105 transition-transform duration-700"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/25 to-transparent pointer-events-none" />
+                <div className="absolute top-4 left-4 flex flex-wrap items-center gap-2">
+                  <span className="px-3 py-1 rounded-full text-[11px] font-bold tracking-wider uppercase bg-[#204696]/90 text-white backdrop-blur-md border border-[#58C1EB]/40 flex items-center gap-1.5 shadow-md">
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#72BF44] animate-pulse" />
+                    Verified Aviance Operations
+                  </span>
+                  <span className="px-3 py-1 rounded-full text-[11px] font-semibold bg-black/60 text-slate-200 backdrop-blur-md border border-white/10 hidden sm:inline-flex">
+                    Kotoka International Airport (ACC)
+                  </span>
+                </div>
+                <div className="absolute bottom-4 left-4 right-4">
+                  <p className="text-white text-sm sm:text-base font-bold drop-shadow-md">
+                    {visuals.primaryCaption}
+                  </p>
+                </div>
+              </div>
+            </div>
+
             <section className="space-y-4">
               <h2 className={`text-xl font-bold border-b pb-3 ${
                 isLight ? 'text-slate-900 border-slate-200' : 'text-white border-slate-800'
@@ -150,6 +304,49 @@ export const ServiceDetailPage: React.FC<ServiceDetailPageProps> = ({
                 {service.fullDescription}
               </p>
             </section>
+
+            {/* Secondary Operational Field Capabilities Gallery if available */}
+            {visuals.secondary && visuals.secondary.length > 0 && (
+              <section className="space-y-4">
+                <div className={`flex items-center justify-between border-b pb-3 ${
+                  isLight ? 'border-slate-200' : 'border-slate-800'
+                }`}>
+                  <h3 className={`text-base font-bold ${isLight ? 'text-slate-900' : 'text-white'}`}>
+                    Operational Field Capabilities & Visual Evidence
+                  </h3>
+                  <span className="text-xs font-mono text-[#009EE0] font-semibold">Active Fleet & Personnel</span>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  {visuals.secondary.map((sec, idx) => (
+                    <div
+                      key={idx}
+                      className={`group rounded-xl border overflow-hidden shadow-md flex flex-col ${
+                        isLight ? 'bg-white border-slate-200 shadow-slate-200/50' : 'bg-[#0C1933]/90 border-[#204696]/30'
+                      }`}
+                    >
+                      <div className="relative aspect-[16/10] overflow-hidden bg-slate-950">
+                        <img
+                          src={sec.img}
+                          alt={sec.title}
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-60 group-hover:opacity-40 transition-opacity" />
+                      </div>
+                      <div className="p-4 flex-1 flex flex-col justify-between">
+                        <div>
+                          <h4 className={`text-sm font-bold ${isLight ? 'text-slate-900' : 'text-white'}`}>
+                            {sec.title}
+                          </h4>
+                          <p className={`text-xs mt-1 leading-relaxed ${isLight ? 'text-slate-600' : 'text-slate-400'}`}>
+                            {sec.desc}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </section>
+            )}
 
             {/* Certified Features & Capabilities */}
             <section className="space-y-4">
@@ -168,9 +365,7 @@ export const ServiceDetailPage: React.FC<ServiceDetailPageProps> = ({
                         : 'bg-[#0C1933]/90 border-[#204696]/30 shadow-[#204696]/5'
                     }`}
                   >
-                    <CheckCircle2 className={`w-4 h-4 shrink-0 mt-0.5 ${
-                      isLight ? 'text-emerald-600' : 'text-[#72BF44]'
-                    }`} />
+                    <CheckCircle2 className="w-4 h-4 shrink-0 mt-0.5 text-[#72BF44]" />
                     <span className={`text-xs font-medium leading-snug ${
                       isLight ? 'text-slate-800' : 'text-slate-200'
                     }`}>
@@ -269,13 +464,6 @@ export const ServiceDetailPage: React.FC<ServiceDetailPageProps> = ({
                     className="w-full py-2.5 bg-[#204696] hover:bg-[#183878] text-white font-bold text-xs rounded-xl transition-colors shadow-sm text-center"
                   >
                     {t('common.quoteCargo', 'Request Air Cargo Handling Quote')}
-                  </button>
-                ) : service.slug === 'vip-charter' || service.slug === 'lounge' ? (
-                  <button
-                    onClick={onOpenVipModal}
-                    className="w-full py-2.5 bg-[#204696] hover:bg-[#183878] text-white font-bold text-xs rounded-xl transition-colors shadow-sm text-center"
-                  >
-                    {t('common.requestAccess', 'Request VIP Lounge / Handling')}
                   </button>
                 ) : service.slug === 'baggage' ? (
                   <button

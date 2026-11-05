@@ -3,6 +3,7 @@ import { Plane, MapPin, Phone, Mail, Clock, ShieldCheck, ArrowUpRight } from 'lu
 import { AvianceLogo } from './AvianceLogo';
 import { useTheme } from '../../context/ThemeContext';
 import { useLanguage } from '../../context/LanguageContext';
+import { cookieConsentService } from '../../services/cookieConsentService';
 
 interface FooterProps {
   onNavigate: (path: string) => void;
@@ -15,15 +16,18 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
   return (
     <footer className={`relative border-t overflow-hidden transition-colors ${
       isLight
-        ? 'bg-[#F1F5F9] border-[#204696]/20 text-slate-600'
+        ? 'bg-white border-slate-200 text-slate-600'
         : 'bg-[#060D1A] border-[#204696]/30 text-slate-300'
     }`}>
+      {/* Signature Aviance Tri-Color Top Accent Line */}
+      <div className="h-[3.5px] w-full bg-gradient-to-r from-[#204696] via-[#009EE0] to-[#72BF44]" />
+
       {/* Subtle bottom ambient glow in Aviance Royal Cobalt Blue */}
       <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-3/4 h-64 bg-[#204696]/10 blur-3xl pointer-events-none rounded-full" />
       <div className="absolute top-0 right-0 w-80 h-80 bg-[#58C1EB]/5 blur-3xl pointer-events-none rounded-full" />
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-16 pb-12">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-16 sm:pt-20 lg:pt-24 pb-12 sm:pb-16">
         <div className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-10 pb-12 border-b ${
-          isLight ? 'border-slate-300/80' : 'border-slate-800/80'
+          isLight ? 'border-slate-200' : 'border-slate-800/80'
         }`}>
           {/* Column 1: Company Profile & Accreditations */}
           <div className="lg:col-span-2 space-y-4">
@@ -45,10 +49,10 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
               <div className="flex flex-wrap gap-2 text-xs">
                 <span className={`px-2.5 py-1 rounded flex items-center gap-1.5 border ${
                   isLight
-                    ? 'bg-white border-slate-300 text-slate-700 shadow-xs'
-                    : 'bg-slate-900 border-slate-800 text-slate-300'
+                    ? 'bg-[#72BF44]/15 border-[#72BF44]/35 text-[#3B7A1C] font-bold shadow-xs'
+                    : 'bg-[#72BF44]/15 border-[#72BF44]/30 text-[#72BF44] font-semibold'
                 }`}>
-                  <ShieldCheck className="w-3.5 h-3.5 text-[#204696]" /> IATA ISAGO Registered
+                  <ShieldCheck className="w-3.5 h-3.5 text-[#72BF44]" /> IATA ISAGO Registered
                 </span>
                 <span className={`px-2.5 py-1 rounded border ${
                   isLight
@@ -112,17 +116,24 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
                 </button>
               </li>
               <li>
-                <button onClick={() => onNavigate('/baggage')} className={`transition-colors text-left ${
+                <button onClick={() => onNavigate('/operations')} className={`transition-colors text-left ${
                   isLight ? 'text-slate-600 hover:text-[#204696]' : 'text-slate-300 hover:text-[#58C1EB]'
                 }`}>
-                  {t('footer.baggageDesk', 'Baggage & WorldTracer')}
+                  Flight Operations & OCC
                 </button>
               </li>
               <li>
-                <button onClick={() => onNavigate('/find-my-bag')} className={`font-medium transition-colors text-left flex items-center gap-1 ${
-                  isLight ? 'text-[#204696] hover:text-[#18397a]' : 'text-[#58C1EB] hover:text-white'
+                <button onClick={() => onNavigate('/gse-fleet-maintenance')} className={`transition-colors text-left ${
+                  isLight ? 'text-slate-600 hover:text-[#204696]' : 'text-slate-300 hover:text-[#58C1EB]'
                 }`}>
-                  {t('footer.findMyBag', 'Find My Bag Portal')} <ArrowUpRight className="w-3 h-3" />
+                  GSE & Fleet Maintenance
+                </button>
+              </li>
+              <li>
+                <button onClick={() => onNavigate('/training')} className={`transition-colors text-left ${
+                  isLight ? 'text-slate-600 hover:text-[#204696]' : 'text-slate-300 hover:text-[#58C1EB]'
+                }`}>
+                  Aviation Training & Room Hire
                 </button>
               </li>
             </ul>
@@ -141,6 +152,27 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
                   isLight ? 'text-slate-600 hover:text-[#204696]' : 'text-slate-300 hover:text-[#58C1EB]'
                 }`}>
                   {t('footer.aboutAviance', 'About Aviance Ghana')}
+                </button>
+              </li>
+              <li>
+                <button onClick={() => onNavigate('/facts-figures')} className={`transition-colors text-left ${
+                  isLight ? 'text-slate-600 hover:text-[#204696]' : 'text-slate-300 hover:text-[#58C1EB]'
+                }`}>
+                  Facts & Figures
+                </button>
+              </li>
+              <li>
+                <button onClick={() => onNavigate('/customers')} className={`transition-colors text-left ${
+                  isLight ? 'text-slate-600 hover:text-[#204696]' : 'text-slate-300 hover:text-[#58C1EB]'
+                }`}>
+                  Airlines & Strategic Customers
+                </button>
+              </li>
+              <li>
+                <button onClick={() => onNavigate('/csr')} className={`transition-colors text-left ${
+                  isLight ? 'text-slate-600 hover:text-[#204696]' : 'text-slate-300 hover:text-[#58C1EB]'
+                }`}>
+                  Corporate Social Responsibility (CSR)
                 </button>
               </li>
               <li>
@@ -225,7 +257,7 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
                   </span>
                   P.M.B. 33, Kotoka International Airport, Accra, Ghana
                   <div className={`font-mono text-[11px] mt-0.5 ${isLight ? 'text-[#204696]' : 'text-[#58C1EB]/90'}`}>
-                    Digital Address: GL-016-1234
+                    Digital Address: GL-116-0409
                   </div>
                 </div>
               </div>
@@ -267,15 +299,15 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
             }`}>
               {t('footer.terms', 'Terms of Use')}
             </button>
+            <button onClick={() => cookieConsentService.openPreferencesModal()} className={`transition-colors ${
+              isLight ? 'hover:text-[#204696]' : 'hover:text-white'
+            }`}>
+              Cookie Settings
+            </button>
             <button onClick={() => onNavigate('/partner-portal')} className={`font-semibold transition-colors ${
               isLight ? 'text-[#204696] hover:text-[#18397a]' : 'text-[#58C1EB] hover:text-white'
             }`}>
               {t('telemetry.portal', 'Airline Portal')}
-            </button>
-            <button onClick={() => onNavigate('/admin')} className={`transition-colors font-medium ${
-              isLight ? 'text-slate-600 hover:text-[#204696]' : 'text-slate-300 hover:text-[#58C1EB]'
-            }`}>
-              {t('drawer.adminPortal', 'CMS Admin Portal')}
             </button>
           </div>
         </div>

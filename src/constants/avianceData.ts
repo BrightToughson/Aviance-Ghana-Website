@@ -13,6 +13,7 @@ import {
   PartnerRequest,
   SystemHealthMetric,
 } from '../types';
+import { ALL_OFFICIAL_NEWS } from './avianceNewsArchive';
 
 export const INITIAL_SERVICES: Service[] = [
   {
@@ -22,7 +23,7 @@ export const INITIAL_SERVICES: Service[] = [
     category: 'Passenger',
     shortDescription: 'Professional support from check-in to boarding and arrival, including travel documentation, gate management, and special assistance for passengers with reduced mobility.',
     fullDescription: 'Aviance Ghana provides comprehensive front-of-house passenger handling for international and domestic airline operators at Kotoka International Airport and regional stations. Services encompass DCS check-in operations, boarding gate management, passenger travel document verification, arrival and transfer passenger facilitation, and dedicated care for Persons with Reduced Mobility (PRM).',
-    heroImage: '/src/assets/images/hero_aviance_turnaround_1791329957957.jpg',
+    heroImage: '/src/assets/aviance_images/services/vip_charter.jpg',
     icon: 'Users',
     locations: ['Accra (Kotoka International Airport)', 'Kumasi', 'Tamale'],
     features: [
@@ -56,7 +57,7 @@ export const INITIAL_SERVICES: Service[] = [
     category: 'Ramp',
     shortDescription: 'Safe and efficient aircraft turnaround, baggage handling, ground support equipment (GSE), and airside ramp coordination under IATA ISAGO standards.',
     fullDescription: 'Our certified ramp operations team executes precision aircraft turnarounds in strict compliance with IATA Safety Audit for Ground Operations (ISAGO) protocols. Services include aircraft marshalling, pushback and towing, Ground Power Unit (GPU) connection, air start, aircraft cooling, baggage and cargo loading/offloading, and potable water/lavatory servicing.',
-    heroImage: '/src/assets/images/ramp_ground_operations_1791329987253.jpg',
+    heroImage: '/src/assets/aviance_images/1791968160594.jpg',
     icon: 'Plane',
     locations: ['Accra (Kotoka International Airport)', 'Kumasi', 'Tamale'],
     features: [
@@ -84,7 +85,7 @@ export const INITIAL_SERVICES: Service[] = [
     category: 'Cargo',
     shortDescription: 'Secure air cargo import and export handling with experienced teams, modern warehouse systems, and Cargo RA3 security certification.',
     fullDescription: 'Aviance Ghana manages secure import and export cargo handling from our specialized air cargo facilities at Kotoka International Airport. Holding EU Cargo RA3 security accreditation, we provide cargo intake, physical screening, temperature-controlled cold room storage for perishables and pharmaceuticals, dangerous goods handling, and direct integration with customs clearance systems.',
-    heroImage: '/src/assets/images/cargo_freight_terminal_1791329968738.jpg',
+    heroImage: '/src/assets/aviance_images/services/cargo_services.jpg',
     icon: 'PackageCheck',
     locations: ['Accra (Cargo Terminal)', 'Kumasi'],
     features: [
@@ -112,7 +113,7 @@ export const INITIAL_SERVICES: Service[] = [
     category: 'VIP & Hospitality',
     shortDescription: 'Customized passenger assistance, executive aircraft handling, VIP meet and greet, and comprehensive ground support for private and charter operations.',
     fullDescription: 'Aviance Ghana specializes in bespoke handling for private jets, diplomatic flights, state missions, and non-scheduled charter operations. We coordinate aircraft handling, VIP meet and greet services, customs and immigration protocol assistance, tarmac passenger transfers, and flight crew liaison.',
-    heroImage: '/src/assets/images/adinkra_vip_lounge_1791329977934.jpg',
+    heroImage: '/src/assets/aviance_images/1788350257403.jpg',
     icon: 'Crown',
     locations: ['Accra (Kotoka International Airport)', 'Kumasi', 'Tamale'],
     features: [
@@ -140,7 +141,7 @@ export const INITIAL_SERVICES: Service[] = [
     category: 'VIP & Hospitality',
     shortDescription: 'Comfortable executive lounge experiences for premium, airline-eligible, and walk-in passengers, including the Terminal 3 lounge opened in 2018.',
     fullDescription: 'Aviance Ghana operates premium departure lounge facilities at Kotoka International Airport, including our modern executive lounge in Terminal 3 opened in 2018. Designed to deliver Ghanaian hospitality in a tranquil environment, the lounge features comfortable seating, Wi-Fi connectivity, hot and cold refreshments, executive showers, and flight information displays.',
-    heroImage: '/src/assets/images/adinkra_vip_lounge_1791329977934.jpg',
+    heroImage: '/src/assets/aviance_images/1791796145150.jpg',
     icon: 'Armchair',
     locations: ['Accra (Kotoka International Airport Terminal 3)'],
     features: [
@@ -168,7 +169,7 @@ export const INITIAL_SERVICES: Service[] = [
     category: 'Passenger',
     shortDescription: 'Dedicated passenger support for delayed, missing or mishandled baggage, with direct assistance channels and WorldTracer tracing desks.',
     fullDescription: 'Aviance Ghana operates dedicated Baggage Services Offices at Kotoka International Airport. We support passengers with immediate tracing of delayed or mishandled baggage through international tracing systems, baggage delivery liaison, and our official Find My Bag communication channel.',
-    heroImage: '/src/assets/images/hero_aviance_turnaround_1791329957957.jpg',
+    heroImage: '/src/assets/aviance_images/services/find_my_bag.jpg',
     icon: 'Luggage',
     locations: ['Accra (Kotoka International Airport)', 'Kumasi', 'Tamale'],
     features: [
@@ -195,7 +196,7 @@ export const INITIAL_SERVICES: Service[] = [
     category: 'Technical',
     shortDescription: 'In-house heavy mechanical workshops, preventive servicing, and round-the-clock maintenance for Ground Support Equipment fleets.',
     fullDescription: 'Our certified technical workshops maintain motorized and non-motorized Ground Support Equipment to ensure equipment availability and safety standards. Technicians execute regular preventive maintenance, hydraulic inspections, and rapid ramp support across tugs, belt loaders, GPUs, and ground machinery.',
-    heroImage: '/src/assets/images/ramp_ground_operations_1791329987253.jpg',
+    heroImage: '/src/assets/aviance_images/services/gse_maintenance.jpg',
     icon: 'Wrench',
     locations: ['Accra (GSE Maintenance Base)'],
     features: [
@@ -215,39 +216,13 @@ export const INITIAL_SERVICES: Service[] = [
     updatedAt: '2026-02-24T15:00:00Z'
   },
   {
-    id: 'srv-8',
-    title: 'Operational & Service Training',
-    slug: 'training',
-    category: 'Security & Quality',
-    shortDescription: 'Comprehensive training programs in ramp safety, ground operations, customer care, and dangerous goods regulations.',
-    fullDescription: 'Aviance Ghana conducts internal and partner training in ground handling safety, ramp coordination, dangerous goods handling, airside driving permits, and passenger customer care to uphold international aviation standards.',
-    heroImage: '/src/assets/images/hero_aviance_turnaround_1791329957957.jpg',
-    icon: 'GraduationCap',
-    locations: ['Accra (Aviance Training Centre)'],
-    features: [
-      'Ramp safety and airside operational training',
-      'Dangerous Goods Regulations (DGR) training',
-      'Passenger service standards and DCS procedures',
-      'Safety Management Systems (SMS) induction'
-    ],
-    operatingHours: 'Monday – Friday: 08:00 – 17:00',
-    contactEmail: 'info@avianceghana.com',
-    contactPhone: '+233 (0) 59 381 6076',
-    isPublished: true,
-    displayOrder: 8,
-    seoTitle: 'Aviation Training — Aviance Ghana',
-    seoDescription: 'Aviation ground handling training, ramp safety, and operational standards in Ghana.',
-    createdAt: '2026-01-22T08:00:00Z',
-    updatedAt: '2026-02-25T11:00:00Z'
-  },
-  {
     id: 'srv-9',
     title: 'OCC - Flight Operations',
     slug: 'operations',
     category: 'Technical',
     shortDescription: 'Operations Control Center (OCC) serving as the 24/7 command center for aircraft handling requests, flight schedules, and ground coordination.',
     fullDescription: 'The Aviance Ghana Operations Control Center (OCC) operates 24/7 as the operational hub, coordinating all flight schedules, aircraft turnarounds, crew communications, and station activities across Accra, Kumasi, and Tamale.',
-    heroImage: '/src/assets/images/ramp_ground_operations_1791329987253.jpg',
+    heroImage: '/src/assets/aviance_images/image_show/ee4669f3-9945-4b97-a86e-d28b9860138a.png',
     icon: 'Cpu',
     locations: ['Accra (Kotoka International Airport)', 'Kumasi', 'Tamale'],
     features: [
@@ -260,7 +235,7 @@ export const INITIAL_SERVICES: Service[] = [
     contactEmail: 'occmgr@avianceghana.com',
     contactPhone: '+233 (0) 559 68 0879',
     isPublished: true,
-    displayOrder: 9,
+    displayOrder: 8,
     seoTitle: 'OCC Flight Operations — Aviance Ghana',
     seoDescription: 'Operations Control Center and 24/7 aircraft turnaround coordination in Ghana.',
     createdAt: '2026-01-23T08:00:00Z',
@@ -322,124 +297,46 @@ export const INITIAL_LOCATIONS: LocationItem[] = [
 export const INITIAL_CERTIFICATIONS: Certification[] = [
   {
     id: 'cert-1',
-    name: 'IATA ISAGO Registration',
+    name: 'IATA ISAGO Certificate of Accreditation',
     issuer: 'International Air Transport Association (IATA)',
-    certificateNumber: 'Official ISAGO Registry',
-    issueDate: '2024-01-01',
-    expiryDate: '2026-12-31',
+    certificateNumber: 'ISAGO-ACC-24-2419',
+    issueDate: '2024-12-17',
+    expiryDate: '2027-01-29',
     status: 'active',
-    category: 'Ground Handling Safety',
-    description: 'Verified official registration: Aviance Ghana is an ISAGO-registered ground service provider, certified and regulated under international safety standards for ground operations.',
+    category: 'Global Safety Accreditation',
+    description: 'Accreditation under the IATA Safety Audit for Ground Operations (ISAGO) program at Kotoka International Airport (ACC). Certified across all seven operational disciplines: Organization Management (ORM), Ramp Handling (RMP), Training (TRN), Passenger Handling (PAX), Cargo Mail Handling (CGM), Load Control (LOD), and Baggage Handling (BAG). Official signatory: Nick Careen, Senior Vice President, Operations, Safety & Security, IATA.',
     displayOrder: 1,
     isVerified: true
   },
   {
     id: 'cert-2',
-    name: 'GCAA Ground Handling Organization License',
+    name: 'GCAA Ground Handling Operating Certificate',
     issuer: 'Ghana Civil Aviation Authority (GCAA)',
-    certificateNumber: 'GCAA Certified GHO',
-    issueDate: '2024-01-01',
-    expiryDate: '2026-12-31',
+    certificateNumber: 'GCAA/ASAS-GHSP/01/2024',
+    issueDate: '2024-09-19',
+    expiryDate: '2029-09-18',
     status: 'active',
-    category: 'Civil Aviation Regulatory',
-    description: 'Verified official authorization: Holds a full commercial ground handling license from the Ghana Civil Aviation Authority to operate at Accra, Kumasi, and Tamale airports.',
+    category: 'State Statutory Licence',
+    description: 'Ground handling operating certificate granted pursuant to Ghana Civil Aviation Act, 2024 (Act 1120) and Part 33 of the Ghana Civil Aviation (Aerodromes) Directives, 2018. Valid for five (5) years authorizing full commercial passenger, ramp, baggage, and cargo handling services. Official signatory: Ing. Charles Kraikue, Director-General, Ghana Civil Aviation Authority.',
     displayOrder: 2,
     isVerified: true
   },
   {
     id: 'cert-3',
-    name: 'Cargo RA3 Certification (Regulated Agent Third Country)',
-    issuer: 'European Union / Appropriate Authority',
-    certificateNumber: 'Cargo RA3 Certified',
-    issueDate: '2024-01-01',
-    expiryDate: '2026-12-31',
+    name: 'UK & EU RA3 Aviation Security Validation',
+    issuer: 'UK Aviation Security · CEIV IATA · EVAAS',
+    certificateNumber: 'UAI:GB/0026/KL/3000',
+    issueDate: '2025-02-28',
+    expiryDate: '2028-02-27',
     status: 'active',
-    category: 'Cargo Security',
-    description: 'Verified official certification: Aviance Ghana is Cargo RA3 certified, validating air cargo security controls and screening standards for European Union compliance.',
+    category: 'International Cargo Security',
+    description: 'Official Validation Checklist for Third Country UK/EU Aviation Security Validated Regulated Agents (RA3) at Kotoka International Airport (ACC / DGAA). Validated by Independent Validator Stephen Ogada under UK RA3 Checklist Version 1 and EVAAS standards, authorizing direct secure air cargo and mail carriage into the United Kingdom and European Union.',
     displayOrder: 3,
     isVerified: true
-  },
-  {
-    id: 'cert-4',
-    name: 'ISO 9001:2015 Quality Management System',
-    issuer: 'International Standards Organization (CMS Placeholder)',
-    certificateNumber: 'Pending Administrator Verification in CMS',
-    issueDate: '2025-01-01',
-    expiryDate: '2026-12-31',
-    status: 'renewal_pending',
-    category: 'Quality Governance [Proposed / Pending Verification]',
-    description: 'Field marked for administrator verification. Please upload verified certificate or update issuer details via the administrative CMS.',
-    displayOrder: 4,
-    isVerified: false
   }
 ];
 
-export const INITIAL_NEWS: NewsArticle[] = [
-  {
-    id: 'news-1',
-    title: 'Aviance Ghana Continues Adherence to IATA ISAGO Standards for Ground Operations',
-    slug: 'aviance-ghana-adheres-to-iata-isago-standards',
-    category: 'Safety & Compliance',
-    excerpt: 'As an ISAGO-registered ground handling provider, Aviance Ghana maintains international safety standards across all airside ground operations.',
-    content: `Aviance Ghana Limited, established in 1994, is a full-service ground handling company operating at Accra's Kotoka International Airport (KIA), Kumasi, and Tamale.
-
-As an ISAGO-registered ground service provider, Aviance Ghana is certified and regulated under the International Air Transport Association's Safety Audit for Ground Operations. The company provides passenger services, ramp handling, cargo operations, lounge services, and VIP/charter flight assistance.
-
-With approximately 1,000 employees, the company’s mission is to deliver safe, secure, and competitive ground handling services built on core values of integrity, quality, safety, and teamwork.`,
-    featuredImage: '/src/assets/images/ramp_ground_operations_1791329987253.jpg',
-    authorName: 'Aviance Corporate Communications',
-    authorRole: 'Official Communications',
-    readTimeMinutes: 2,
-    tags: ['Safety', 'ISAGO', 'Ground Operations', 'Ghana Aviation'],
-    isPublished: true,
-    status: 'Published',
-    version: 1,
-    publishedAt: '2026-02-18T10:00:00Z',
-    createdAt: '2026-02-18T10:00:00Z'
-  },
-  {
-    id: 'news-2',
-    title: 'Cargo RA3 Certified Terminal Operations at Kotoka International Airport',
-    slug: 'cargo-ra3-certified-operations-kia',
-    category: 'Cargo Services',
-    excerpt: 'Aviance Ghana provides secure import and export air cargo handling with certified Cargo RA3 security controls.',
-    content: `Aviance Ghana continues to provide secure air freight handling through its cargo division at Kotoka International Airport.
-
-Holding Cargo RA3 certification, the facility maintains international screening protocols, temperature-controlled cold room storage for perishables and sensitive goods, and coordinated customs documentation support.
-
-For cargo enquiries, the division is reachable via +233 (0) 540 81 6024 or robertamenyah@avianceghana.com.`,
-    featuredImage: '/src/assets/images/cargo_freight_terminal_1791329968738.jpg',
-    authorName: 'Cargo Division',
-    authorRole: 'Cargo Communications',
-    readTimeMinutes: 2,
-    tags: ['Cargo', 'RA3', 'Air Freight', 'KIA'],
-    isPublished: true,
-    status: 'Published',
-    version: 1,
-    publishedAt: '2026-01-28T09:30:00Z',
-    createdAt: '2026-01-28T09:30:00Z'
-  },
-  {
-    id: 'news-3',
-    title: 'Terminal 3 Executive Lounge Facility Welcomes Eligible and Walk-In Passengers',
-    slug: 'terminal-3-lounge-welcomes-passengers',
-    category: 'Lounge Services',
-    excerpt: 'Opened in 2018 in Terminal 3, Aviance Ghana’s executive lounge offers comfort and amenities for departing passengers.',
-    content: `Aviance Ghana’s executive departure lounge at Kotoka International Airport Terminal 3, commissioned in 2018, offers travelers comfortable seating, complimentary refreshments, Wi-Fi, and private shower suites.
-
-The lounge is accessible to eligible airline partner passengers and walk-in travelers. Enquiries can be directed to +233 (0) 557 75 8345 or loungemanager@avianceghana.com.`,
-    featuredImage: '/src/assets/images/adinkra_vip_lounge_1791329977934.jpg',
-    authorName: 'Lounge Services',
-    authorRole: 'Hospitality Team',
-    readTimeMinutes: 2,
-    tags: ['Lounge', 'Terminal 3', 'KIA', 'Hospitality'],
-    isPublished: true,
-    status: 'Published',
-    version: 1,
-    publishedAt: '2026-01-12T14:00:00Z',
-    createdAt: '2026-01-12T14:00:00Z'
-  }
-];
+export const INITIAL_NEWS: NewsArticle[] = ALL_OFFICIAL_NEWS;
 
 export const INITIAL_VACANCIES: Vacancy[] = [
   {
@@ -545,101 +442,257 @@ export const INITIAL_BAGGAGE: BaggageRecord[] = [
   }
 ];
 
-// Verified Executive Leadership Team directly verified from official Aviance Ghana sources
+// Verified Executive & Management Team directly verified from official Aviance Ghana sources
 export const INITIAL_TEAM: TeamMember[] = [
   {
     id: 'team-1',
     name: 'Richard Backhouse',
     position: 'Chief Executive Officer',
     department: 'Executive Management',
-    biography: 'Chief Executive Officer of Aviance Ghana Limited, leading strategic operations, safety oversight, carrier relationships, and ground handling growth across Ghanaian aerodromes.',
-    photoUrl: '/src/assets/images/hero_aviance_turnaround_1791329957957.jpg',
-    email: 'info@avianceghana.com',
+    biography: 'Chief Executive Officer of Aviance Ghana Limited, driving company strategy, safety culture, carrier partnerships, and ground handling growth across Ghana.',
+    photoUrl: '/src/assets/aviance_images/ceo and stakeholders/1787739001941.jpg',
+    email: 'rbackhouse@avianceghana.com',
     displayOrder: 1,
     isActive: true,
     isVerified: true
   },
   {
     id: 'team-2',
-    name: 'Mark Kamis',
-    position: 'Managing Director',
-    department: 'Executive Management',
-    biography: 'Managing Director of Aviance Ghana Limited, driving operational transformation, safety management systems, and infrastructure modernization across stations.',
-    photoUrl: '/src/assets/images/ramp_ground_operations_1791329987253.jpg',
-    email: 'info@avianceghana.com',
+    name: 'Ebenezer Darko',
+    position: 'General Manager Operations',
+    department: 'Ground Operations',
+    biography: 'Leads airside ground support equipment dispatch, ramp safety protocols, turnaround coordination, and operational compliance across all flights.',
+    photoUrl: '/src/assets/aviance_images/1791968160594.jpg',
+    email: 'ebendarko@avianceghana.com',
     displayOrder: 2,
     isActive: true,
     isVerified: true
   },
   {
     id: 'team-3',
-    name: 'Michaela Walker',
-    position: 'Director of Operations',
-    department: 'Ground Operations',
-    biography: 'Directs aircraft ground handling, turnaround execution, OCC operations, and station service level compliance across Accra, Kumasi, and Tamale airports.',
-    photoUrl: '/src/assets/images/ramp_ground_operations_1791329987253.jpg',
-    email: 'occmgr@avianceghana.com',
+    name: 'Angela Nortey',
+    position: 'Passenger Handling Manager',
+    department: 'Passenger & Baggage Services',
+    biography: 'Manages passenger check-in desks, DCS airline systems, boarding gate operations, VIP escort services, and PRM special assistance at Kotoka Terminal 3.',
+    photoUrl: '/src/assets/aviance_images/1776164623557.jpg',
+    email: 'phmgr@avianceghana.com',
     displayOrder: 3,
     isActive: true,
     isVerified: true
   },
   {
     id: 'team-4',
-    name: 'Erasmus Twentor',
-    position: 'General Manager Human Resources',
+    name: 'Eunice Anim',
+    position: 'Training Manager',
     department: 'Human Resources',
-    biography: 'Directs talent development, workforce welfare, training compliance, and industrial relations for approximately 1,000 employees.',
-    photoUrl: '/src/assets/images/hero_aviance_turnaround_1791329957957.jpg',
-    email: 'info@avianceghana.com',
+    biography: 'Leads the Aviance Ground Operations Training Academy, delivering certified IATA and GCAA courses in DGR, ramp safety, SMS, and service excellence.',
+    photoUrl: '',
+    email: 'hrtrainer@avianceghana.com',
     displayOrder: 4,
     isActive: true,
     isVerified: true
   },
   {
     id: 'team-5',
-    name: 'Ebenezer Darko',
-    position: 'General Manager Operations',
-    department: 'Ground Operations',
-    biography: 'Leads airside ground support equipment dispatch, ramp safety protocols, turnaround coordination, and operational compliance.',
-    photoUrl: '/src/assets/images/ramp_ground_operations_1791329987253.jpg',
-    email: 'occmgr@avianceghana.com',
+    name: 'Operations Duty Managers',
+    position: 'PH Duty Managers',
+    department: 'Passenger & Baggage Services',
+    biography: 'Round-the-clock 24/7 duty managers supervising flight arrivals, passenger connections, dispatch operations, and real-time station coordination.',
+    photoUrl: '',
+    email: 'dutymanagers@avianceghana.com',
     displayOrder: 5,
     isActive: true,
     isVerified: true
   },
   {
     id: 'team-6',
-    name: 'Dominic Adjei-Badu',
-    position: 'Financial Controller',
-    department: 'Finance & Administration',
-    biography: 'Directs corporate financial governance, statutory reporting, commercial contracts, and fiscal planning for Aviance Ghana Limited.',
-    photoUrl: '/src/assets/images/hero_aviance_turnaround_1791329957957.jpg',
-    email: 'info@avianceghana.com',
+    name: 'Belinda Adade',
+    position: 'Lost and Found Manager',
+    department: 'Passenger & Baggage Services',
+    biography: 'Directs the Baggage Service Office (BSO), baggage tracking systems (WorldTracer), damaged baggage reconciliation, and passenger luggage reunification.',
+    photoUrl: '',
+    email: 'belindaadade@avianceghana.com',
     displayOrder: 6,
     isActive: true,
     isVerified: true
   },
   {
     id: 'team-7',
-    name: 'Robert Amenyah',
-    position: 'Cargo Manager',
-    department: 'Cargo Operations',
-    biography: 'Manages Aviance Cargo Village terminal operations, EU RA3 compliance, cold storage facilities, and freight handling at Kotoka International Airport.',
-    photoUrl: '/src/assets/images/cargo_freight_terminal_1791329968738.jpg',
-    email: 'robertamenyah@avianceghana.com',
+    name: 'Richmond Okyere Gyasi',
+    position: 'Maintenance Manager',
+    department: 'Maintenance & GSE',
+    biography: 'Directs mechanical workshop facilities, preventive and corrective GSE servicing schedules, and airside technical availability for motorized equipment.',
+    photoUrl: '',
+    email: 'richmondokyere@avianceghana.com',
     displayOrder: 7,
     isActive: true,
     isVerified: true
   },
   {
     id: 'team-8',
-    name: 'Belinda Adade',
-    position: 'Lost and Found / Baggage Manager',
-    department: 'Passenger & Baggage Services',
-    biography: 'Leads the Baggage Services Office and Lost & Found unit in Terminal 3, managing tracing coordination, property irregularity reports, and passenger queries.',
-    photoUrl: '/src/assets/images/hero_aviance_turnaround_1791329957957.jpg',
-    email: 'belindaadade@avianceghana.com',
+    name: 'Michaela Walker',
+    position: 'Director of Operations',
+    department: 'Ground Operations',
+    biography: 'Oversees nationwide flight turnaround operations, airside safety management, station coordination, and service level adherence across Accra, Kumasi, and Tamale airports.',
+    photoUrl: '/src/assets/aviance_images/1788350257403.jpg',
+    email: 'mwalker@avianceghana.com',
     displayOrder: 8,
+    isActive: true,
+    isVerified: true
+  },
+  {
+    id: 'team-9',
+    name: 'Dominic Adjei-Badu',
+    position: 'Financial Controller',
+    department: 'Finance & Administration',
+    biography: 'Directs corporate financial governance, statutory audit compliance, commercial contract administration, and fiscal planning for Aviance Ghana Limited.',
+    photoUrl: '/src/assets/aviance_images/ceo and stakeholders/1787739002168.jpg',
+    email: 'financialcontroller@avianceghana.com',
+    displayOrder: 9,
+    isActive: true,
+    isVerified: true
+  },
+  {
+    id: 'team-10',
+    name: 'Yaw Amoafo Dickson',
+    position: 'Ramp Manager',
+    department: 'Ground Operations',
+    biography: 'Supervises airside apron operations, aircraft loading and offloading, pushback operations, and strict adherence to IATA ISAGO safety standards.',
+    photoUrl: '',
+    email: 'ydickson@avianceghana.com',
+    displayOrder: 10,
+    isActive: true,
+    isVerified: true
+  },
+  {
+    id: 'team-11',
+    name: 'Robert Amenyah',
+    position: 'Cargo Manager',
+    department: 'Cargo Operations',
+    biography: 'Manages the 10,000 sqm Aviance Cargo Village terminal operations, EU RA3 compliance, pharmaceutical cold chain storage, and air freight logistics.',
+    photoUrl: '/src/assets/aviance_images/1780574568846.jpg',
+    email: 'robertamenyah@avianceghana.com',
+    displayOrder: 11,
+    isActive: true,
+    isVerified: true
+  },
+  {
+    id: 'team-12',
+    name: 'Emma Tandoh',
+    position: 'OCC - Flight Operations Manager',
+    department: 'Ground Operations',
+    biography: 'Directs the 24/7 Operations Control Centre (OCC), Weight & Balance load control, flight scheduling, slot coordination, and airline dispatch communications.',
+    photoUrl: '',
+    email: 'occmgr@avianceghana.com',
+    displayOrder: 12,
+    isActive: true,
+    isVerified: true
+  },
+  {
+    id: 'team-13',
+    name: 'Pearl Darkwah',
+    position: 'Lounge Manager',
+    department: 'Passenger & Baggage Services',
+    biography: 'Manages the luxury Adinkra Executive Lounge at Terminal 3, overseeing VIP hospitality, premium culinary services, and international executive passenger comfort.',
+    photoUrl: '/src/assets/aviance_images/1791796145150.jpg',
+    email: 'loungemanager@avianceghana.com',
+    displayOrder: 13,
+    isActive: true,
+    isVerified: true
+  },
+  {
+    id: 'team-14',
+    name: 'John Aryeh',
+    position: 'Information Technology Manager',
+    department: 'IT & Technology',
+    biography: 'Directs digital aviation systems, network infrastructure, DCS terminal interfaces, cybersecurity, telecommunications, and operational telemetry.',
+    photoUrl: '',
+    email: 'it@avianceghana.com',
+    displayOrder: 14,
+    isActive: true,
+    isVerified: true
+  },
+  {
+    id: 'team-15',
+    name: 'Erasmus Twentor',
+    position: 'General Manager Human Resources',
+    department: 'Human Resources',
+    biography: 'Directs talent development, workforce welfare, training compliance, industrial relations, and employee engagement for over 1,000 aviation professionals.',
+    photoUrl: '/src/assets/aviance_images/1791796139946.jpg',
+    email: 'etwentor@avianceghana.com',
+    displayOrder: 15,
+    isActive: true,
+    isVerified: true
+  },
+  {
+    id: 'team-16',
+    name: 'Paul F.N.K. Addo-Donkor',
+    position: 'Human Resource Manager',
+    department: 'Human Resources',
+    biography: 'Oversees personnel administration, employee welfare policies, recruitment drives, staff records, and compliance with statutory labor standards.',
+    photoUrl: '',
+    email: 'hrmgr@avianceghana.com',
+    displayOrder: 16,
+    isActive: true,
+    isVerified: true
+  },
+  {
+    id: 'team-17',
+    name: 'Papa Bonsu',
+    position: 'Quality Health and Safety Manager',
+    department: 'Quality & Safety',
+    biography: 'Champions Aviance Ghana’s Safety Management System (SMS), IATA ISAGO conformance, environmental stewardship, and occupational health protocols.',
+    photoUrl: '',
+    email: 'qhsmgr@avianceghana.com',
+    displayOrder: 17,
+    isActive: true,
+    isVerified: true
+  },
+  {
+    id: 'team-18',
+    name: 'Roland Afaglo',
+    position: 'Appearance Manager',
+    department: 'Ground Operations',
+    biography: 'Directs aircraft cabin cleaning standards, interior grooming, deep sanitization, and aircraft exterior presentation across all scheduled carrier turnarounds.',
+    photoUrl: '',
+    email: 'acmgr@avianceghana.com',
+    displayOrder: 18,
+    isActive: true,
+    isVerified: true
+  },
+  {
+    id: 'team-19',
+    name: 'Derrick Nakuja',
+    position: 'Domestic Manager',
+    department: 'Ground Operations',
+    biography: 'Coordinates all domestic flight handling operations across Kotoka Terminal 2, Prempeh I International Airport (Kumasi), and Tamale International Airport.',
+    photoUrl: '',
+    email: 'derricknakuja@avianceghana.com',
+    displayOrder: 19,
+    isActive: true,
+    isVerified: true
+  },
+  {
+    id: 'team-20',
+    name: 'Kwesi Yawson',
+    position: 'Security Manager',
+    department: 'Quality & Safety',
+    biography: 'Oversees airside security protocols, cargo screening, baggage surveillance, access control, EU RA3 supply chain security, and aviation law enforcement liaisons.',
+    photoUrl: '',
+    email: 'security@avianceghana.com',
+    displayOrder: 20,
+    isActive: true,
+    isVerified: true
+  },
+  {
+    id: 'team-21',
+    name: 'James Chappell',
+    position: 'Ground Support Equipment Manager',
+    department: 'Maintenance & GSE',
+    biography: 'Directs motorized GSE maintenance, fleet modernisation, zero-emission electric belt loaders, pushback tractors, and apron machinery reliability.',
+    photoUrl: '',
+    email: 'jameschappell@avianceghana.com',
+    displayOrder: 21,
     isActive: true,
     isVerified: true
   }
@@ -972,17 +1025,17 @@ export const INITIAL_SYSTEM_HEALTH: SystemHealthMetric[] = [
 
 export const INITIAL_SETTINGS: SiteSettings = {
   companyName: 'Aviance Ghana Limited',
-  tagline: 'Leading Aviation Ground Handling Agent at Kotoka International Airport',
-  headOfficeAddress: 'Aviance Cargo Village, Kotoka International Airport, Accra, Ghana',
-  digitalAddress: 'GL-016-1234',
-  poBox: 'P.M.B. 33, Kotoka International Airport, Accra, Ghana',
-  primaryPhone: '+233 302 778 025',
-  secondaryPhone: '+233 593 816 076',
+  tagline: 'Ghana’s Premier Aviation Ground Handling & Cargo Partner Since 1994',
+  headOfficeAddress: 'Aviance Ghana Limited, Private Mail Bag, Kotoka International Airport (Cargo Village), Accra, Ghana',
+  digitalAddress: 'GL-116-0409',
+  poBox: 'Private Mail Bag, Kotoka International Airport, Accra, Ghana',
+  primaryPhone: '+233 (0) 59 381 6076',
+  secondaryPhone: '+233 (0) 557 75 8345',
   primaryEmail: 'info@avianceghana.com',
-  cargoEmail: 'cargosales@avianceghana.com',
-  vipEmail: 'lounges@avianceghana.com',
-  careersEmail: 'hr@avianceghana.com',
-  operatingHours: '24 Hours / 7 Days a week (Year-Round Flight Support)',
+  cargoEmail: 'robertamenyah@avianceghana.com',
+  vipEmail: 'loungemanager@avianceghana.com',
+  careersEmail: 'hrmgr@avianceghana.com',
+  operatingHours: '24 Hours / 7 Days a week (Year-Round Flight Support) · Office: Mon-Fri 08:00 - 17:00',
   enableAnalytics: true,
   maintenanceMode: false,
 };

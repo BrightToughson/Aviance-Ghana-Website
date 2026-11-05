@@ -297,7 +297,7 @@ export interface TeamMember {
   position: string;
   department: string;
   biography: string;
-  photoUrl: string;
+  photoUrl?: string;
   email?: string;
   linkedinUrl?: string;
   displayOrder: number;

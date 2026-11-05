@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import {
   FileText,
-  Search,
   Filter,
   Download,
   Calendar,
@@ -20,7 +19,6 @@ interface DocumentCentrePageProps {
 }
 
 export const DocumentCentrePage: React.FC<DocumentCentrePageProps> = ({ onNavigate }) => {
-  const [search, setSearch] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string>('All');
   const [documents] = useState<DigitalDocument[]>(INITIAL_DOCUMENTS);
   const { toast } = useToast();
@@ -35,12 +33,7 @@ export const DocumentCentrePage: React.FC<DocumentCentrePageProps> = ({ onNaviga
   ];
 
   const filtered = documents.filter((doc) => {
-    const matchesCategory = selectedCategory === 'All' || doc.category === selectedCategory;
-    const matchesSearch =
-      doc.title.toLowerCase().includes(search.toLowerCase()) ||
-      doc.description.toLowerCase().includes(search.toLowerCase()) ||
-      doc.fileName.toLowerCase().includes(search.toLowerCase());
-    return matchesCategory && matchesSearch;
+    return selectedCategory === 'All' || doc.category === selectedCategory;
   });
 
   const handleDownload = (doc: DigitalDocument) => {
@@ -51,14 +44,17 @@ export const DocumentCentrePage: React.FC<DocumentCentrePageProps> = ({ onNaviga
   };
 
   return (
-    <div className="pt-24 pb-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12 animate-in fade-in duration-150">
+    <div className="py-12 sm:py-16 lg:py-20 pb-24 sm:pb-32 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12 sm:space-y-16 animate-in fade-in duration-150">
       {/* Hero Header in Official Aviance Blue */}
-      <div className="py-12 bg-gradient-to-b from-[#11244C] via-[#0C1933] to-[#08101E] border border-[#204696]/30 rounded-3xl p-6 sm:p-10 text-center space-y-3 relative overflow-hidden shadow-2xl">
+      <div className="py-12 sm:py-16 lg:py-20 bg-gradient-to-b from-[#11244C] via-[#0C1933] to-[#08101E] border border-[#204696]/30 rounded-3xl p-6 sm:p-10 text-center space-y-3 relative overflow-hidden shadow-2xl">
         {/* Subtle Ambient Backing Glow */}
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-3/4 h-36 bg-[#204696]/20 blur-3xl pointer-events-none rounded-full" />
         <div className="relative z-10 space-y-3">
-          <div className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-[#58C1EB]">
-            <FileText className="w-4 h-4" /> Aviance Ghana Corporate Governance
+          <div className="flex items-center justify-center gap-2.5">
+            <span className="w-1.5 h-6 rounded-full bg-gradient-to-b from-[#204696] via-[#009EE0] to-[#72BF44]" />
+            <h2 className="text-xs sm:text-sm font-extrabold uppercase tracking-widest text-[#58C1EB]">
+              Corporate Governance <span className="text-[#009EE0]">·</span> <span className="text-[#72BF44]">Official Publications</span>
+            </h2>
           </div>
           <h1 className="text-3xl sm:text-5xl font-extrabold text-white tracking-tight">
             Digital Document Centre
@@ -69,36 +65,21 @@ export const DocumentCentrePage: React.FC<DocumentCentrePageProps> = ({ onNaviga
         </div>
       </div>
 
-      {/* Filter and Search Bar */}
-      <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-        {/* Search Input */}
-        <div className="relative w-full sm:w-80">
-          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-          <input
-            type="text"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            placeholder="Search documents or manuals..."
-            className="w-full bg-[#060D1A] border border-[#204696]/30 rounded-xl pl-10 pr-4 py-2.5 text-xs text-white placeholder-slate-400 focus:outline-none focus:border-[#58C1EB] transition-colors"
-          />
-        </div>
-
-        {/* Category Pills */}
-        <div className="flex flex-wrap items-center gap-1.5 self-start sm:self-auto">
-          {categories.map((cat) => (
-            <button
-              key={cat}
-              onClick={() => setSelectedCategory(cat)}
-              className={`px-3 py-1.5 text-xs font-semibold rounded-lg transition-colors ${
-                selectedCategory === cat
-                  ? 'bg-[#204696] text-white border border-[#58C1EB]/40 shadow-sm'
-                  : 'bg-[#071120] border border-[#204696]/20 text-slate-400 hover:text-white hover:bg-[#0E2042]'
-              }`}
-            >
-              {cat}
-            </button>
-          ))}
-        </div>
+      {/* Category Pills */}
+      <div className="flex flex-wrap items-center gap-1.5">
+        {categories.map((cat) => (
+          <button
+            key={cat}
+            onClick={() => setSelectedCategory(cat)}
+            className={`px-3 py-1.5 text-xs font-semibold rounded-lg transition-colors ${
+              selectedCategory === cat
+                ? 'bg-[#204696] text-white border border-[#58C1EB]/40 shadow-sm'
+                : 'bg-[#071120] border border-[#204696]/20 text-slate-400 hover:text-white hover:bg-[#0E2042]'
+            }`}
+          >
+            {cat}
+          </button>
+        ))}
       </div>
 
       {/* Document Cards Grid */}
@@ -161,15 +142,14 @@ export const DocumentCentrePage: React.FC<DocumentCentrePageProps> = ({ onNaviga
 
       {filtered.length === 0 && (
         <div className="text-center py-16 bg-[#0C1933]/90 border border-[#204696]/30 rounded-2xl text-slate-400 text-xs space-y-2 shadow-xl">
-          <p>No documents matching your search filters.</p>
+          <p>No documents matching the selected category.</p>
           <button
             onClick={() => {
-              setSearch('');
               setSelectedCategory('All');
             }}
             className="text-[#58C1EB] hover:underline font-semibold"
           >
-            Clear Search Filters
+            Show All Documents
           </button>
         </div>
       )}

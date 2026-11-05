@@ -12,48 +12,34 @@ interface ThemeContextType {
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [theme, setThemeState] = useState<ThemeMode>(() => {
-    try {
-      const saved = localStorage.getItem('aviance_theme');
-      if (saved === 'light' || saved === 'navy') {
-        return saved;
-      }
-    } catch {
-      // fallback
-    }
-    return 'navy';
-  });
+  const [theme, setThemeState] = useState<ThemeMode>('light');
 
   const setTheme = (newTheme: ThemeMode) => {
-    setThemeState(newTheme);
+    setThemeState('light');
     try {
-      localStorage.setItem('aviance_theme', newTheme);
+      localStorage.setItem('aviance_theme', 'light');
     } catch {
       // fallback
     }
   };
 
   const toggleTheme = () => {
-    setTheme(theme === 'navy' ? 'light' : 'navy');
+    setTheme('light');
   };
 
   useEffect(() => {
+    try {
+      localStorage.setItem('aviance_theme', 'light');
+    } catch {}
     const root = document.documentElement;
-    if (theme === 'light') {
-      root.classList.add('theme-light');
-      root.classList.remove('theme-navy');
-      root.setAttribute('data-theme', 'light');
-      root.style.colorScheme = 'light';
-    } else {
-      root.classList.remove('theme-light');
-      root.classList.add('theme-navy');
-      root.setAttribute('data-theme', 'navy');
-      root.style.colorScheme = 'dark';
-    }
-  }, [theme]);
+    root.classList.add('theme-light', 'light');
+    root.classList.remove('theme-navy', 'dark');
+    root.setAttribute('data-theme', 'light');
+    root.style.colorScheme = 'light';
+  }, []);
 
   return (
-    <ThemeContext.Provider value={{ theme, toggleTheme, setTheme, isLight: theme === 'light' }}>
+    <ThemeContext.Provider value={{ theme: 'light', toggleTheme, setTheme, isLight: true }}>
       {children}
     </ThemeContext.Provider>
   );

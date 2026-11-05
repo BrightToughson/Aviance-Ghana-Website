@@ -177,8 +177,8 @@ export const SmartServiceFinder: React.FC<SmartServiceFinderProps> = ({
         {
           title: language === 'fr' ? 'Réservations Salons Privés' : language === 'tw' ? 'Ahomegyebea Soronko Booking' : 'Private Lounge Reservations',
           desc: language === 'fr' ? 'Salles de réunion privées exclusives et suites avec douches au Terminal 3.' : language === 'tw' ? 'Nhyiamu adan soronko ne aguarebea pa wɔ Terminal 3 mu.' : 'Exclusive private meeting rooms and executive shower facilities inside Terminal 3.',
-          action: () => (onOpenVipModal ? onOpenVipModal() : onNavigate('/lounge')),
-          actionText: language === 'fr' ? 'Réserver l\'Accès Salon' : language === 'tw' ? 'Gye Ahomegyebea No' : 'Book Lounge Access',
+          action: () => onNavigate('/lounge'),
+          actionText: language === 'fr' ? 'Explorer les Salons' : language === 'tw' ? 'Hwɛ Ahomegyebea' : 'Explore Lounges',
         },
         {
           title: language === 'fr' ? 'Conciergerie Protocolaire Dédiée' : language === 'tw' ? 'VIP Protocol Nkitahodi' : 'Direct Protocol Concierge',

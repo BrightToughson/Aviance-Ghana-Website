@@ -31,12 +31,12 @@ const STORAGE_KEYS = {
   SERVICES: 'aviance_services',
   LOCATIONS: 'aviance_locations',
   CERTIFICATIONS: 'aviance_certifications',
-  NEWS: 'aviance_news',
+  NEWS: 'aviance_news_official_archive_v5',
   VACANCIES: 'aviance_vacancies',
   APPLICATIONS: 'aviance_applications',
   ENQUIRIES: 'aviance_enquiries',
   BAGGAGE: 'aviance_baggage',
-  TEAM: 'aviance_team',
+  TEAM: 'aviance_team_v4',
   CUSTOMERS: 'aviance_customers',
   AUDIT_LOGS: 'aviance_audit_logs',
   NOTIFICATIONS: 'aviance_notifications',
@@ -252,7 +252,7 @@ export const dataService = {
         slug,
         shortDescription: service.shortDescription || '',
         fullDescription: service.fullDescription || '',
-        heroImage: service.heroImage || '/src/assets/images/hero_aviance_turnaround_1791329957957.jpg',
+        heroImage: service.heroImage || '/src/assets/aviance_images/1791968160594.jpg',
         icon: service.icon || 'Plane',
         locations: service.locations || ['Accra (Kotoka T3)'],
         features: service.features || [],
@@ -391,7 +391,7 @@ export const dataService = {
         category: article.category || 'Company News',
         excerpt: article.excerpt || article.content.substring(0, 160) + '...',
         featuredImage:
-          article.featuredImage || '/src/assets/images/ramp_ground_operations_1791329987253.jpg',
+          article.featuredImage || '/src/assets/aviance_images/1788350257403.jpg',
         authorName: article.authorName || 'Aviance Corporate Communications',
         authorRole: article.authorRole || 'Media Relations',
         authorEmail: article.authorEmail || 'comms@avianceghana.com',
@@ -679,7 +679,26 @@ export const dataService = {
 
   // Team
   getTeam: (): TeamMember[] => {
-    return getStored<TeamMember[]>(STORAGE_KEYS.TEAM, INITIAL_TEAM);
+    try {
+      localStorage.removeItem('aviance_team');
+      localStorage.removeItem('aviance_team_v2');
+      localStorage.removeItem('aviance_team_v3');
+    } catch {}
+
+    const list = getStored<TeamMember[]>(STORAGE_KEYS.TEAM, INITIAL_TEAM);
+    // If stored array is empty, has less than 21 members, or has obsolete demo members like 'Mark Kamis', refresh with INITIAL_TEAM
+    if (!list || list.length < INITIAL_TEAM.length || list.some((m) => m.name.includes('Mark Kamis'))) {
+      const merged = INITIAL_TEAM.map((initMember) => {
+        const found = list ? list.find((m) => m.email && m.email.toLowerCase() === initMember.email?.toLowerCase()) : null;
+        if (found && found.photoUrl) {
+          return { ...initMember, photoUrl: found.photoUrl };
+        }
+        return initMember;
+      });
+      setStored(STORAGE_KEYS.TEAM, merged);
+      return merged;
+    }
+    return list;
   },
   saveTeamMember: (member: Partial<TeamMember> & { name: string; position: string }): TeamMember => {
     const list = dataService.getTeam();
@@ -693,7 +712,7 @@ export const dataService = {
         id: `team-${Date.now()}`,
         department: member.department || 'Operations',
         biography: member.biography || '',
-        photoUrl: member.photoUrl || '/src/assets/images/hero_aviance_turnaround_1791329957957.jpg',
+        photoUrl: member.photoUrl || '/src/assets/aviance_images/ceo and stakeholders/1787739001941.jpg',
         displayOrder: list.length + 1,
         isActive: true,
         ...member,

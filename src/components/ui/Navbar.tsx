@@ -1,50 +1,109 @@
 import React, { useState, useEffect, useRef } from 'react';
 import {
-  Menu,
-  X,
-  Search,
+  PhoneCall,
+  Mail,
   ChevronDown,
-  Shield,
+  ChevronRight,
   Plane,
-  ArrowRight,
+  Shield,
   PackageCheck,
   Armchair,
-  Luggage,
-  Wrench,
-  GraduationCap,
-  Cpu,
   Users,
-  Building2,
-  FileText,
-  HelpCircle,
+  Wrench,
+  Cpu,
+  ArrowRight,
   Award,
-  PhoneCall,
+  Building2,
+  FileCheck2,
+  HeartHandshake,
+  Home,
   Briefcase,
-  Sun,
-  Moon,
-  Globe,
-  Check,
+  MapPin,
+  Clock,
+  ExternalLink,
+  Luggage,
+  Newspaper,
+  BarChart3,
+  ShieldCheck,
+  GraduationCap,
+  X
 } from 'lucide-react';
 import { AvianceLogo } from './AvianceLogo';
-import { useTheme } from '../../context/ThemeContext';
-import { useLanguage } from '../../context/LanguageContext';
+
+// Authentic Aviance Operations Photography for Directory Showcase
+import turnaroundImg from '../../assets/aviance_images/1791968160594.jpg';
+import loungeImg from '../../assets/aviance_images/1791796145150.jpg';
+import supportImg from '../../assets/aviance_images/1776164623557.jpg';
+import cargoImg from '../../assets/aviance_images/1780574568846.jpg';
 
 interface NavbarProps {
   currentPath: string;
   onNavigate: (path: string) => void;
-  onOpenSearch: () => void;
 }
 
-export const Navbar: React.FC<NavbarProps> = ({ currentPath, onNavigate, onOpenSearch }) => {
-  const { theme, toggleTheme, isLight } = useTheme();
-  const { language, setLanguage, t, languages, currentLanguageOption } = useLanguage();
+export const Navbar: React.FC<NavbarProps> = ({ currentPath, onNavigate }) => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [servicesMenuOpen, setServicesMenuOpen] = useState(false);
-  const [moreMenuOpen, setMoreMenuOpen] = useState(false);
-  const [languageMenuOpen, setLanguageMenuOpen] = useState(false);
+  const [menuToggledOnce, setMenuToggledOnce] = useState(false);
+  const [servicesDropdownOpen, setServicesDropdownOpen] = useState(false);
+  const [aboutDropdownOpen, setAboutDropdownOpen] = useState(false);
+  const [drawerAboutOpen, setDrawerAboutOpen] = useState(false);
+  const [drawerServicesOpen, setDrawerServicesOpen] = useState(false);
+  const [sidebarSlide, setSidebarSlide] = useState(0);
 
-  const navRef = useRef<HTMLDivElement>(null);
+  // Auto-expand relevant dropdown in mobile drawer based on current route
+  useEffect(() => {
+    if (mobileMenuOpen) {
+      if (
+        currentPath.startsWith('/about') ||
+        currentPath === '/management' ||
+        currentPath === '/facts-figures' ||
+        currentPath === '/customers' ||
+        currentPath === '/code-of-conduct' ||
+        currentPath === '/certifications'
+      ) {
+        setDrawerAboutOpen(true);
+      } else if (
+        currentPath.startsWith('/services') ||
+        currentPath.startsWith('/passenger') ||
+        currentPath.startsWith('/ramp') ||
+        currentPath === '/cargo' ||
+        currentPath === '/lounge' ||
+        currentPath === '/vip-charter' ||
+        currentPath === '/operations' ||
+        currentPath === '/find-my-bag' ||
+        currentPath === '/training' ||
+        currentPath === '/gse-fleet-maintenance'
+      ) {
+        setDrawerServicesOpen(true);
+      }
+    }
+  }, [mobileMenuOpen, currentPath]);
+
+  // Debounced dropdown close timer to prevent vanishing when moving mouse down
+  const closeTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  const handleDropdownEnter = (type: 'about' | 'services') => {
+    if (closeTimeoutRef.current) {
+      clearTimeout(closeTimeoutRef.current);
+      closeTimeoutRef.current = null;
+    }
+    setAboutDropdownOpen(type === 'about');
+    setServicesDropdownOpen(type === 'services');
+  };
+
+  const handleDropdownLeave = () => {
+    if (closeTimeoutRef.current) clearTimeout(closeTimeoutRef.current);
+    closeTimeoutRef.current = setTimeout(() => {
+      setAboutDropdownOpen(false);
+      setServicesDropdownOpen(false);
+    }, 350);
+  };
+
+  const toggleDirectoryMenu = () => {
+    setMenuToggledOnce(true);
+    setMobileMenuOpen((prev) => !prev);
+  };
 
   useEffect(() => {
     const handleScroll = () => {
@@ -54,821 +113,835 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPath, onNavigate, onOpenS
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // Close dropdowns when clicking outside
   useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (navRef.current && !navRef.current.contains(event.target as Node)) {
-        setServicesMenuOpen(false);
-        setMoreMenuOpen(false);
-        setLanguageMenuOpen(false);
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setMobileMenuOpen(false);
+        setMenuToggledOnce(true);
+        setAboutDropdownOpen(false);
+        setServicesDropdownOpen(false);
       }
     };
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
   }, []);
 
-  const handleNavClick = (path: string) => {
+  useEffect(() => {
+    if (mobileMenuOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [mobileMenuOpen]);
+
+  const handleNav = (path: string) => {
+    if (closeTimeoutRef.current) clearTimeout(closeTimeoutRef.current);
     setMobileMenuOpen(false);
-    setServicesMenuOpen(false);
-    setMoreMenuOpen(false);
-    setLanguageMenuOpen(false);
+    setMenuToggledOnce(true);
+    setServicesDropdownOpen(false);
+    setAboutDropdownOpen(false);
+    setDrawerAboutOpen(false);
+    setDrawerServicesOpen(false);
     onNavigate(path);
   };
 
-  const serviceLinks = [
-    { name: t('services.passenger.title', 'Passenger Services'), path: '/passenger-services', icon: Users, desc: t('services.passenger.desc', 'DCS check-in, boarding & PRM') },
-    { name: t('services.ramp.title', 'Ramp Handling'), path: '/ramp-handling', icon: Plane, desc: t('services.ramp.desc', 'Aircraft turnaround & pushback') },
-    { name: t('services.cargo.title', 'Air Cargo Terminal'), path: '/cargo', icon: PackageCheck, desc: t('services.cargo.desc', 'EU RA3 cold chain logistics') },
-    { name: t('services.vip.title', 'VIP & Charter Services'), path: '/vip-charter', icon: Shield, desc: t('services.vip.desc', 'Meet & greet, executive handling') },
-    { name: t('services.lounge.title', 'Lounge Services (Adinkra)'), path: '/lounge', icon: Armchair, desc: t('services.lounge.desc', 'Executive hospitality Terminal 3') },
-    { name: t('services.baggage.title', 'Baggage Services'), path: '/baggage', icon: Luggage, desc: t('services.baggage.desc', 'Delayed baggage & tracing desk') },
-    { name: t('services.gse.title', 'GSE & Fleet Maintenance'), path: '/gse-fleet-maintenance', icon: Wrench, desc: t('services.gse.desc', 'Airside workshop maintenance') },
-    { name: t('services.training.title', 'Operational Training'), path: '/training', icon: GraduationCap, desc: t('services.training.desc', 'Ramp safety & DGR training') },
-    { name: t('services.occ.title', 'OCC - Flight Operations'), path: '/operations', icon: Cpu, desc: t('services.occ.desc', '24/7 flight coordination center') },
+  const servicePillars = [
+    {
+      title: 'Passenger & Terminal',
+      kicker: 'Hospitality & Care',
+      dotClass: 'bg-[#204696]',
+      items: [
+        { name: 'Passenger Services', path: '/passenger-services', icon: Users, desc: 'DCS check-in, boarding gates & PRM passenger care' },
+        { name: 'Lounge Services', path: '/lounge', icon: Armchair, desc: 'Adinkra Executive Lounge & The U Lounge at T3' },
+        { name: 'Find My Bag', path: '/find-my-bag', icon: Luggage, desc: 'Direct passenger baggage tracking & PIR resolution' },
+      ]
+    },
+    {
+      title: 'Airside & Turnaround',
+      kicker: 'Apron Operations',
+      dotClass: 'bg-[#009EE0]',
+      items: [
+        { name: 'Ramp Handling', path: '/ramp-handling', icon: Plane, desc: 'Aircraft turnaround, pushback & GPU servicing' },
+        { name: 'OCC-Flight Operations', path: '/operations', icon: Cpu, desc: '24/7 flight coordination, dispatch & load control' },
+        { name: 'GSE and Fleet Maintenance', path: '/gse-fleet-maintenance', icon: Wrench, desc: 'Ground support equipment maintenance & engineering' },
+      ]
+    },
+    {
+      title: 'Cargo & Specialized',
+      kicker: 'Logistics & Safety',
+      dotClass: 'bg-[#72BF44]',
+      items: [
+        { name: 'Cargo Services', path: '/cargo', icon: PackageCheck, desc: 'EU RA3 certified bonded warehousing & cold-chain' },
+        { name: 'VIP and Charter Services', path: '/vip-charter', icon: Shield, desc: 'Apron escort, private charters & diplomatic protocol' },
+        { name: 'Training Academy', path: '/training', icon: GraduationCap, desc: 'ICAO & IATA safety, SMS courses & training facilities' },
+      ]
+    }
   ];
 
-  const moreLinks = [
-    { name: t('nav.lounge', 'Adinkra Lounge (T3)'), path: '/lounge', icon: Armchair, desc: 'Premium executive passenger hospitality', desktopOnlyAtLg: true },
-    { name: t('nav.safety', 'Safety & Standards'), path: '/certifications', icon: Award, desc: 'ISAGO, GCAA, IATA AHM compliance', desktopOnlyAtLg: true },
-    { name: t('nav.careers', 'Careers & Vacancies'), path: '/careers', icon: Briefcase, desc: 'Join our certified ground operations crew', desktopOnlyAtLg: true },
-    { name: t('nav.management', 'Executive Leadership'), path: '/management', icon: Building2, desc: 'Aviance board & senior management team' },
-    { name: t('nav.about', 'About Aviance Ghana'), path: '/about', icon: Users, desc: 'History, infrastructure, fleet & values' },
-    { name: t('nav.documents', 'Document Centre'), path: '/documents', icon: FileText, desc: 'SGHA, tariffs, manuals & airline forms' },
-    { name: t('nav.faqs', 'Operational FAQs'), path: '/faqs', icon: HelpCircle, desc: 'Answers for passengers & airline partners' },
-    { name: t('nav.contact', 'Contact & Station Info'), path: '/contact', icon: PhoneCall, desc: 'ACC, KMS, TML station directories' },
+  const services = servicePillars.flatMap((p) => p.items);
+
+  const aboutPillars = [
+    {
+      title: 'Corporate & Governance',
+      dotClass: 'bg-[#204696]',
+      items: [
+        { name: 'About Aviance (Who We Are)', path: '/about', icon: Building2, desc: '30+ year company heritage, vision & mission' },
+        { name: 'Management Team', path: '/management', icon: Users, desc: 'Executive leadership team & station department heads' },
+        { name: 'Code of Conduct', path: '/code-of-conduct', icon: ShieldCheck, desc: 'Corporate governance, ethics & safety compliance' },
+      ]
+    },
+    {
+      title: 'Standards & Partnerships',
+      dotClass: 'bg-[#009EE0]',
+      items: [
+        { name: 'Facts & Figures', path: '/facts-figures', icon: BarChart3, desc: 'Annual flights, cargo volume & passenger metrics' },
+        { name: 'Customer Airlines', path: '/customers', icon: Plane, desc: 'Scheduled long-haul, domestic & cargo carriers' },
+        { name: 'Certifications & Licenses', path: '/certifications', icon: FileCheck2, desc: 'IATA ISAGO registry, EU RA3 & GCAA licence' },
+      ]
+    }
   ];
+
+  const aboutLinks = aboutPillars.flatMap((p) => p.items);
+
+  const contactLinks = [
+    { name: 'Station Offices & Headquarters', path: '/contact#stations', icon: MapPin, desc: 'Kotoka International Airport (ACC) Cargo Village' },
+    { name: 'Regional Aerodromes', path: '/contact#regional', icon: Building2, desc: 'Kumasi (KMS) & Tamale (TML) regional operations' },
+    { name: '24/7 Operations Control Centre', path: '/contact#occ', icon: PhoneCall, desc: 'Real-time apron coordination & flight dispatch' },
+    { name: 'Request Handling Proposal (RFP)', path: '/contact#rfp', icon: FileCheck2, desc: 'Formal airline tenders, ad-hoc charters & service quotes' },
+    { name: 'Help & Customer Inquiries', path: '/contact#inquiries', icon: Mail, desc: 'Executive lounge passes, inquiries & customer care' },
+  ];
+
+  const TURNAROUND_IMG = turnaroundImg;
+  const LOUNGE_IMG = loungeImg;
+  const SUPPORT_IMG = supportImg;
+
+  // 4 Authentic Showcase Slides for Directory Sidebar
+  const showcaseSlides = [
+    {
+      id: 1,
+      image: turnaroundImg,
+      title: 'Airline Ground Handling & Turnaround',
+      desc: 'Precision ramp operations, pushback, and flight servicing at ACC, KMS & TML.'
+    },
+    {
+      id: 2,
+      image: loungeImg,
+      title: 'Executive Adinkra Lounges',
+      desc: 'World-class hospitality, VIP passenger comforts, and dedicated airport executive facilities.'
+    },
+    {
+      id: 3,
+      image: supportImg,
+      title: 'Modern GSE & Fleet Engineering',
+      desc: 'Certified ground support equipment, zero-emission engineering, and airside safety.'
+    },
+    {
+      id: 4,
+      image: cargoImg,
+      title: 'EU RA3 Bonded Cargo Logistics',
+      desc: 'Secure temperature-controlled cold-chain, pharmaceutical handling, and air freight logistics.'
+    }
+  ];
+
+  // Auto-advance sidebar slideshow automatically every 3.5s
+  useEffect(() => {
+    if (!mobileMenuOpen) return;
+    const interval = setInterval(() => {
+      setSidebarSlide((prev) => (prev + 1) % showcaseSlides.length);
+    }, 3500);
+    return () => clearInterval(interval);
+  }, [mobileMenuOpen, showcaseSlides.length]);
 
   return (
-    <div ref={navRef}>
-      {/* Real-Time Operational Airport Telemetry & Contact Bar */}
-      <div className={`fixed top-0 left-0 right-0 z-50 h-7 border-b text-[11px] font-medium shadow-xs flex items-center justify-between select-none transition-colors px-3 sm:px-6 lg:px-8 ${
-        isLight
-          ? 'bg-slate-100 border-slate-200 text-slate-700'
-          : 'bg-[#08101E] border-[#204696]/40 text-white'
+    <>
+      {/* Main Corporate Navigation Header */}
+      <header className={`sticky top-0 z-40 w-full transition-all duration-300 ease-out ${
+        isScrolled
+          ? 'bg-white/95 backdrop-blur-md shadow-md shadow-slate-900/5 border-b border-slate-200/90'
+          : 'bg-white/98 backdrop-blur-sm border-b border-slate-200'
       }`}>
-        <div className="flex items-center gap-2 sm:gap-4 overflow-hidden whitespace-nowrap">
-          <div className="flex items-center gap-1.5 shrink-0">
-            <span className="w-2 h-2 rounded-full bg-[#72BF44] animate-pulse"></span>
-            <span className={`tracking-wide text-[10.5px] sm:text-[11px] font-semibold ${
-              isLight ? 'text-slate-900' : 'text-slate-100'
-            }`}>
-              {t('telemetry.station', "ACC · Kotoka Int'l")}
-            </span>
-            <span className={`hidden sm:inline text-[10px] font-mono ${
-              isLight ? 'text-slate-500' : 'text-slate-400'
-            }`}>
-              {t('telemetry.terminal', 'Terminal 3 (DGAA)')}
-            </span>
-          </div>
-          <span className={`hidden md:inline ${isLight ? 'text-slate-300' : 'text-slate-700'}`}>|</span>
-          <div className="hidden md:flex items-center gap-2">
-            <span className={`font-mono text-[10px] uppercase font-bold tracking-wider ${
-              isLight ? 'text-[#0284C7]' : 'text-[#58C1EB]'
-            }`}>
-              {t('telemetry.isago', 'ISAGO Registered')}
-            </span>
-            <span className={isLight ? 'text-slate-400' : 'text-slate-600'}>·</span>
-            <span className={`text-[10px] ${isLight ? 'text-slate-600' : 'text-slate-300'}`}>
-              {t('telemetry.gcaa', 'GCAA Authorized Handler')}
-            </span>
-          </div>
-        </div>
+        {/* Aviance Identity Tri-Color Top Accent (Cobalt Blue, Azure Cyan, Leaf Green) */}
+        <div className="h-[3.5px] w-full bg-gradient-to-r from-[#204696] via-[#009EE0] to-[#72BF44]" />
 
-        <div className="flex items-center gap-2.5 sm:gap-5 text-[11px] shrink-0 font-mono whitespace-nowrap">
-          <div className={`hidden lg:flex items-center gap-2 ${isLight ? 'text-slate-700' : 'text-slate-300'}`}>
-            <span className={`text-[10px] ${isLight ? 'text-[#0284C7] font-semibold' : 'text-[#58C1EB]'}`}>
-              {t('telemetry.occ', '24/7 OCC:')}
-            </span>
-            <a href="tel:+233244334022" className={`transition-colors font-semibold ${
-              isLight ? 'hover:text-[#204696] text-slate-800' : 'hover:text-white text-slate-200'
-            }`}>
-              +233 (0) 244 334 022
-            </a>
-          </div>
-          <span className={`hidden lg:inline ${isLight ? 'text-slate-300' : 'text-slate-700'}`}>|</span>
-          <div className="flex items-center gap-2 sm:gap-3 font-sans">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between h-20 transition-all duration-300">
+            
+            {/* Brand Logo with micro-lift */}
             <button
-              onClick={() => handleNavClick('/partner-portal')}
-              className={`transition-colors font-medium text-[11px] flex items-center gap-1 ${
-                isLight ? 'text-[#204696] hover:text-[#153170]' : 'text-[#58C1EB] hover:text-white'
-              }`}
+              onClick={() => handleNav('/')}
+              className="flex items-center gap-3 focus:outline-none text-left transition-transform duration-300 hover:scale-[1.02] active:scale-95 cursor-pointer"
+              aria-label="Aviance Ghana Homepage"
             >
-              <span>{t('telemetry.portal', 'Airline Portal')}</span>
-            </button>
-            <span className={isLight ? 'text-slate-400' : 'text-slate-600'}>·</span>
-            <button
-              onClick={() => handleNavClick('/find-my-bag')}
-              className={`transition-colors text-[11px] ${
-                isLight ? 'text-slate-600 hover:text-slate-900' : 'text-slate-300 hover:text-white'
-              }`}
-            >
-              {t('telemetry.tracing', 'Baggage Tracing')}
-            </button>
-          </div>
-        </div>
-      </div>
-
-      {/* Main Navigation Bar */}
-      <header
-        className={`fixed top-7 left-0 right-0 z-40 transition-all duration-300 ${
-          isLight
-            ? isScrolled
-              ? 'bg-white/95 backdrop-blur-xl border-b border-slate-200 shadow-md text-slate-900'
-              : 'bg-white/90 backdrop-blur-md border-b border-slate-200/80 text-slate-900'
-            : isScrolled
-              ? 'bg-[#08101E]/95 backdrop-blur-xl border-b border-[#204696]/50 shadow-xl shadow-black/50 text-white'
-              : 'bg-gradient-to-b from-[#08101E]/95 via-[#08101E]/80 to-transparent backdrop-blur-md border-b border-[#204696]/20 text-white'
-        }`}
-      >
-        <div className="max-w-7xl mx-auto px-2.5 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16 sm:h-20 gap-1.5 sm:gap-2">
-            {/* Zone 1: Official Aviance Brand Logo (Single responsive logo element) */}
-            <button
-              onClick={() => handleNavClick('/')}
-              className="group flex items-center text-left focus:outline-none py-1 shrink-0 transition-transform hover:scale-[1.01]"
-              aria-label="Aviance Ghana Home"
-            >
-              <div className="block sm:hidden">
-                <AvianceLogo variant={isLight ? 'on-light' : 'on-dark'} size="sm" />
-              </div>
-              <div className="hidden sm:block">
-                <AvianceLogo variant={isLight ? 'on-light' : 'on-dark'} size="md" />
-              </div>
+              <AvianceLogo variant="on-light" size="md" showSubtitle={false} />
             </button>
 
-            {/* Zone 2: Responsive Desktop Navigation Links */}
-            <nav className={`hidden lg:flex items-center gap-3.5 xl:gap-5 2xl:gap-6 text-xs xl:text-sm font-medium shrink-0 ${
-              isLight ? 'text-slate-700' : 'text-slate-200'
-            }`}>
-              {/* Services Mega Menu Trigger */}
-              <div className="relative">
+            {/* Desktop Navigation Links */}
+            <nav className="hidden lg:flex items-center gap-1 font-medium text-sm text-slate-700 h-full">
+              <button
+                onClick={() => handleNav('/')}
+                className={`px-3.5 py-2 rounded-lg transition-all duration-300 font-medium active:scale-95 ${
+                  currentPath === '/'
+                    ? 'text-[#204696] font-bold bg-blue-50/90 shadow-2xs'
+                    : 'text-slate-700 hover:text-[#204696] hover:bg-slate-50 hover:scale-[1.02]'
+                }`}
+              >
+                Home
+              </button>
+
+              {/* About Us Aramex-Style Mega Dropdown */}
+              <div
+                className="relative h-full flex items-center"
+                onMouseEnter={() => handleDropdownEnter('about')}
+                onMouseLeave={handleDropdownLeave}
+              >
                 <button
-                  onClick={() => {
-                    setServicesMenuOpen(!servicesMenuOpen);
-                    setMoreMenuOpen(false);
-                    setLanguageMenuOpen(false);
-                  }}
-                  className={`flex items-center gap-1.5 transition-colors py-2 focus:outline-none ${
-                    currentPath.startsWith('/services') ||
-                    currentPath === '/passenger-services' ||
-                    currentPath === '/ramp-handling' ||
-                    currentPath === '/cargo' ||
-                    currentPath === '/vip-charter' ||
-                    currentPath === '/baggage' ||
-                    currentPath === '/gse-fleet-maintenance' ||
-                    currentPath === '/training'
-                      ? isLight ? 'text-[#204696] font-bold' : 'text-[#58C1EB] font-bold'
-                      : isLight ? 'hover:text-[#204696]' : 'hover:text-white'
-                  }`}
-                >
-                  <span>{t('nav.services', 'Services')}</span>
-                  <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-200 ${
-                    servicesMenuOpen ? (isLight ? 'rotate-180 text-[#204696]' : 'rotate-180 text-[#58C1EB]') : (isLight ? 'text-slate-500' : 'text-slate-400')
-                  }`} />
-                </button>
-
-                {/* Mega Menu Dropdown */}
-                {servicesMenuOpen && (
-                  <div
-                    className={`absolute top-full left-0 w-[680px] xl:w-[740px] mt-2 p-5 rounded-2xl shadow-2xl grid grid-cols-2 gap-2.5 z-50 animate-in fade-in slide-in-from-top-2 duration-150 backdrop-blur-2xl border ${
-                      isLight
-                        ? 'bg-white border-slate-200 text-slate-800 shadow-slate-300/60'
-                        : 'bg-[#0A162C] border-[#204696]/60 text-slate-100 shadow-black/80'
-                    }`}
-                  >
-                    <div className={`col-span-2 pb-3 mb-1 border-b flex items-center justify-between ${
-                      isLight ? 'border-slate-200' : 'border-slate-800/80'
-                    }`}>
-                      <div className="flex items-center gap-2">
-                        <span className="w-2 h-2 rounded-full bg-[#58C1EB]"></span>
-                        <span className={`text-xs font-bold uppercase tracking-wider ${
-                          isLight ? 'text-slate-900' : 'text-white'
-                        }`}>
-                          {t('nav.servicesTitle', 'Ground Handling & Aviation Services')}
-                        </span>
-                      </div>
-                      <button
-                        onClick={() => handleNavClick('/services')}
-                        className={`text-xs font-semibold flex items-center gap-1 transition-colors group ${
-                          isLight ? 'text-[#204696] hover:text-[#153170]' : 'text-[#58C1EB] hover:text-white'
-                        }`}
-                      >
-                        {t('nav.completeDirectory', 'Complete Directory')} <ArrowRight className="w-3 h-3 group-hover:translate-x-0.5 transition-transform" />
-                      </button>
-                    </div>
-                    {serviceLinks.map((item) => {
-                      const Icon = item.icon;
-                      const isActive = currentPath === item.path;
-                      return (
-                        <button
-                          key={item.path}
-                          onClick={() => handleNavClick(item.path)}
-                          className={`flex items-start gap-3 p-2.5 rounded-xl text-left border transition-all group ${
-                            isActive
-                              ? isLight
-                                ? 'bg-blue-50/80 border-[#204696]/50'
-                                : 'bg-[#204696]/30 border-[#58C1EB]/60'
-                              : isLight
-                                ? 'hover:bg-slate-50 border-transparent hover:border-slate-200'
-                                : 'hover:bg-slate-800/70 border-transparent hover:border-[#204696]/40'
-                          }`}
-                        >
-                          <div className={`p-2 rounded-lg transition-all shadow-sm shrink-0 ${
-                            isActive
-                              ? 'bg-[#204696] text-white border border-[#58C1EB]/60'
-                              : isLight
-                                ? 'bg-slate-100 group-hover:bg-[#204696] text-[#204696] group-hover:text-white border border-slate-200'
-                                : 'bg-slate-900/90 group-hover:bg-[#204696] text-[#58C1EB] group-hover:text-white border border-slate-800 group-hover:border-[#58C1EB]/50'
-                          }`}>
-                            <Icon className="w-4 h-4" />
-                          </div>
-                          <div className="min-w-0">
-                            <div className={`text-xs xl:text-sm font-semibold transition-colors truncate ${
-                              isActive
-                                ? 'text-[#204696]'
-                                : isLight
-                                  ? 'text-slate-800 group-hover:text-[#204696]'
-                                  : 'text-slate-100 group-hover:text-white'
-                            }`}>
-                              {item.name}
-                            </div>
-                            <div className={`text-[11px] transition-colors truncate ${
-                              isLight ? 'text-slate-500 group-hover:text-slate-700' : 'text-slate-400 group-hover:text-slate-300'
-                            }`}>
-                              {item.desc}
-                            </div>
-                          </div>
-                        </button>
-                      );
-                    })}
-                  </div>
-                )}
-              </div>
-
-              {/* Flight Operations */}
-              <button
-                onClick={() => handleNavClick('/operations')}
-                className={`transition-colors relative py-1 shrink-0 ${
-                  currentPath === '/operations'
-                    ? isLight ? 'text-[#204696] font-bold' : 'text-[#58C1EB] font-bold'
-                    : isLight ? 'hover:text-[#204696]' : 'hover:text-white'
-                }`}
-              >
-                {t('nav.flightOps', 'Flight Ops')}
-                {currentPath === '/operations' && (
-                  <span className={`absolute bottom-0 left-0 right-0 h-0.5 rounded-full ${
-                    isLight ? 'bg-[#204696]' : 'bg-[#58C1EB]'
-                  }`}></span>
-                )}
-              </button>
-
-              {/* Cargo Terminal */}
-              <button
-                onClick={() => handleNavClick('/cargo')}
-                className={`transition-colors relative py-1 shrink-0 ${
-                  currentPath === '/cargo'
-                    ? isLight ? 'text-[#204696] font-bold' : 'text-[#58C1EB] font-bold'
-                    : isLight ? 'hover:text-[#204696]' : 'hover:text-white'
-                }`}
-              >
-                {t('nav.cargo', 'Cargo')}
-                {currentPath === '/cargo' && (
-                  <span className={`absolute bottom-0 left-0 right-0 h-0.5 rounded-full ${
-                    isLight ? 'bg-[#204696]' : 'bg-[#58C1EB]'
-                  }`}></span>
-                )}
-              </button>
-
-              {/* Find My Bag */}
-              <button
-                onClick={() => handleNavClick('/find-my-bag')}
-                className={`transition-colors relative py-1 shrink-0 flex items-center gap-1.5 ${
-                  currentPath === '/find-my-bag'
-                    ? isLight ? 'text-[#204696] font-bold' : 'text-[#58C1EB] font-bold'
-                    : isLight ? 'hover:text-[#204696]' : 'hover:text-white'
-                }`}
-              >
-                <span>{t('nav.findMyBag', 'Find My Bag')}</span>
-                <span className="w-1.5 h-1.5 rounded-full bg-[#58C1EB] animate-pulse"></span>
-                {currentPath === '/find-my-bag' && (
-                  <span className={`absolute bottom-0 left-0 right-0 h-0.5 rounded-full ${
-                    isLight ? 'bg-[#204696]' : 'bg-[#58C1EB]'
-                  }`}></span>
-                )}
-              </button>
-
-              {/* Visible on XL+ screens */}
-              <button
-                onClick={() => handleNavClick('/lounge')}
-                className={`hidden xl:inline-block transition-colors relative py-1 shrink-0 ${
-                  currentPath === '/lounge'
-                    ? isLight ? 'text-[#204696] font-bold' : 'text-[#58C1EB] font-bold'
-                    : isLight ? 'hover:text-[#204696]' : 'hover:text-white'
-                }`}
-              >
-                {t('nav.lounge', 'Adinkra Lounge')}
-                {currentPath === '/lounge' && (
-                  <span className={`absolute bottom-0 left-0 right-0 h-0.5 rounded-full ${
-                    isLight ? 'bg-[#204696]' : 'bg-[#58C1EB]'
-                  }`}></span>
-                )}
-              </button>
-
-              <button
-                onClick={() => handleNavClick('/certifications')}
-                className={`hidden xl:inline-block transition-colors relative py-1 shrink-0 ${
-                  currentPath === '/certifications'
-                    ? isLight ? 'text-[#204696] font-bold' : 'text-[#58C1EB] font-bold'
-                    : isLight ? 'hover:text-[#204696]' : 'hover:text-white'
-                }`}
-              >
-                {t('nav.safety', 'Safety & Standards')}
-                {currentPath === '/certifications' && (
-                  <span className={`absolute bottom-0 left-0 right-0 h-0.5 rounded-full ${
-                    isLight ? 'bg-[#204696]' : 'bg-[#58C1EB]'
-                  }`}></span>
-                )}
-              </button>
-
-              <button
-                onClick={() => handleNavClick('/careers')}
-                className={`hidden xl:inline-block transition-colors relative py-1 shrink-0 ${
-                  currentPath === '/careers'
-                    ? isLight ? 'text-[#204696] font-bold' : 'text-[#58C1EB] font-bold'
-                    : isLight ? 'hover:text-[#204696]' : 'hover:text-white'
-                }`}
-              >
-                {t('nav.careers', 'Careers')}
-                {currentPath === '/careers' && (
-                  <span className={`absolute bottom-0 left-0 right-0 h-0.5 rounded-full ${
-                    isLight ? 'bg-[#204696]' : 'bg-[#58C1EB]'
-                  }`}></span>
-                )}
-              </button>
-
-              {/* More Dropdown */}
-              <div className="relative">
-                <button
-                  onClick={() => {
-                    setMoreMenuOpen(!moreMenuOpen);
-                    setServicesMenuOpen(false);
-                    setLanguageMenuOpen(false);
-                  }}
-                  className={`flex items-center gap-1 transition-colors py-2 focus:outline-none ${
+                  onClick={() => handleNav('/about')}
+                  className={`flex items-center gap-1.5 px-3.5 py-2 rounded-lg transition-all duration-300 font-medium active:scale-95 ${
+                    currentPath.startsWith('/about') ||
                     currentPath === '/management' ||
-                    currentPath === '/about' ||
-                    currentPath === '/documents' ||
-                    currentPath === '/faqs' ||
-                    currentPath === '/news'
-                      ? isLight ? 'text-[#204696] font-bold' : 'text-[#58C1EB] font-bold'
-                      : isLight ? 'hover:text-[#204696]' : 'hover:text-white'
+                    currentPath === '/management-team' ||
+                    currentPath === '/facts-figures' ||
+                    currentPath === '/facts-and-figures' ||
+                    currentPath === '/customers' ||
+                    currentPath === '/code-of-conduct' ||
+                    currentPath === '/certifications' ||
+                    currentPath === '/certifications-licenses'
+                      ? 'text-[#204696] font-bold bg-blue-50/90 shadow-2xs'
+                      : 'text-slate-700 hover:text-[#204696] hover:bg-slate-50 hover:scale-[1.02]'
                   }`}
                 >
-                  <span>{t('nav.more', 'More')}</span>
-                  <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-200 ${
-                    moreMenuOpen ? (isLight ? 'rotate-180 text-[#204696]' : 'rotate-180 text-[#58C1EB]') : (isLight ? 'text-slate-500' : 'text-slate-400')
-                  }`} />
+                  <span>About Us</span>
+                  <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-300 ease-out ${aboutDropdownOpen ? 'rotate-180 text-[#204696]' : 'text-slate-400'}`} />
                 </button>
 
-                {moreMenuOpen && (
-                  <div
-                    className={`absolute top-full right-0 w-72 mt-2 p-2.5 rounded-2xl shadow-2xl z-50 animate-in fade-in slide-in-from-top-2 duration-150 backdrop-blur-2xl space-y-1 border ${
-                      isLight
-                        ? 'bg-white border-slate-200 text-slate-800 shadow-slate-300/60'
-                        : 'bg-[#0A162C] border-[#204696]/60 text-slate-100 shadow-black/80'
-                    }`}
-                  >
-                    {moreLinks.map((item) => {
-                      const Icon = item.icon;
-                      return (
-                        <button
-                          key={item.path}
-                          onClick={() => handleNavClick(item.path)}
-                          className={`w-full flex items-center gap-3 p-2.5 rounded-xl text-left transition-all group ${
-                            currentPath === item.path
-                              ? isLight
-                                ? 'bg-blue-50 text-[#204696] font-semibold'
-                                : 'bg-[#204696]/30 text-[#58C1EB]'
-                              : isLight
-                                ? 'text-slate-700 hover:bg-slate-50 hover:text-[#204696]'
-                                : 'text-slate-200 hover:bg-slate-800/70 hover:text-white'
-                          } ${item.desktopOnlyAtLg ? 'xl:hidden' : ''}`}
-                        >
-                          <div className={`p-1.5 rounded-lg border transition-all shrink-0 ${
-                            isLight
-                              ? 'bg-slate-100 border-slate-200 group-hover:border-[#204696]/40 group-hover:bg-[#204696] text-[#204696] group-hover:text-white'
-                              : 'bg-slate-900 border-slate-800 group-hover:border-[#58C1EB]/40 group-hover:bg-[#204696] text-[#58C1EB] group-hover:text-white'
-                          }`}>
-                            <Icon className="w-3.5 h-3.5" />
-                          </div>
-                          <div className="min-w-0">
-                            <div className="text-xs font-semibold transition-colors truncate">
-                              {item.name}
+                {aboutDropdownOpen && (
+                  <>
+                    {/* Soft Backdrop Overlay with interactive dismiss */}
+                    <div
+                      onClick={() => {
+                        setAboutDropdownOpen(false);
+                        setServicesDropdownOpen(false);
+                      }}
+                      className="fixed inset-0 top-20 bg-slate-950/25 backdrop-blur-2xs z-40 transition-opacity duration-300 animate-fade-in"
+                      aria-hidden="true"
+                    />
+
+                    {/* Seamless Full-Width Mega-Dropdown Panel */}
+                    <div
+                      onMouseEnter={() => handleDropdownEnter('about')}
+                      onMouseLeave={handleDropdownLeave}
+                      className="fixed top-20 inset-x-0 w-full z-50 bg-white border-b border-slate-200/90 shadow-2xl shadow-slate-900/10 pointer-events-auto animate-slide-down"
+                    >
+                      {/* Aviance Identity Tri-Color Top Accent Line */}
+                      <div className="h-[2px] w-full bg-gradient-to-r from-[#204696] via-[#009EE0] to-[#72BF44]" />
+
+                      <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-10 py-7 lg:py-8">
+                        {/* Main Content Grid */}
+                        <div className="grid grid-cols-12 gap-8 text-slate-800 text-left items-stretch">
+                          {/* Left: 2 Balanced Pillars (3 links each) */}
+                          <div className="col-span-12 lg:col-span-8 xl:col-span-9 flex flex-col justify-between">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-6">
+                              {aboutPillars.map((pillar) => (
+                                <div key={pillar.title} className="space-y-3">
+                                  <div className="flex items-center gap-2 pb-2 border-b border-slate-100">
+                                    <span className={`w-1.5 h-1.5 rounded-full ${pillar.dotClass}`} />
+                                    <span className="text-xs font-bold uppercase tracking-wider text-slate-400 font-mono">
+                                      {pillar.title}
+                                    </span>
+                                  </div>
+                                  <div className="space-y-1">
+                                    {pillar.items.map((item) => {
+                                      const Icon = item.icon;
+                                      return (
+                                        <button
+                                          key={item.name}
+                                          onClick={() => handleNav(item.path)}
+                                          className="w-full text-left p-2.5 rounded-xl transition-all duration-150 group flex items-start gap-3 hover:bg-slate-50 cursor-pointer"
+                                        >
+                                          <div className="p-2 rounded-lg bg-slate-100 group-hover:bg-[#204696] text-slate-600 group-hover:text-white transition-colors shrink-0 mt-0.5">
+                                            <Icon className="w-4 h-4" />
+                                          </div>
+                                          <div className="min-w-0 flex-1">
+                                            <div className="font-bold text-xs sm:text-[13px] text-slate-900 group-hover:text-[#204696] transition-colors flex items-center justify-between">
+                                              <span>{item.name}</span>
+                                              <ArrowRight className="w-3.5 h-3.5 text-[#204696] opacity-0 -translate-x-1 group-hover:opacity-100 group-hover:translate-x-0 transition-all shrink-0 ml-1" />
+                                            </div>
+                                            <p className="text-[11.5px] text-slate-500 font-normal leading-relaxed mt-0.5">
+                                              {item.desc}
+                                            </p>
+                                          </div>
+                                        </button>
+                                      );
+                                    })}
+                                  </div>
+                                </div>
+                              ))}
                             </div>
-                            <div className={`text-[10px] truncate ${isLight ? 'text-slate-500' : 'text-slate-400'}`}>
-                              {item.desc}
+                          </div>
+
+                          {/* Right: Editorial Image Showcase Card */}
+                          <div className="col-span-12 lg:col-span-4 xl:col-span-3">
+                            <div
+                              onClick={() => handleNav('/about')}
+                              className="relative h-full min-h-[260px] rounded-2xl overflow-hidden shadow-sm group/card cursor-pointer border border-slate-200/80 bg-slate-900 flex flex-col justify-end p-5"
+                            >
+                              <img
+                                src={LOUNGE_IMG}
+                                alt="Aviance Ghana VIP Lounge"
+                                className="absolute inset-0 w-full h-full object-cover group-hover/card:scale-105 transition-transform duration-500"
+                              />
+                              <div className="absolute inset-0 bg-gradient-to-t from-slate-950/95 via-slate-950/50 to-transparent" />
+                              
+                              <div className="relative text-white space-y-1.5">
+                                <span className="text-[10px] font-bold uppercase tracking-wider text-blue-300 block font-mono">
+                                  COMPANY HERITAGE
+                                </span>
+                                <h5 className="font-bold text-sm text-white group-hover/card:text-blue-200 transition-colors leading-snug">
+                                  30+ Years of Ground Handling Excellence
+                                </h5>
+                                <p className="text-[11px] text-slate-300 leading-relaxed font-normal">
+                                  Pioneering safety, apron turnaround, and executive VIP hospitality at Kotoka International Airport since 1994.
+                                </p>
+                                <div className="pt-2 flex items-center gap-1.5 text-xs font-semibold text-blue-300 group-hover/card:text-white transition-colors">
+                                  <span>Explore company profile</span>
+                                  <ArrowRight className="w-3.5 h-3.5 group-hover/card:translate-x-1 transition-transform" />
+                                </div>
+                              </div>
                             </div>
                           </div>
-                        </button>
-                      );
-                    })}
-                  </div>
+                        </div>
+
+                        {/* Bottom Utility Bar */}
+                        <div className="pt-4 mt-6 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-500">
+                          <div className="flex items-center gap-2">
+                            <span className="w-1.5 h-1.5 rounded-full bg-[#72BF44]" />
+                            <span>Regulated by GCAA · IATA ISAGO Registered Ground Service Provider · EU RA3 Validated</span>
+                          </div>
+                          <button
+                            onClick={() => handleNav('/about')}
+                            className="font-bold text-[#204696] hover:text-[#183878] hover:underline flex items-center gap-1.5 cursor-pointer"
+                          >
+                            <span>Discover Aviance History & Governance</span>
+                            <ArrowRight className="w-3.5 h-3.5" />
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </>
                 )}
               </div>
+
+              {/* Services Aramex-Style Mega Dropdown */}
+              <div
+                className="relative h-full flex items-center"
+                onMouseEnter={() => handleDropdownEnter('services')}
+                onMouseLeave={handleDropdownLeave}
+              >
+                <button
+                  onClick={() => handleNav('/services')}
+                  className={`flex items-center gap-1.5 px-3.5 py-2 rounded-lg transition-all duration-300 font-medium active:scale-95 ${
+                    currentPath.startsWith('/passenger') || currentPath.startsWith('/ramp') || currentPath === '/cargo' || currentPath === '/services' || currentPath === '/lounge' || currentPath === '/vip-charter' || currentPath === '/training'
+                      ? 'text-[#204696] font-bold bg-blue-50/90 shadow-2xs'
+                      : 'text-slate-700 hover:text-[#204696] hover:bg-slate-50 hover:scale-[1.02]'
+                  }`}
+                >
+                  <span>Services</span>
+                  <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-300 ease-out ${servicesDropdownOpen ? 'rotate-180 text-[#204696]' : 'text-slate-400'}`} />
+                </button>
+
+                {servicesDropdownOpen && (
+                  <>
+                    {/* Soft Backdrop Overlay with interactive dismiss */}
+                    <div
+                      onClick={() => {
+                        setServicesDropdownOpen(false);
+                        setAboutDropdownOpen(false);
+                      }}
+                      className="fixed inset-0 top-20 bg-slate-950/25 backdrop-blur-2xs z-40 transition-opacity duration-300 animate-fade-in"
+                      aria-hidden="true"
+                    />
+
+                    {/* Seamless Full-Width Mega-Dropdown Panel */}
+                    <div
+                      onMouseEnter={() => handleDropdownEnter('services')}
+                      onMouseLeave={handleDropdownLeave}
+                      className="fixed top-20 inset-x-0 w-full z-50 bg-white border-b border-slate-200/90 shadow-2xl shadow-slate-900/10 pointer-events-auto animate-slide-down"
+                    >
+                      {/* Aviance Identity Tri-Color Top Accent Line */}
+                      <div className="h-[2px] w-full bg-gradient-to-r from-[#204696] via-[#009EE0] to-[#72BF44]" />
+
+                      <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-10 py-7 lg:py-8">
+                        {/* Main Content Grid: 3 Balanced Pillars + Right Editorial Showcase Card */}
+                        <div className="grid grid-cols-12 gap-8 text-slate-800 text-left items-stretch">
+                          {/* Left: 3 Balanced Pillars (3 items each = 9 total) */}
+                          <div className="col-span-12 lg:col-span-8 xl:col-span-9 flex flex-col justify-between">
+                            <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+                              {servicePillars.map((pillar) => (
+                                <div key={pillar.title} className="space-y-3">
+                                  <div className="flex items-center gap-2 pb-2 border-b border-slate-100">
+                                    <span className={`w-1.5 h-1.5 rounded-full ${pillar.dotClass}`} />
+                                    <span className="text-xs font-bold uppercase tracking-wider text-slate-400 font-mono">
+                                      {pillar.title}
+                                    </span>
+                                  </div>
+                                  <div className="space-y-1">
+                                    {pillar.items.map((item) => {
+                                      const Icon = item.icon;
+                                      return (
+                                        <button
+                                          key={item.name}
+                                          onClick={() => handleNav(item.path)}
+                                          className="w-full text-left p-2.5 rounded-xl transition-all duration-150 group flex items-start gap-3 hover:bg-slate-50 cursor-pointer"
+                                        >
+                                          <div className="p-2 rounded-lg bg-slate-100 group-hover:bg-[#204696] text-slate-600 group-hover:text-white transition-colors shrink-0 mt-0.5">
+                                            <Icon className="w-4 h-4" />
+                                          </div>
+                                          <div className="min-w-0 flex-1">
+                                            <div className="font-bold text-xs sm:text-[13px] text-slate-900 group-hover:text-[#204696] transition-colors flex items-center justify-between">
+                                              <span>{item.name}</span>
+                                              <ArrowRight className="w-3.5 h-3.5 text-[#204696] opacity-0 -translate-x-1 group-hover:opacity-100 group-hover:translate-x-0 transition-all shrink-0 ml-1" />
+                                            </div>
+                                            <p className="text-[11.5px] text-slate-500 font-normal leading-relaxed mt-0.5">
+                                              {item.desc}
+                                            </p>
+                                          </div>
+                                        </button>
+                                      );
+                                    })}
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+
+                          {/* Right: Featured Editorial Showcase Card */}
+                          <div className="col-span-12 lg:col-span-4 xl:col-span-3">
+                            <div
+                              onClick={() => handleNav('/ramp-handling')}
+                              className="relative h-full min-h-[260px] rounded-2xl overflow-hidden shadow-sm group/card cursor-pointer border border-slate-200/80 bg-slate-900 flex flex-col justify-end p-5"
+                            >
+                              <img
+                                src={TURNAROUND_IMG}
+                                alt="Aviance Aircraft Turnaround"
+                                className="absolute inset-0 w-full h-full object-cover group-hover/card:scale-105 transition-transform duration-500"
+                              />
+                              <div className="absolute inset-0 bg-gradient-to-t from-slate-950/95 via-slate-950/50 to-transparent" />
+                              
+                              <div className="relative text-white space-y-1.5">
+                                <span className="text-[10px] font-bold uppercase tracking-wider text-blue-300 block font-mono">
+                                  AIRSIDE SPOTLIGHT
+                                </span>
+                                <h5 className="font-bold text-sm text-white group-hover/card:text-blue-200 transition-colors leading-snug">
+                                  ISAGO-Accredited Apron & Pushback Turnaround
+                                </h5>
+                                <p className="text-[11px] text-slate-300 leading-relaxed font-normal">
+                                  Precision towbarless pushback, certified GPU ground power servicing, and full ramp safety across ACC, KMS & TML.
+                                </p>
+                                <div className="pt-2 flex items-center gap-1.5 text-xs font-semibold text-blue-300 group-hover/card:text-white transition-colors">
+                                  <span>Explore Ramp Operations</span>
+                                  <ArrowRight className="w-3.5 h-3.5 group-hover/card:translate-x-1 transition-transform" />
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Bottom Utility Bar */}
+                        <div className="pt-4 mt-6 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-500">
+                          <div className="flex items-center gap-2">
+                            <span className="w-1.5 h-1.5 rounded-full bg-[#72BF44]" />
+                            <span>Certified ground handling operations across Kotoka (ACC), Kumasi (KMS) & Tamale (TML)</span>
+                          </div>
+                          <button
+                            onClick={() => handleNav('/services')}
+                            className="font-bold text-[#204696] hover:text-[#183878] hover:underline flex items-center gap-1.5 cursor-pointer"
+                          >
+                            <span>Explore All 9 Capabilities Hub</span>
+                            <ArrowRight className="w-3.5 h-3.5" />
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </>
+                )}
+              </div>
+
+              <button
+                onClick={() => handleNav('/csr')}
+                className={`px-3.5 py-2 rounded-lg transition-all duration-300 font-medium active:scale-95 ${
+                  currentPath === '/csr' || currentPath.includes('csr')
+                    ? 'text-[#204696] font-bold bg-blue-50/90 shadow-2xs'
+                    : 'text-slate-700 hover:text-[#204696] hover:bg-slate-50 hover:scale-[1.02]'
+                }`}
+              >
+                CSR
+              </button>
+
+              <button
+                onClick={() => handleNav('/news')}
+                className={`px-3.5 py-2 rounded-lg transition-all duration-300 font-medium active:scale-95 ${
+                  currentPath.startsWith('/news')
+                    ? 'text-[#204696] font-bold bg-blue-50/90 shadow-2xs'
+                    : 'text-slate-700 hover:text-[#204696] hover:bg-slate-50 hover:scale-[1.02]'
+                }`}
+              >
+                News
+              </button>
+
+              <button
+                onClick={() => handleNav('/careers')}
+                className={`px-3.5 py-2 rounded-lg transition-all duration-300 font-medium active:scale-95 ${
+                  currentPath === '/careers'
+                    ? 'text-[#204696] font-bold bg-blue-50/90 shadow-2xs'
+                    : 'text-slate-700 hover:text-[#204696] hover:bg-slate-50 hover:scale-[1.02]'
+                }`}
+              >
+                Careers
+              </button>
+
+              {/* Contact Direct Link */}
+              <button
+                onClick={() => handleNav('/contact')}
+                className={`px-3.5 py-2 rounded-lg transition-all duration-300 font-medium cursor-pointer active:scale-95 ${
+                  currentPath === '/contact' || currentPath.startsWith('/contact')
+                    ? 'text-[#204696] font-bold bg-blue-50/90 shadow-2xs'
+                    : 'text-slate-700 hover:text-[#204696] hover:bg-slate-50 hover:scale-[1.02]'
+                }`}
+              >
+                Contact
+              </button>
             </nav>
 
-            {/* Zone 3: Modern Action Controls */}
-            <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
-              {/* Language Switcher Dropdown (EN / TW / FR) */}
-              <div className="relative">
-                <button
-                  onClick={() => {
-                    setLanguageMenuOpen(!languageMenuOpen);
-                    setServicesMenuOpen(false);
-                    setMoreMenuOpen(false);
-                  }}
-                  aria-label="Change language (English, Twi, Français)"
-                  aria-expanded={languageMenuOpen}
-                  title={`Language: ${currentLanguageOption.label}. Click to switch between English, Twi, and French.`}
-                  className={`h-9 px-2 sm:px-2.5 rounded-xl border transition-all flex items-center justify-center gap-1 sm:gap-1.5 text-xs font-semibold select-none group focus:outline-none focus:ring-2 shrink-0 ${
-                    isLight
-                      ? 'bg-slate-100 hover:bg-slate-200 text-slate-800 border-slate-200 focus:ring-[#204696]/30'
-                      : 'bg-slate-900/80 hover:bg-slate-800 text-slate-200 hover:text-white border-slate-800 hover:border-[#58C1EB]/40 focus:ring-[#58C1EB]/40'
-                  }`}
-                >
-                  <span className="text-sm leading-none" role="img" aria-hidden="true">
-                    {currentLanguageOption.flag}
-                  </span>
-                  <span className="font-mono text-[11px] font-bold uppercase tracking-wider">
-                    {currentLanguageOption.code.toUpperCase()}
-                  </span>
-                  <ChevronDown
-                    className={`w-3 h-3 transition-transform duration-200 ${
-                      languageMenuOpen ? 'rotate-180' : ''
-                    } ${isLight ? 'text-slate-500' : 'text-slate-400'}`}
-                  />
-                </button>
-
-                {/* Language Dropdown Menu */}
-                {languageMenuOpen && (
-                  <div
-                    className={`absolute top-full right-0 w-48 mt-2 p-1.5 rounded-2xl shadow-2xl z-50 animate-in fade-in slide-in-from-top-2 duration-150 backdrop-blur-2xl border ${
-                      isLight
-                        ? 'bg-white border-slate-200 text-slate-800 shadow-slate-300/60'
-                        : 'bg-[#0A162C] border-[#204696]/60 text-slate-100 shadow-black/80'
+            {/* Action Buttons Right */}
+            <div className="flex items-center gap-3">
+              {/* Executive Mobile Menu Toggle Button */}
+              <button
+                onClick={toggleDirectoryMenu}
+                className={`lg:hidden flex items-center justify-center w-10 h-10 rounded-full transition-all cursor-pointer select-none active:scale-95 group ${
+                  mobileMenuOpen
+                    ? 'bg-slate-100 text-slate-800 hover:bg-slate-200'
+                    : 'text-slate-700 hover:text-[#204696] hover:bg-slate-100'
+                }`}
+                aria-label={mobileMenuOpen ? 'Close navigation menu' : 'Open navigation menu'}
+              >
+                <div className="relative w-5 h-4 flex items-center justify-center pointer-events-none">
+                  {/* Top Bar */}
+                  <span
+                    className={`absolute h-[2px] w-5 rounded-full transition-all duration-300 ease-in-out transform origin-center ${
+                      mobileMenuOpen
+                        ? 'translate-y-0 rotate-45 bg-slate-800 group-hover:bg-[#204696]'
+                        : '-translate-y-1.5 group-hover:-translate-y-[3.5px] rotate-0 bg-slate-800 group-hover:bg-[#204696]'
                     }`}
-                    role="menu"
-                  >
-                    <div className={`px-2.5 py-1.5 text-[10px] font-mono uppercase font-bold tracking-wider border-b mb-1 flex items-center gap-1.5 ${
-                      isLight ? 'text-slate-500 border-slate-200' : 'text-slate-400 border-slate-800'
-                    }`}>
-                      <Globe className="w-3 h-3 text-[#204696]" />
-                      <span>{t('common.switchLanguage', 'Select Language')}</span>
-                    </div>
-                    {languages.map((lang) => {
-                      const isSelected = language === lang.code;
-                      return (
-                        <button
-                          key={lang.code}
-                          role="menuitem"
-                          onClick={() => {
-                            setLanguage(lang.code);
-                            setLanguageMenuOpen(false);
-                          }}
-                          className={`w-full flex items-center justify-between px-2.5 py-2 rounded-xl text-left text-xs transition-all ${
-                            isSelected
-                              ? isLight
-                                ? 'bg-blue-50 text-[#204696] font-bold'
-                                : 'bg-[#204696]/30 text-[#58C1EB] font-bold'
-                              : isLight
-                                ? 'text-slate-700 hover:bg-slate-100 hover:text-slate-900'
-                                : 'text-slate-300 hover:bg-slate-800/80 hover:text-white'
-                          }`}
-                        >
-                          <div className="flex items-center gap-2.5">
-                            <span className="text-base leading-none">{lang.flag}</span>
-                            <div>
-                              <div className="font-semibold text-xs leading-tight">{lang.nativeLabel}</div>
-                              <div className={`text-[10px] ${isLight ? 'text-slate-500' : 'text-slate-400'}`}>{lang.label}</div>
-                            </div>
-                          </div>
-                          {isSelected && <Check className={`w-3.5 h-3.5 ${isLight ? 'text-[#204696]' : 'text-[#58C1EB]'}`} />}
-                        </button>
-                      );
-                    })}
-                  </div>
-                )}
-              </div>
+                  />
 
-              {/* Theme Toggle */}
-              <button
-                onClick={toggleTheme}
-                aria-label={isLight ? 'Switch to Deep Navy Theme' : 'Switch to Operational Light Mode'}
-                title={isLight ? 'Light theme active — Switch to Navy' : 'Navy theme active — Switch to Light'}
-                className={`w-9 h-9 sm:w-auto sm:px-2.5 rounded-xl border transition-all flex items-center justify-center gap-1.5 text-xs font-semibold select-none group focus:outline-none focus:ring-2 shrink-0 ${
-                  isLight
-                    ? 'bg-amber-50 hover:bg-amber-100/80 text-amber-950 border-amber-300 focus:ring-amber-400/50 shadow-xs'
-                    : 'bg-slate-900/80 hover:bg-slate-800 text-slate-200 hover:text-white border-slate-800 hover:border-[#58C1EB]/40 focus:ring-[#58C1EB]/40'
-                }`}
-              >
-                {isLight ? (
-                  <>
-                    <Sun className="w-4 h-4 text-amber-600 animate-[spin_12s_linear_infinite]" />
-                    <span className="hidden xl:inline text-[10px] font-mono tracking-tight text-amber-900 uppercase font-bold">
-                      {t('nav.themeLight', 'Light')}
-                    </span>
-                  </>
-                ) : (
-                  <>
-                    <Moon className="w-4 h-4 text-[#58C1EB]" />
-                    <span className="hidden xl:inline text-[10px] font-mono tracking-tight text-[#58C1EB] uppercase font-bold">
-                      {t('nav.themeNavy', 'Navy')}
-                    </span>
-                  </>
-                )}
-              </button>
+                  {/* Middle Bar (collapses to 2 bars on hover & X on open) */}
+                  <span
+                    className={`absolute h-[2px] w-5 rounded-full transition-all duration-300 ease-in-out transform origin-center bg-slate-800 group-hover:bg-[#204696] ${
+                      mobileMenuOpen
+                        ? 'opacity-0 scale-x-0'
+                        : 'opacity-100 scale-x-100 group-hover:opacity-0 group-hover:scale-x-0'
+                    }`}
+                  />
 
-              {/* Command Search Trigger */}
-              <button
-                onClick={onOpenSearch}
-                aria-label={t('nav.search', 'Search platform')}
-                className={`w-9 h-9 sm:w-auto sm:px-2.5 border rounded-xl transition-all flex items-center justify-center gap-1.5 text-xs shrink-0 ${
-                  isLight
-                    ? 'bg-slate-100 hover:bg-slate-200 text-slate-700 border-slate-200'
-                    : 'bg-slate-900/80 hover:bg-slate-800 text-slate-300 hover:text-white border-slate-800 hover:border-[#58C1EB]/40'
-                }`}
-              >
-                <Search className={`w-4 h-4 ${isLight ? 'text-[#204696]' : 'text-[#58C1EB]'}`} />
-                <span className={`hidden sm:inline font-mono text-[10px] px-1.5 py-0.5 rounded border ${
-                  isLight ? 'bg-white text-slate-600 border-slate-300' : 'bg-slate-950 text-slate-400 border-slate-800'
-                }`}>
-                  ⌘K
-                </span>
-              </button>
-
-              {/* Primary Call-to-Action */}
-              <button
-                onClick={() => handleNavClick('/contact')}
-                className="hidden md:inline-flex items-center gap-1.5 px-3 sm:px-3.5 py-1.5 sm:py-2 text-xs font-bold text-white bg-gradient-to-r from-[#204696] to-[#18397a] hover:from-[#2653b3] hover:to-[#204696] border border-[#58C1EB]/50 rounded-xl transition-all shadow-md shadow-[#204696]/40 hover:shadow-lg hover:shadow-[#204696]/60 hover:border-[#58C1EB] shrink-0"
-              >
-                <span>{t('nav.requestHandling', 'Request Handling')}</span>
-                <ArrowRight className="w-3 h-3 text-[#58C1EB]" />
-              </button>
-
-              {/* Admin Portal Button */}
-              <button
-                onClick={() => handleNavClick('/admin')}
-                className={`hidden sm:inline-flex text-xs font-semibold px-2.5 sm:px-3 py-1.5 rounded-xl border transition-colors shrink-0 ${
-                  isLight
-                    ? 'bg-slate-100 hover:bg-slate-200 text-slate-700 border-slate-200'
-                    : 'bg-slate-900/60 hover:bg-slate-800 text-slate-300 hover:text-white border-slate-800 hover:border-slate-700'
-                }`}
-                title="Management Portal & CMS"
-              >
-                {t('nav.admin', 'Admin')}
-              </button>
-
-              {/* Mobile Menu Trigger */}
-              <button
-                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                className={`lg:hidden w-9 h-9 rounded-xl border transition-colors shrink-0 flex items-center justify-center ${
-                  isLight
-                    ? 'bg-slate-100 hover:bg-slate-200 text-slate-800 border-slate-200'
-                    : 'bg-slate-900/80 hover:bg-slate-800 text-slate-200 hover:text-white border-slate-800'
-                }`}
-                aria-label="Toggle Navigation Menu"
-              >
-                {mobileMenuOpen ? <X className="w-4.5 h-4.5" /> : <Menu className="w-4.5 h-4.5" />}
+                  {/* Bottom Bar */}
+                  <span
+                    className={`absolute h-[2px] w-5 rounded-full transition-all duration-300 ease-in-out transform origin-center ${
+                      mobileMenuOpen
+                        ? 'translate-y-0 -rotate-45 bg-slate-800 group-hover:bg-[#204696]'
+                        : 'translate-y-1.5 group-hover:translate-y-[3.5px] rotate-0 bg-slate-800 group-hover:bg-[#204696]'
+                    }`}
+                  />
+                </div>
               </button>
             </div>
           </div>
         </div>
 
-        {/* Mobile Navigation Drawer */}
-        {mobileMenuOpen && (
-          <div className={`lg:hidden border-b px-4 pt-3 pb-6 max-h-[85vh] overflow-y-auto space-y-4 shadow-2xl backdrop-blur-xl ${
-            isLight
-              ? 'bg-white/98 border-slate-200 text-slate-900'
-              : 'bg-[#08101E] border-[#204696]/40 text-white'
-          }`}>
-            {/* Language Switcher in Mobile Drawer */}
-            <div className={`p-3 rounded-2xl border transition-all ${
-              isLight
-                ? 'bg-slate-50 border-slate-200 shadow-xs'
-                : 'bg-[#0A162C] border-[#204696]/40'
-            }`}>
-              <div className="flex items-center justify-between mb-2">
-                <div className="flex items-center gap-2">
-                  <Globe className={`w-4 h-4 ${isLight ? 'text-[#204696]' : 'text-[#58C1EB]'}`} />
-                  <span className={`text-xs font-bold ${isLight ? 'text-slate-900' : 'text-white'}`}>
-                    {t('common.switchLanguage', 'Language / Kasa / Langue')}
-                  </span>
-                </div>
-                <span className={`text-[10px] font-mono uppercase px-1.5 py-0.5 rounded border ${
-                  isLight ? 'bg-white text-slate-600 border-slate-300' : 'bg-slate-900 text-slate-400 border-slate-800'
-                }`}>
-                  {currentLanguageOption.label}
-                </span>
-              </div>
-              <div className="grid grid-cols-3 gap-1.5">
-                {languages.map((lang) => {
-                  const isSelected = language === lang.code;
-                  return (
+        {/* Modern Executive Responsive Navigation Drawer with Smooth Slide & Fade In/Out */}
+        {/* Soft Backdrop Overlay with interactive dismiss & smooth fade */}
+        <div
+          onClick={() => {
+            setMobileMenuOpen(false);
+            setMenuToggledOnce(true);
+          }}
+          className={`fixed inset-0 top-20 bg-slate-950/40 backdrop-blur-xs z-30 transition-all duration-300 ease-in-out ${
+            mobileMenuOpen ? 'opacity-100 pointer-events-auto visible' : 'opacity-0 pointer-events-none invisible'
+          }`}
+          aria-hidden="true"
+        />
+
+        {/* Top-Down Expanding Panel attached below Header with smooth physics */}
+        <div
+          className={`fixed inset-x-0 top-20 z-40 bg-white/98 backdrop-blur-xl border-b border-slate-200 shadow-2xl max-h-[calc(100vh-5rem)] overflow-y-auto transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] transform ${
+            mobileMenuOpen
+              ? 'translate-y-0 opacity-100 pointer-events-auto visible'
+              : '-translate-y-4 opacity-0 pointer-events-none invisible'
+          }`}
+        >
+              {/* Aviance Identity Tri-Color Top Accent Line */}
+              <div className="h-[2px] w-full bg-gradient-to-r from-[#204696] via-[#009EE0] to-[#72BF44]" />
+
+              <div className="max-w-4xl mx-auto px-5 sm:px-8 py-6 sm:py-8">
+                {/* Main Navigation Stack */}
+                <div className="space-y-1">
+                  
+                  {/* 1. Aviation Services (Expandable) */}
+                  <div className="border-b border-slate-100">
                     <button
-                      key={lang.code}
-                      onClick={() => setLanguage(lang.code)}
-                      className={`py-2 px-1.5 rounded-xl text-xs font-semibold flex flex-col items-center justify-center gap-0.5 transition-all border ${
-                        isSelected
-                          ? isLight
-                            ? 'bg-[#204696] text-white border-[#204696] shadow-xs'
-                            : 'bg-gradient-to-r from-[#204696] to-[#18397a] text-white border-[#58C1EB]/60 shadow-xs'
-                          : isLight
-                            ? 'bg-white text-slate-700 border-slate-200 hover:border-slate-300 hover:bg-slate-100'
-                            : 'bg-slate-900/80 text-slate-300 border-slate-800 hover:border-[#58C1EB]/30 hover:bg-slate-800'
+                      onClick={() => setDrawerServicesOpen(!drawerServicesOpen)}
+                      className="w-full py-4 px-1 text-left flex items-center justify-between group cursor-pointer transition-colors"
+                    >
+                      <div className="flex items-center gap-3">
+                        <span className={`text-lg sm:text-xl font-bold tracking-tight transition-colors ${
+                          currentPath.startsWith('/services') || currentPath.startsWith('/passenger') || currentPath.startsWith('/ramp') || currentPath === '/cargo' || currentPath === '/lounge' || currentPath === '/vip-charter' || currentPath === '/operations' || currentPath === '/find-my-bag' || currentPath === '/training' || currentPath === '/gse-fleet-maintenance'
+                            ? 'text-[#204696]'
+                            : 'text-slate-900 group-hover:text-[#204696]'
+                        }`}>
+                          Aviation Services
+                        </span>
+                        <span className="text-xs font-semibold text-slate-400 group-hover:text-slate-600 font-mono">
+                          (9)
+                        </span>
+                      </div>
+                      <ChevronDown
+                        className={`w-5 h-5 text-slate-400 group-hover:text-[#204696] transition-transform duration-300 ease-out ${
+                          drawerServicesOpen ? 'rotate-180 text-[#204696]' : ''
+                        }`}
+                      />
+                    </button>
+
+                    <div
+                      className={`grid transition-all duration-300 ease-in-out ${
+                        drawerServicesOpen ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'
                       }`}
                     >
-                      <span className="text-base">{lang.flag}</span>
-                      <span className="text-[11px] font-bold">{lang.label}</span>
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
+                      <div className="overflow-hidden">
+                        <div className="pb-6 pt-1 px-1 space-y-6">
+                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+                          {servicePillars.map((pillar) => (
+                            <div key={pillar.title} className="space-y-2.5">
+                              <div className="flex items-center gap-1.5 pb-1 border-b border-slate-100">
+                                <span className={`w-1.5 h-1.5 rounded-full ${pillar.dotClass}`} />
+                                <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 font-mono">
+                                  {pillar.title}
+                                </span>
+                              </div>
+                              <div className="space-y-1">
+                                {pillar.items.map((item) => {
+                                  const isActive = currentPath === item.path;
+                                  return (
+                                    <button
+                                      key={item.name}
+                                      onClick={() => handleNav(item.path)}
+                                      className={`w-full text-left py-2 px-2.5 rounded-lg transition-all group flex flex-col cursor-pointer ${
+                                        isActive
+                                          ? 'bg-blue-50/80 text-[#204696]'
+                                          : 'hover:bg-slate-50 text-slate-700'
+                                      }`}
+                                    >
+                                      <div className="flex items-center justify-between text-xs sm:text-[13px] font-semibold text-slate-900 group-hover:text-[#204696]">
+                                        <span>{item.name}</span>
+                                        <ArrowRight className="w-3 h-3 text-[#204696] opacity-0 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all shrink-0 ml-1" />
+                                      </div>
+                                      <span className="text-[10.5px] text-slate-500 line-clamp-1 mt-0.5 font-normal">
+                                        {item.desc}
+                                      </span>
+                                    </button>
+                                  );
+                                })}
+                              </div>
+                            </div>
+                          ))}
+                        </div>
 
-            {/* Theme Toggle in Mobile Drawer */}
-            <div className={`p-3 rounded-2xl border flex items-center justify-between transition-all ${
-              isLight
-                ? 'bg-slate-50 border-slate-200 shadow-xs'
-                : 'bg-[#0A162C] border-[#204696]/40'
-            }`}>
-              <div className="flex items-center gap-2.5">
-                <div className={`p-2 rounded-xl ${
-                  isLight ? 'bg-amber-100 text-amber-700' : 'bg-[#204696]/30 text-[#58C1EB]'
-                }`}>
-                  {isLight ? <Sun className="w-4 h-4 text-amber-600" /> : <Moon className="w-4 h-4 text-[#58C1EB]" />}
-                </div>
-                <div>
-                  <div className={`text-xs font-bold ${isLight ? 'text-slate-900' : 'text-white'}`}>
-                    {isLight ? 'Operational Light Mode' : 'Deep Navy Mode'}
+                        <div className="pt-2 border-t border-slate-100 flex items-center justify-between">
+                          <button
+                            onClick={() => handleNav('/services')}
+                            className="text-xs font-bold text-[#204696] hover:underline flex items-center gap-1 cursor-pointer"
+                          >
+                            <span>Explore all 9 aviation capabilities hub</span>
+                            <ArrowRight className="w-3 h-3" />
+                          </button>
+                        </div>
+                        </div>
+                      </div>
+                    </div>
                   </div>
-                  <div className="text-[10px] text-slate-500">
-                    {isLight ? 'High-contrast dispatch theme' : 'Official midnight theme'}
-                  </div>
-                </div>
-              </div>
-              <button
-                onClick={toggleTheme}
-                className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all shadow-sm ${
-                  isLight
-                    ? 'bg-[#204696] text-white hover:bg-[#18397a]'
-                    : 'bg-gradient-to-r from-[#204696] to-[#18397a] text-white hover:from-[#2653b3] hover:to-[#204696] border border-[#58C1EB]/40'
-                }`}
-              >
-                {isLight ? 'Navy' : 'Light'}
-              </button>
-            </div>
 
-            {/* Quick Actions in mobile drawer */}
-            <div className="grid grid-cols-2 gap-2 pt-1">
-              <button
-                onClick={() => handleNavClick('/partner-portal')}
-                className={`p-2.5 rounded-xl border text-left ${
-                  isLight
-                    ? 'bg-slate-50 border-slate-200 hover:border-[#204696]/40'
-                    : 'bg-[#0A162C] border-[#204696]/40 hover:border-[#58C1EB]/50'
-                }`}
-              >
-                <div className={`text-[10px] font-mono ${isLight ? 'text-slate-500' : 'text-slate-400'}`}>AIRLINE</div>
-                <div className={`text-xs font-bold ${isLight ? 'text-[#204696]' : 'text-[#58C1EB]'}`}>
-                  {t('telemetry.portal', 'Airline Portal')} →
-                </div>
-              </button>
-              <button
-                onClick={() => handleNavClick('/find-my-bag')}
-                className={`p-2.5 rounded-xl border text-left ${
-                  isLight
-                    ? 'bg-slate-50 border-slate-200 hover:border-[#204696]/40'
-                    : 'bg-[#0A162C] border-[#204696]/40 hover:border-[#58C1EB]/50'
-                }`}
-              >
-                <div className={`text-[10px] font-mono ${isLight ? 'text-slate-500' : 'text-slate-400'}`}>TELEMETRY</div>
-                <div className={`text-xs font-bold flex items-center gap-1 ${isLight ? 'text-slate-900' : 'text-white'}`}>
-                  {t('telemetry.tracing', 'Baggage Tracing')}
-                  <span className="w-1.5 h-1.5 rounded-full bg-[#72BF44]"></span>
-                </div>
-              </button>
-            </div>
-
-            {/* Section: Ground Handling Services */}
-            <div>
-              <div className="text-[11px] font-mono uppercase tracking-wider text-[#58C1EB] font-bold px-3 py-1 flex items-center justify-between">
-                <span>{t('nav.services', 'Ground Services')}</span>
-                <button
-                  onClick={() => handleNavClick('/services')}
-                  className="text-[10px] underline hover:text-[#204696]"
-                >
-                  {t('nav.completeDirectory', 'View Directory')}
-                </button>
-              </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-1 mt-1">
-                {serviceLinks.map((service) => {
-                  const Icon = service.icon;
-                  return (
+                  {/* 2. About Aviance Ghana (Expandable) */}
+                  <div className="border-b border-slate-100">
                     <button
-                      key={service.path}
-                      onClick={() => handleNavClick(service.path)}
-                      className={`flex items-center gap-2.5 px-3 py-2 rounded-xl text-left text-xs transition-colors ${
-                        isLight
-                          ? 'text-slate-700 hover:text-[#204696] hover:bg-slate-100'
-                          : 'text-slate-200 hover:text-white hover:bg-slate-800/70'
+                      onClick={() => setDrawerAboutOpen(!drawerAboutOpen)}
+                      className="w-full py-4 px-1 text-left flex items-center justify-between group cursor-pointer transition-colors"
+                    >
+                      <div className="flex items-center gap-3">
+                        <span className={`text-lg sm:text-xl font-bold tracking-tight transition-colors ${
+                          currentPath.startsWith('/about') || currentPath === '/management' || currentPath === '/facts-figures' || currentPath === '/customers' || currentPath === '/code-of-conduct' || currentPath === '/certifications'
+                            ? 'text-[#204696]'
+                            : 'text-slate-900 group-hover:text-[#204696]'
+                        }`}>
+                          About Aviance Ghana
+                        </span>
+                        <span className="text-xs font-semibold text-slate-400 group-hover:text-slate-600 font-mono">
+                          (6)
+                        </span>
+                      </div>
+                      <ChevronDown
+                        className={`w-5 h-5 text-slate-400 group-hover:text-[#204696] transition-transform duration-300 ease-out ${
+                          drawerAboutOpen ? 'rotate-180 text-[#204696]' : ''
+                        }`}
+                      />
+                    </button>
+
+                    <div
+                      className={`grid transition-all duration-300 ease-in-out ${
+                        drawerAboutOpen ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'
                       }`}
                     >
-                      <Icon className={`w-3.5 h-3.5 shrink-0 ${isLight ? 'text-[#204696]' : 'text-[#58C1EB]'}`} />
-                      <span className="truncate">{service.name}</span>
+                      <div className="overflow-hidden">
+                        <div className="pb-6 pt-1 px-1 space-y-4">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                          {aboutLinks.map((item) => {
+                            const isActive = currentPath === item.path;
+                            return (
+                              <button
+                                key={item.name}
+                                onClick={() => handleNav(item.path)}
+                                className={`w-full text-left py-2 px-2.5 rounded-lg transition-all group flex flex-col cursor-pointer ${
+                                  isActive
+                                    ? 'bg-blue-50/80 text-[#204696]'
+                                    : 'hover:bg-slate-50 text-slate-700'
+                                }`}
+                              >
+                                <div className="flex items-center justify-between text-xs sm:text-[13px] font-semibold text-slate-900 group-hover:text-[#204696]">
+                                  <span>{item.name}</span>
+                                  <ArrowRight className="w-3 h-3 text-[#204696] opacity-0 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all shrink-0 ml-1" />
+                                </div>
+                                <span className="text-[10.5px] text-slate-500 line-clamp-1 mt-0.5 font-normal">
+                                  {item.desc}
+                                </span>
+                              </button>
+                            );
+                          })}
+                        </div>
+
+                        <div className="pt-2 border-t border-slate-100 flex items-center justify-between">
+                          <button
+                            onClick={() => handleNav('/about')}
+                            className="text-xs font-bold text-[#204696] hover:underline flex items-center gap-1 cursor-pointer"
+                          >
+                            <span>Explore full corporate profile & heritage</span>
+                            <ArrowRight className="w-3 h-3" />
+                          </button>
+                        </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* 3. CSR & Sustainability (Direct) */}
+                  <div className="border-b border-slate-100">
+                    <button
+                      onClick={() => handleNav('/csr')}
+                      className="w-full py-4 px-1 text-left flex items-center justify-between group cursor-pointer transition-colors"
+                    >
+                      <span className={`text-lg sm:text-xl font-bold tracking-tight transition-colors ${
+                        currentPath === '/csr' ? 'text-[#204696]' : 'text-slate-900 group-hover:text-[#204696]'
+                      }`}>
+                        CSR & Community
+                      </span>
+                      <ArrowRight className="w-4 h-4 text-slate-300 group-hover:text-[#204696] group-hover:translate-x-1 transition-all" />
                     </button>
-                  );
-                })}
-              </div>
-            </div>
+                  </div>
 
-            {/* Section: Flight Operations & Facilities */}
-            <div>
-              <div className={`text-[11px] font-mono uppercase tracking-wider font-bold px-3 py-1 ${
-                isLight ? 'text-slate-500' : 'text-slate-400'
-              }`}>
-                {t('drawer.operationsHubs', 'Operations & Hubs')}
-              </div>
-              <div className="flex flex-col gap-1 mt-1">
-                <button
-                  onClick={() => handleNavClick('/operations')}
-                  className={`text-left px-3 py-2 rounded-xl text-xs transition-colors ${
-                    isLight ? 'text-slate-700 hover:text-[#204696] hover:bg-slate-100' : 'text-slate-200 hover:bg-slate-800/70'
-                  }`}
-                >
-                  {t('services.occ.title', 'Flight Operations & OCC')} (Accra · Kumasi · Tamale)
-                </button>
-                <button
-                  onClick={() => handleNavClick('/cargo')}
-                  className={`text-left px-3 py-2 rounded-xl text-xs transition-colors ${
-                    isLight ? 'text-slate-700 hover:text-[#204696] hover:bg-slate-100' : 'text-slate-200 hover:bg-slate-800/70'
-                  }`}
-                >
-                  {t('services.cargo.title', 'Cargo Terminal')} (EU RA3 Cold Chain)
-                </button>
-                <button
-                  onClick={() => handleNavClick('/lounge')}
-                  className={`text-left px-3 py-2 rounded-xl text-xs transition-colors ${
-                    isLight ? 'text-slate-700 hover:text-[#204696] hover:bg-slate-100' : 'text-slate-200 hover:bg-slate-800/70'
-                  }`}
-                >
-                  {t('services.lounge.title', 'Adinkra Executive Lounge')} (Terminal 3)
-                </button>
-                <button
-                  onClick={() => handleNavClick('/certifications')}
-                  className={`text-left px-3 py-2 rounded-xl text-xs transition-colors ${
-                    isLight ? 'text-slate-700 hover:text-[#204696] hover:bg-slate-100' : 'text-slate-200 hover:bg-slate-800/70'
-                  }`}
-                >
-                  {t('nav.safety', 'Safety, Quality & ISAGO Certifications')}
-                </button>
-              </div>
-            </div>
+                  {/* 4. News & Media (Direct) */}
+                  <div className="border-b border-slate-100">
+                    <button
+                      onClick={() => handleNav('/news')}
+                      className="w-full py-4 px-1 text-left flex items-center justify-between group cursor-pointer transition-colors"
+                    >
+                      <span className={`text-lg sm:text-xl font-bold tracking-tight transition-colors ${
+                        currentPath.startsWith('/news') ? 'text-[#204696]' : 'text-slate-900 group-hover:text-[#204696]'
+                      }`}>
+                        News & Media
+                      </span>
+                      <ArrowRight className="w-4 h-4 text-slate-300 group-hover:text-[#204696] group-hover:translate-x-1 transition-all" />
+                    </button>
+                  </div>
 
-            {/* Section: Corporate & Support */}
-            <div>
-              <div className={`text-[11px] font-mono uppercase tracking-wider font-bold px-3 py-1 ${
-                isLight ? 'text-slate-500' : 'text-slate-400'
-              }`}>
-                {t('drawer.companyResources', 'Company & Resources')}
-              </div>
-              <div className={`grid grid-cols-2 gap-1 mt-1 text-xs ${
-                isLight ? 'text-slate-600' : 'text-slate-300'
-              }`}>
-                <button onClick={() => handleNavClick('/about')} className={`text-left px-3 py-2 rounded-xl transition-colors ${isLight ? 'hover:text-[#204696] hover:bg-slate-100' : 'hover:bg-slate-800/70'}`}>{t('nav.about', 'About Us')}</button>
-                <button onClick={() => handleNavClick('/management')} className={`text-left px-3 py-2 rounded-xl transition-colors ${isLight ? 'hover:text-[#204696] hover:bg-slate-100' : 'hover:bg-slate-800/70'}`}>{t('nav.management', 'Leadership')}</button>
-                <button onClick={() => handleNavClick('/careers')} className={`text-left px-3 py-2 rounded-xl transition-colors ${isLight ? 'hover:text-[#204696] hover:bg-slate-100' : 'hover:bg-slate-800/70'}`}>{t('nav.careers', 'Careers')}</button>
-                <button onClick={() => handleNavClick('/documents')} className={`text-left px-3 py-2 rounded-xl transition-colors ${isLight ? 'hover:text-[#204696] hover:bg-slate-100' : 'hover:bg-slate-800/70'}`}>{t('nav.documents', 'Documents')}</button>
-                <button onClick={() => handleNavClick('/news')} className={`text-left px-3 py-2 rounded-xl transition-colors ${isLight ? 'hover:text-[#204696] hover:bg-slate-100' : 'hover:bg-slate-800/70'}`}>{t('drawer.allNews', 'News')}</button>
-                <button onClick={() => handleNavClick('/faqs')} className={`text-left px-3 py-2 rounded-xl transition-colors ${isLight ? 'hover:text-[#204696] hover:bg-slate-100' : 'hover:bg-slate-800/70'}`}>{t('nav.faqs', 'FAQs')}</button>
-                <button onClick={() => handleNavClick('/admin')} className={`text-left px-3 py-2 rounded-xl transition-colors font-semibold col-span-2 border ${isLight ? 'text-[#204696] bg-blue-50/80 border-[#204696]/20 hover:bg-blue-100/60' : 'text-[#58C1EB] bg-[#204696]/20 border-[#204696]/40 hover:bg-[#204696]/40'}`}>{t('nav.admin', 'Admin Portal & CMS')} 🔐</button>
-              </div>
-            </div>
+                  {/* 5. Careers & Opportunities (Direct) */}
+                  <div className="border-b border-slate-100">
+                    <button
+                      onClick={() => handleNav('/careers')}
+                      className="w-full py-4 px-1 text-left flex items-center justify-between group cursor-pointer transition-colors"
+                    >
+                      <span className={`text-lg sm:text-xl font-bold tracking-tight transition-colors ${
+                        currentPath === '/careers' ? 'text-[#204696]' : 'text-slate-900 group-hover:text-[#204696]'
+                      }`}>
+                        Careers
+                      </span>
+                      <ArrowRight className="w-4 h-4 text-slate-300 group-hover:text-[#204696] group-hover:translate-x-1 transition-all" />
+                    </button>
+                  </div>
 
-            {/* Direct CTA */}
-            <div className="pt-2">
-              <button
-                onClick={() => handleNavClick('/contact')}
-                className="w-full text-center px-4 py-3 rounded-xl bg-gradient-to-r from-[#204696] to-[#18397a] hover:from-[#2653b3] hover:to-[#204696] text-white font-bold text-xs border border-[#58C1EB]/50 shadow-lg shadow-[#204696]/40 flex items-center justify-center gap-2"
-              >
-                <span>{t('nav.requestHandling', 'Request Handling')}</span>
-                <ArrowRight className="w-3.5 h-3.5 text-[#58C1EB]" />
-              </button>
+                  {/* 6. Contact & Station Offices (Direct) */}
+                  <div className="border-b border-slate-100">
+                    <button
+                      onClick={() => handleNav('/contact')}
+                      className="w-full py-4 px-1 text-left flex items-center justify-between group cursor-pointer transition-colors"
+                    >
+                      <span className={`text-lg sm:text-xl font-bold tracking-tight transition-colors ${
+                        currentPath.startsWith('/contact') ? 'text-[#204696]' : 'text-slate-900 group-hover:text-[#204696]'
+                      }`}>
+                        Contact & Station Offices
+                      </span>
+                      <ArrowRight className="w-4 h-4 text-slate-300 group-hover:text-[#204696] group-hover:translate-x-1 transition-all" />
+                    </button>
+                  </div>
+
+                </div>
+
+                {/* Ground Operations & Utilities Bar */}
+                <div className="mt-8 pt-6 border-t border-slate-200/80 space-y-4">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 text-xs">
+                    {/* Live OCC Contact */}
+                    <div className="flex items-center gap-2.5">
+                      <span className="relative flex h-2 w-2">
+                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#72BF44] opacity-75"></span>
+                        <span className="relative inline-flex rounded-full h-2 w-2 bg-[#72BF44]"></span>
+                      </span>
+                      <span className="text-slate-500 font-medium">24/7 Flight Operations Dispatch:</span>
+                      <a href="tel:+233244333133" className="font-semibold text-slate-900 hover:text-[#204696] font-mono">
+                        +233 (0) 244 333 133
+                      </a>
+                    </div>
+
+                    {/* Extranet & Hubs */}
+                    <div className="flex items-center gap-3 text-slate-500">
+                      <button
+                        onClick={() => handleNav('/partner-portal')}
+                        className="hover:text-[#204696] transition-colors flex items-center gap-1 font-medium cursor-pointer"
+                      >
+                        <span>Airline Extranet</span>
+                        <ExternalLink className="w-3 h-3" />
+                      </button>
+                      <span>·</span>
+                      <span className="font-mono text-[11px] text-slate-500">ACC · KMS · TML</span>
+                    </div>
+                  </div>
+
+                  <div className="pt-3 border-t border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-[11px] text-slate-400">
+                    <span>Ghana Civil Aviation Authority (GCAA) Licensed · IATA ISAGO Registered Ground Handler</span>
+                    <span>Kotoka International Airport · Terminal 3 & Cargo Village</span>
+                  </div>
+                </div>
+
+              </div>
             </div>
-          </div>
-        )}
-      </header>
-    </div>
+          </header>
+    </>
   );
 };
-
-

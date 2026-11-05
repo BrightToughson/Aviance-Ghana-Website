@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { HelpCircle, Search, ChevronDown, ArrowRight } from 'lucide-react';
+import { HelpCircle, ChevronDown, ArrowRight } from 'lucide-react';
 import { INITIAL_FAQS } from '../../constants/avianceData';
 import { useTheme } from '../../context/ThemeContext';
 import { useLanguage } from '../../context/LanguageContext';
@@ -11,7 +11,6 @@ interface FaqPageProps {
 export const FaqPage: React.FC<FaqPageProps> = ({ onNavigate }) => {
   const { isLight } = useTheme();
   const { t, language } = useLanguage();
-  const [search, setSearch] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string>('All');
   const [openIds, setOpenIds] = useState<string[]>(['faq-1', 'faq-2']);
 
@@ -38,11 +37,7 @@ export const FaqPage: React.FC<FaqPageProps> = ({ onNavigate }) => {
   };
 
   const filtered = INITIAL_FAQS.filter((faq) => {
-    const matchesCat = selectedCategory === 'All' || faq.category === selectedCategory;
-    const matchesSearch =
-      faq.question.toLowerCase().includes(search.toLowerCase()) ||
-      faq.answer.toLowerCase().includes(search.toLowerCase());
-    return matchesCat && matchesSearch;
+    return selectedCategory === 'All' || faq.category === selectedCategory;
   });
 
   const toggleFaq = (id: string) => {
@@ -52,9 +47,9 @@ export const FaqPage: React.FC<FaqPageProps> = ({ onNavigate }) => {
   };
 
   return (
-    <div className="pt-24 pb-20 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12 animate-in fade-in duration-150">
+    <div className="py-12 sm:py-16 lg:py-20 pb-24 sm:pb-32 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12 sm:space-y-16 animate-in fade-in duration-150">
       {/* Hero in Official Aviance Blue */}
-      <div className={`py-12 border rounded-3xl p-6 sm:p-10 text-center space-y-3 relative overflow-hidden shadow-2xl transition-colors ${
+      <div className={`py-12 sm:py-16 lg:py-20 border rounded-3xl p-6 sm:p-10 text-center space-y-3 relative overflow-hidden shadow-2xl transition-colors ${
         isLight
           ? 'bg-gradient-to-b from-blue-50 via-slate-50 to-white border-slate-200'
           : 'bg-gradient-to-b from-[#11244C] via-[#0C1933] to-[#08101E] border-[#204696]/30'
@@ -63,10 +58,13 @@ export const FaqPage: React.FC<FaqPageProps> = ({ onNavigate }) => {
           isLight ? 'bg-[#204696]/5' : 'bg-[#204696]/20'
         }`} />
         <div className="relative z-10 space-y-3">
-          <div className={`inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-wider ${
-            isLight ? 'text-[#0284C7]' : 'text-[#58C1EB]'
-          }`}>
-            <HelpCircle className="w-4 h-4" /> {t('pages.faqs.kicker', 'Help & Passenger Assistance')}
+          <div className="flex items-center justify-center gap-2.5">
+            <span className="w-1.5 h-6 rounded-full bg-gradient-to-b from-[#204696] via-[#009EE0] to-[#72BF44]" />
+            <h2 className={`text-xs sm:text-sm font-extrabold uppercase tracking-widest ${
+              isLight ? 'text-[#204696]' : 'text-[#58C1EB]'
+            }`}>
+              Help & Passenger Assistance <span className="text-[#009EE0]">·</span> <span className={isLight ? 'text-[#3B7A1C]' : 'text-[#72BF44]'}>Aviance Support</span>
+            </h2>
           </div>
           <h1 className={`text-3xl sm:text-5xl font-extrabold tracking-tight ${
             isLight ? 'text-slate-900' : 'text-white'
@@ -81,28 +79,8 @@ export const FaqPage: React.FC<FaqPageProps> = ({ onNavigate }) => {
         </div>
       </div>
 
-      {/* Filter and Search */}
+      {/* Filter Categories */}
       <div className="space-y-4">
-        <div className="relative">
-          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-          <input
-            type="text"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            placeholder={
-              language === 'fr'
-                ? "Rechercher une question (ex. bagage perdu, accès salon, cargo)..."
-                : language === 'tw'
-                ? "Hwehwɛ nsɛmmisa (e.g. kotokuo a ayera, ahomegyebea, cargo)..."
-                : "Search questions (e.g. lost bag, lounge walk-in, cargo cold room, NSS)..."
-            }
-            className={`w-full border rounded-xl pl-10 pr-4 py-3 text-sm transition-colors focus:outline-none ${
-              isLight
-                ? 'bg-white border-slate-300 text-slate-900 placeholder-slate-400 focus:border-[#204696] shadow-2xs'
-                : 'bg-[#060D1A] border-[#204696]/30 text-white placeholder-slate-400 focus:border-[#58C1EB]'
-            }`}
-          />
-        </div>
 
         <div className="flex flex-wrap items-center gap-1.5">
           {categories.map((cat) => (

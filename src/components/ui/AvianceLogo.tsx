@@ -4,6 +4,7 @@ interface AvianceLogoProps {
   variant?: 'color' | 'on-dark' | 'on-light' | 'mark-only' | 'monochrome';
   size?: 'sm' | 'md' | 'lg' | 'xl';
   markSize?: number;
+  strokeWidth?: number;
   showSubtitle?: boolean;
   subtitleText?: string;
   className?: string;
@@ -13,6 +14,7 @@ export const AvianceLogo: React.FC<AvianceLogoProps> = ({
   variant = 'on-dark',
   size = 'md',
   markSize: customMarkSize,
+  strokeWidth: customStrokeWidth,
   showSubtitle = true,
   subtitleText = 'GHANA',
   className = '',
@@ -73,7 +75,7 @@ export const AvianceLogo: React.FC<AvianceLogoProps> = ({
         <path
           d="M 12 18 C 28 10, 65 14, 82 28 C 86 31, 84 37, 71 46 C 63 59, 56 68, 52 67 C 46 66, 42 54, 45 36 C 36 32, 24 25, 12 18 Z"
           stroke={colors.emblemOutline}
-          strokeWidth="3.2"
+          strokeWidth={customStrokeWidth || 3.2}
           strokeLinejoin="round"
           strokeLinecap="round"
           fill="none"
@@ -82,14 +84,14 @@ export const AvianceLogo: React.FC<AvianceLogoProps> = ({
         <path
           d="M 50 16 C 49 26, 48 34, 47 38 C 46 47, 48 58, 52 67"
           stroke={colors.emblemOutline}
-          strokeWidth="2.8"
+          strokeWidth={customStrokeWidth ? customStrokeWidth * 0.85 : 2.8}
           strokeLinecap="round"
           fill="none"
         />
         <path
           d="M 12 18 C 28 26, 38 33, 47 38 C 57 41, 65 44, 71 46"
           stroke={colors.emblemOutline}
-          strokeWidth="2.8"
+          strokeWidth={customStrokeWidth ? customStrokeWidth * 0.85 : 2.8}
           strokeLinecap="round"
           fill="none"
         />

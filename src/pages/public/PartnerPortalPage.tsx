@@ -72,18 +72,18 @@ export const PartnerPortalPage: React.FC<PartnerPortalPageProps> = ({ onNavigate
   };
 
   return (
-    <div className="pt-24 pb-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12 animate-in fade-in duration-150">
+    <div className="py-12 sm:py-16 lg:py-20 pb-24 sm:pb-32 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12 sm:space-y-16 animate-in fade-in duration-150">
       {/* Top Banner Notice */}
       <div className="bg-[#0A162C]/95 border border-[#204696]/35 rounded-3xl p-6 sm:p-10 space-y-4 shadow-2xl relative overflow-hidden">
         {/* Subtle Ambient Backing Glow */}
         <div className="absolute top-0 right-0 w-96 h-96 bg-[#204696]/20 rounded-full blur-3xl pointer-events-none" />
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-800 pb-5">
           <div className="space-y-1">
-            <div className="flex items-center gap-2">
-              <span className="text-xs font-mono font-bold text-[#58C1EB] uppercase tracking-wider">
-                Airline Commercial Gateway
-              </span>
-              <StatusBadge status="VERIFIED OFFICIAL" size="xs" />
+            <div className="flex items-center gap-2.5">
+              <span className="w-1.5 h-5 rounded-full bg-gradient-to-b from-[#204696] via-[#009EE0] to-[#72BF44]" />
+              <h2 className="text-xs sm:text-sm font-extrabold uppercase tracking-widest text-[#58C1EB]">
+                Airline Commercial Gateway <span className="text-[#009EE0]">·</span> <span className="text-[#72BF44]">Verified Official</span>
+              </h2>
             </div>
             <h1 className="text-2xl sm:text-4xl font-extrabold text-white tracking-tight">
               Airline Customer & Operations Portal

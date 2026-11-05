@@ -99,6 +99,8 @@ function generateInitialMockEvents(): AnalyticsEventRecord[] {
   return events;
 }
 
+import { cookieConsentService } from './cookieConsentService';
+
 export const analyticsService = {
   trackEvent: (
     eventName: string,
@@ -106,6 +108,11 @@ export const analyticsService = {
     metadata?: Record<string, any>
   ): void => {
     try {
+      // Respect user cookie preferences: if user declined analytics, do not log telemetry
+      if (cookieConsentService.hasConsent() && !cookieConsentService.isAnalyticsAllowed()) {
+        return;
+      }
+
       const events = getStoredEvents();
       const newEvent: AnalyticsEventRecord = {
         id: `ev_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
