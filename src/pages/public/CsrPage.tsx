@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import {
   Heart,
   HeartHandshake,
@@ -35,7 +35,6 @@ interface CsrPageProps {
 
 export const CsrPage: React.FC<CsrPageProps> = ({ onNavigate }) => {
   const [currentSlide, setCurrentSlide] = useState<number>(0);
-  const [isAutoPlay, setIsAutoPlay] = useState<boolean>(true);
 
   // All 6 Authentic Images from the csr folder
   const csrGallery = [
@@ -227,14 +226,32 @@ export const CsrPage: React.FC<CsrPageProps> = ({ onNavigate }) => {
 
   const filtered = officialInitiatives;
 
-  // Auto-rotate hero image show every 4.5 seconds
-  useEffect(() => {
-    if (!isAutoPlay) return;
-    const interval = setInterval(() => {
+  // Auto-rotate hero image show every 4.5 seconds continuously, even after controls are clicked
+  const timerRef = useRef<NodeJS.Timeout | null>(null);
+
+  const restartAutoplay = useCallback(() => {
+    if (timerRef.current) {
+      clearInterval(timerRef.current);
+    }
+    timerRef.current = setInterval(() => {
       setCurrentSlide((prev) => (prev + 1) % csrGallery.length);
     }, 4500);
-    return () => clearInterval(interval);
-  }, [isAutoPlay, csrGallery.length]);
+  }, [csrGallery.length]);
+
+  useEffect(() => {
+    restartAutoplay();
+    return () => {
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+      }
+    };
+  }, [restartAutoplay]);
+
+  const handleSlideChange = (index: number) => {
+    setCurrentSlide(index);
+    // Restart timer so user gets full 4.5s on selected slide before auto-advance resumes
+    restartAutoplay();
+  };
 
   const totalSlides = csrGallery.length;
   const prevIndex = (currentSlide - 1 + totalSlides) % totalSlides;
@@ -342,15 +359,13 @@ export const CsrPage: React.FC<CsrPageProps> = ({ onNavigate }) => {
             
             {/* The 3D Rolling Carousel Cylinder Stage */}
             <div
-              onMouseEnter={() => setIsAutoPlay(false)}
-              onMouseLeave={() => setIsAutoPlay(true)}
               className="relative w-full h-[290px] sm:h-[350px] md:h-[400px] flex items-center justify-center [perspective:1200px] overflow-hidden select-none my-2"
             >
               
               {/* Floating Left Arrow Button */}
               <button
                 type="button"
-                onClick={() => setCurrentSlide(prevIndex)}
+                onClick={() => handleSlideChange(prevIndex)}
                 aria-label="Previous photo in rolling show"
                 className="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 z-40 w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-white/95 hover:bg-white text-slate-800 hover:text-[#204696] shadow-xl border border-slate-200/90 flex items-center justify-center transition-all duration-200 hover:scale-110 active:scale-95 cursor-pointer backdrop-blur-xs group"
                 title={`Previous: ${prevPhoto.title}`}
@@ -368,7 +383,7 @@ export const CsrPage: React.FC<CsrPageProps> = ({ onNavigate }) => {
                     key={photo.id}
                     onClick={() => {
                       if (diff !== 0) {
-                        setCurrentSlide(index);
+                        handleSlideChange(index);
                       }
                     }}
                     style={{
@@ -424,7 +439,7 @@ export const CsrPage: React.FC<CsrPageProps> = ({ onNavigate }) => {
               {/* Floating Right Arrow Button */}
               <button
                 type="button"
-                onClick={() => setCurrentSlide(nextIndex)}
+                onClick={() => handleSlideChange(nextIndex)}
                 aria-label="Next photo in rolling show"
                 className="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 z-40 w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-white/95 hover:bg-white text-slate-800 hover:text-[#204696] shadow-xl border border-slate-200/90 flex items-center justify-center transition-all duration-200 hover:scale-110 active:scale-95 cursor-pointer backdrop-blur-xs group"
                 title={`Next: ${nextPhoto.title}`}
@@ -435,13 +450,13 @@ export const CsrPage: React.FC<CsrPageProps> = ({ onNavigate }) => {
 
             {/* Clean Minimalist Indicators & Details (Small thumbnail images removed) */}
             <div className="space-y-3 pt-3">
-              {/* Smooth Rolling Progress Dots + Pause/Play */}
+              {/* Smooth Rolling Progress Dots */}
               <div className="flex items-center justify-center gap-2">
                 {csrGallery.map((photo, idx) => (
                   <button
                     key={photo.id}
                     type="button"
-                    onClick={() => setCurrentSlide(idx)}
+                    onClick={() => handleSlideChange(idx)}
                     className={`h-2.5 rounded-full transition-all duration-400 cursor-pointer ${
                       currentSlide === idx
                         ? 'w-8 bg-[#204696] shadow-xs'

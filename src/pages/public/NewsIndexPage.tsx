@@ -75,6 +75,7 @@ export const NewsIndexPage: React.FC<NewsIndexPageProps> = ({ news, onNavigate }
     if (e) e.stopPropagation();
     setIsShuffling(true);
     setProgress(0);
+    setIsAutoPlaying(true);
     setFeaturedIndex((currentIdx) => {
       const remaining = [0, 1, 2].filter((i) => i !== currentIdx && i < featuredArticles.length);
       const randomPick = remaining[Math.floor(Math.random() * remaining.length)];
@@ -86,12 +87,14 @@ export const NewsIndexPage: React.FC<NewsIndexPageProps> = ({ news, onNavigate }
   const handleNextFeatured = (e?: React.MouseEvent) => {
     if (e) e.stopPropagation();
     setProgress(0);
+    setIsAutoPlaying(true);
     setFeaturedIndex((prev) => (prev + 1) % featuredArticles.length);
   };
 
   const handlePrevFeatured = (e?: React.MouseEvent) => {
     if (e) e.stopPropagation();
     setProgress(0);
+    setIsAutoPlaying(true);
     setFeaturedIndex((prev) => (prev - 1 + featuredArticles.length) % featuredArticles.length);
   };
 
@@ -368,8 +371,6 @@ export const NewsIndexPage: React.FC<NewsIndexPageProps> = ({ news, onNavigate }
             {/* Main Featured Card with Smooth Animation */}
             <div
               key={activeFeatured.id}
-              onMouseEnter={() => setIsAutoPlaying(false)}
-              onMouseLeave={() => setIsAutoPlaying(true)}
               onClick={() => onNavigate(`/news/${activeFeatured.slug}`)}
               className="animate-featured-switch group cursor-pointer rounded-3xl border border-slate-200/90 bg-white shadow-xl hover:shadow-2xl transition-all duration-300 overflow-hidden"
             >
@@ -476,6 +477,7 @@ export const NewsIndexPage: React.FC<NewsIndexPageProps> = ({ news, onNavigate }
                     onClick={() => {
                       setProgress(0);
                       setFeaturedIndex(idx);
+                      setIsAutoPlaying(true);
                     }}
                     className={`relative p-3.5 rounded-2xl border text-left transition-all duration-300 cursor-pointer overflow-hidden ${
                       isActive
