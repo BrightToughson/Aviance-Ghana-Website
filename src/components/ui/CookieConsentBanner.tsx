@@ -45,16 +45,16 @@ export const CookieConsentBanner: React.FC<CookieConsentBannerProps> = ({ onNavi
     return () => window.removeEventListener('aviance:open-cookie-preferences', handleOpen);
   }, []);
 
-  // Lock body scroll when the consent banner or modal is open
+  // Only lock body scroll when the full preferences modal is open, NOT for the floating banner
   useEffect(() => {
-    if (isVisible || isModalOpen) {
+    if (isModalOpen) {
       const originalOverflow = document.body.style.overflow;
       document.body.style.overflow = 'hidden';
       return () => {
         document.body.style.overflow = originalOverflow;
       };
     }
-  }, [isVisible, isModalOpen]);
+  }, [isModalOpen]);
 
   // Trap Escape key in preferences modal
   useEffect(() => {
@@ -99,78 +99,63 @@ export const CookieConsentBanner: React.FC<CookieConsentBannerProps> = ({ onNavi
 
   return (
     <>
-      {/* 100% Screen Dark Blurred Backdrop */}
-      {isVisible && !isModalOpen && (
-        <div
-          className="fixed inset-0 z-[940] bg-slate-950/65 backdrop-blur-md animate-in fade-in duration-500"
-          aria-hidden="true"
-        />
-      )}
-
-      {/* 100% Full-Width Bottom Bar with Executive Aviation Design */}
+      {/* Modern Executive Floating Cookie Consent Card (Non-blocking, no dark blur backdrop) */}
       {isVisible && !isModalOpen && (
         <aside
           role="region"
           aria-label="Privacy and Cookie Consent"
-          className="fixed bottom-0 left-0 right-0 w-full z-[950] animate-in fade-in slide-in-from-bottom duration-500"
+          className="fixed bottom-4 sm:bottom-6 right-4 sm:right-6 z-[950] max-w-[440px] w-[calc(100%-2rem)] animate-in fade-in slide-in-from-bottom-5 duration-500 ease-out"
         >
-          <div className="w-full bg-white/98 dark:bg-slate-900/98 backdrop-blur-2xl border-t border-slate-200/90 dark:border-slate-800 shadow-[0_-20px_50px_rgba(15,46,83,0.3)]">
-            {/* Aviance Identity Tri-Color Top Accent Line spanning 100% of viewport */}
-            <div className="h-1 sm:h-1.5 w-full bg-gradient-to-r from-[#204696] via-[#009EE0] to-[#72BF44]" />
+          <div className="relative overflow-hidden rounded-3xl bg-white/95 dark:bg-slate-900/95 backdrop-blur-2xl border border-slate-200/90 dark:border-slate-800 shadow-[0_20px_60px_-15px_rgba(15,46,83,0.22)] dark:shadow-[0_25px_65px_-15px_rgba(0,0,0,0.65)] transition-all">
+            {/* Signature Aviance Tri-Color Top Accent Line */}
+            <div className="h-1 w-full bg-gradient-to-r from-[#204696] via-[#009EE0] to-[#72BF44]" />
 
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5 sm:py-6">
-              <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-5 sm:gap-6">
-                
-                {/* Left/Main Column: Badge, Title, Compliance Pills, & Legal Copy */}
-                <div className="space-y-2 max-w-4xl">
-                  <div className="flex flex-wrap items-center gap-2.5">
-                    <div className="w-9 h-9 rounded-xl bg-blue-50 dark:bg-blue-950/60 border border-[#204696]/20 flex items-center justify-center shrink-0 text-[#204696] dark:text-[#58C1EB] shadow-xs">
-                      <Cookie className="w-5 h-5" />
-                    </div>
-                    <h3 className="text-base sm:text-lg font-bold text-slate-900 dark:text-white tracking-tight">
-                      Cookie & Data Privacy Choices
+            <div className="p-5 sm:p-6 space-y-4">
+              {/* Header: Icon, Title, Compliance Badge & Close (X) */}
+              <div className="flex items-start justify-between gap-3">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-blue-50 to-blue-100/80 dark:from-blue-950/60 dark:to-blue-900/40 border border-[#204696]/15 dark:border-[#58C1EB]/20 flex items-center justify-center shrink-0 text-[#204696] dark:text-[#58C1EB] shadow-2xs">
+                    <Cookie className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <h3 className="text-sm sm:text-base font-bold text-slate-900 dark:text-white tracking-tight leading-snug">
+                      Cookie & Privacy Choices
                     </h3>
-                    <div className="flex items-center gap-1.5">
-                      <span className="text-[10px] sm:text-[11px] font-mono font-semibold text-[#204696] dark:text-[#58C1EB] bg-blue-50 dark:bg-blue-950/50 border border-[#204696]/20 px-2 py-0.5 rounded-md">
+                    <div className="flex items-center gap-1.5 mt-0.5">
+                      <span className="text-[10px] font-mono font-semibold text-[#204696] dark:text-[#58C1EB] bg-blue-50 dark:bg-blue-950/60 border border-[#204696]/15 px-1.5 py-0.5 rounded">
                         Ghana Act 843
                       </span>
-                      <span className="text-[10px] sm:text-[11px] font-mono font-semibold text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/50 border border-emerald-300/30 px-2 py-0.5 rounded-md">
-                        ISAGO & GDPR Compliant
+                      <span className="text-[10px] text-slate-300 dark:text-slate-600">·</span>
+                      <span className="text-[10px] font-mono font-medium text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-300/25 px-1.5 py-0.5 rounded">
+                        GDPR Compliant
                       </span>
                     </div>
-                  </div>
-
-                  <p className="text-xs sm:text-[13px] text-slate-600 dark:text-slate-300 leading-relaxed">
-                    Aviance Ghana Limited uses essential cookies to safeguard airside ground handling operations, partner authorizations, and station telemetry. With your consent, we also utilize optional analytics and personalization cookies to deliver an elevated digital experience. Under the <strong className="font-semibold text-slate-900 dark:text-white">Ghana Data Protection Act (Act 843)</strong>, you retain full ownership and control over your preferences at all times.
-                  </p>
-
-                  <div className="pt-0.5">
-                    <button
-                      type="button"
-                      onClick={handleNavigatePolicy}
-                      className="text-xs text-[#204696] dark:text-[#58C1EB] hover:text-[#009EE0] font-medium underline underline-offset-2 transition-colors cursor-pointer inline-flex items-center gap-1"
-                    >
-                      <span>Read Aviance Ghana's complete Data Protection & Cookie Policy</span>
-                      <ChevronRight className="w-3.5 h-3.5" />
-                    </button>
                   </div>
                 </div>
 
-                {/* Right Column: Actions */}
-                <div className="flex flex-col sm:flex-row lg:flex-row items-stretch sm:items-center justify-end gap-2.5 shrink-0 pt-2 lg:pt-0 border-t lg:border-t-0 border-slate-200 dark:border-slate-800">
-                  <button
-                    type="button"
-                    onClick={() => setIsModalOpen(true)}
-                    className="px-5 py-2.5 rounded-full border border-slate-300 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200 text-xs sm:text-sm font-bold uppercase tracking-wider transition-all duration-300 flex items-center justify-center gap-2 cursor-pointer shadow-2xs hover:shadow-xs hover:-translate-y-0.5 active:scale-95 hover:border-slate-400"
-                  >
-                    <SlidersHorizontal className="w-4 h-4 text-[#204696] dark:text-[#58C1EB]" />
-                    <span>Customize</span>
-                  </button>
+                <button
+                  type="button"
+                  onClick={handleAcceptEssential}
+                  className="p-1.5 rounded-xl text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer shrink-0"
+                  aria-label="Dismiss cookie notice with essential cookies only"
+                  title="Dismiss (Essential only)"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
 
+              {/* Description */}
+              <p className="text-xs sm:text-[13px] text-slate-600 dark:text-slate-300 leading-relaxed font-normal">
+                Aviance Ghana uses essential cookies to ensure secure ground handling operations and station telemetry. Optional cookies help personalize and elevate your digital experience.
+              </p>
+
+              {/* Action Buttons */}
+              <div className="space-y-2.5 pt-1">
+                <div className="grid grid-cols-2 gap-2">
                   <button
                     type="button"
                     onClick={handleAcceptEssential}
-                    className="px-5 py-2.5 rounded-full bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs sm:text-sm font-bold uppercase tracking-wider transition-all duration-300 cursor-pointer text-center shadow-2xs hover:shadow-xs hover:-translate-y-0.5 active:scale-95"
+                    className="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/80 hover:bg-slate-100 dark:bg-slate-800/80 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200 text-xs font-bold transition-all duration-200 cursor-pointer text-center active:scale-95 shadow-2xs"
                   >
                     Essential Only
                   </button>
@@ -178,12 +163,31 @@ export const CookieConsentBanner: React.FC<CookieConsentBannerProps> = ({ onNavi
                   <button
                     type="button"
                     onClick={handleAcceptAll}
-                    className="px-6 py-2.5 rounded-full bg-gradient-to-r from-[#204696] via-[#1a3d8c] to-[#009EE0] hover:brightness-110 active:scale-95 text-white text-xs sm:text-sm font-bold uppercase tracking-wider shadow-md hover:shadow-lg transition-all duration-300 hover:-translate-y-0.5 cursor-pointer text-center"
+                    className="w-full px-4 py-2.5 rounded-xl bg-gradient-to-r from-[#204696] via-[#1a3d8c] to-[#009EE0] hover:brightness-110 active:scale-95 text-white text-xs font-bold shadow-md shadow-[#204696]/20 transition-all duration-200 cursor-pointer text-center"
                   >
-                    Accept All Cookies
+                    Accept All
                   </button>
                 </div>
 
+                {/* Footer Utilities: Customize & Policy Link */}
+                <div className="flex items-center justify-between pt-2 border-t border-slate-100 dark:border-slate-800 text-[11px]">
+                  <button
+                    type="button"
+                    onClick={() => setIsModalOpen(true)}
+                    className="text-slate-500 hover:text-[#204696] dark:hover:text-[#58C1EB] font-semibold flex items-center gap-1.5 transition-colors cursor-pointer"
+                  >
+                    <SlidersHorizontal className="w-3.5 h-3.5 text-[#204696] dark:text-[#58C1EB]" />
+                    <span>Customize preferences</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={handleNavigatePolicy}
+                    className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 underline underline-offset-2 transition-colors cursor-pointer"
+                  >
+                    Cookie Policy
+                  </button>
+                </div>
               </div>
             </div>
           </div>
