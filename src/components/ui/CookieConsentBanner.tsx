@@ -45,16 +45,16 @@ export const CookieConsentBanner: React.FC<CookieConsentBannerProps> = ({ onNavi
     return () => window.removeEventListener('aviance:open-cookie-preferences', handleOpen);
   }, []);
 
-  // Only lock body scroll when the full preferences modal is open, NOT for the floating banner
+  // Lock body scroll until user answers or while preferences modal is open
   useEffect(() => {
-    if (isModalOpen) {
+    if (isVisible || isModalOpen) {
       const originalOverflow = document.body.style.overflow;
       document.body.style.overflow = 'hidden';
       return () => {
         document.body.style.overflow = originalOverflow;
       };
     }
-  }, [isModalOpen]);
+  }, [isVisible, isModalOpen]);
 
   // Trap Escape key in preferences modal
   useEffect(() => {
@@ -99,69 +99,69 @@ export const CookieConsentBanner: React.FC<CookieConsentBannerProps> = ({ onNavi
 
   return (
     <>
-      {/* Modern Minimalist Floating Cookie Consent Card */}
+      {/* Full-screen backdrop blur until the user answers */}
+      {isVisible && !isModalOpen && (
+        <div
+          className="fixed inset-0 z-[940] bg-slate-950/45 backdrop-blur-md animate-in fade-in duration-300"
+          aria-hidden="true"
+        />
+      )}
+
+      {/* 100% Horizontal Screen-Width Bottom Bar */}
       {isVisible && !isModalOpen && (
         <aside
           role="region"
           aria-label="Privacy and Cookie Consent"
-          className="fixed bottom-4 sm:bottom-6 right-4 sm:right-6 z-[950] max-w-[360px] w-[calc(100%-2rem)] animate-in fade-in slide-in-from-bottom-5 duration-400 ease-out"
+          className="fixed bottom-0 inset-x-0 w-full z-[950] animate-in fade-in slide-in-from-bottom duration-300 ease-out"
         >
-          <div className="relative overflow-hidden rounded-2xl bg-white/95 dark:bg-slate-900/95 backdrop-blur-2xl border border-slate-200/90 dark:border-slate-800 shadow-[0_16px_48px_-12px_rgba(15,46,83,0.18)] dark:shadow-[0_20px_50px_-15px_rgba(0,0,0,0.6)] transition-all">
+          <div className="w-full bg-white/98 dark:bg-slate-900/98 backdrop-blur-2xl border-t border-slate-200/90 dark:border-slate-800 shadow-[0_-12px_40px_rgba(15,46,83,0.2)]">
             {/* Signature Aviance Tri-Color Top Accent Line */}
-            <div className="h-1 w-full bg-gradient-to-r from-[#204696] via-[#009EE0] to-[#72BF44]" />
+            <div className="h-[3px] w-full bg-gradient-to-r from-[#204696] via-[#009EE0] to-[#72BF44]" />
 
-            <div className="p-4 sm:p-5 space-y-3">
-              {/* Header: Icon, Title & Dismiss (X) */}
-              <div className="flex items-center justify-between gap-2">
-                <div className="flex items-center gap-2.5">
-                  <div className="w-8 h-8 rounded-xl bg-blue-50 dark:bg-blue-950/60 border border-[#204696]/15 dark:border-[#58C1EB]/20 flex items-center justify-center shrink-0 text-[#204696] dark:text-[#58C1EB]">
-                    <Cookie className="w-4 h-4" />
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-5">
+              <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 md:gap-8">
+                
+                {/* Left: Icon + Content */}
+                <div className="flex items-center gap-3.5 flex-1 min-w-0">
+                  <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-blue-50 to-blue-100/80 dark:from-blue-950/60 dark:to-blue-900/40 border border-[#204696]/15 dark:border-[#58C1EB]/20 flex items-center justify-center shrink-0 text-[#204696] dark:text-[#58C1EB] shadow-2xs">
+                    <Cookie className="w-5 h-5" />
                   </div>
-                  <h3 className="text-sm font-bold text-slate-900 dark:text-white tracking-tight">
-                    Cookie Preferences
-                  </h3>
+                  <div className="space-y-0.5">
+                    <h3 className="text-sm sm:text-base font-bold text-slate-900 dark:text-white tracking-tight">
+                      Cookie Preferences
+                    </h3>
+                    <p className="text-xs sm:text-[13px] text-slate-600 dark:text-slate-300 leading-relaxed font-normal">
+                      We use cookies to improve your browsing experience and analyze site traffic.{' '}
+                      <button
+                        type="button"
+                        onClick={handleNavigatePolicy}
+                        className="text-[#204696] dark:text-[#58C1EB] hover:underline font-medium cursor-pointer"
+                      >
+                        Privacy Policy
+                      </button>
+                    </p>
+                  </div>
                 </div>
 
-                <button
-                  type="button"
-                  onClick={handleAcceptEssential}
-                  className="p-1 rounded-lg text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer shrink-0"
-                  aria-label="Close cookie banner"
-                  title="Close"
-                >
-                  <X className="w-4 h-4" />
-                </button>
-              </div>
+                {/* Right: Action Buttons in horizontal arrangement */}
+                <div className="flex items-center gap-2.5 shrink-0 self-end md:self-center">
+                  <button
+                    type="button"
+                    onClick={handleAcceptEssential}
+                    className="px-4 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white hover:bg-slate-50 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs sm:text-sm font-semibold transition-all cursor-pointer whitespace-nowrap active:scale-95 shadow-2xs"
+                  >
+                    Essential Only
+                  </button>
 
-              {/* Simple, natural copy */}
-              <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed font-normal">
-                We use cookies to improve your browsing experience and analyze site traffic.{' '}
-                <button
-                  type="button"
-                  onClick={handleNavigatePolicy}
-                  className="text-[#204696] dark:text-[#58C1EB] hover:underline font-medium cursor-pointer"
-                >
-                  Privacy Policy
-                </button>
-              </p>
+                  <button
+                    type="button"
+                    onClick={handleAcceptAll}
+                    className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-[#204696] via-[#1a3d8c] to-[#009EE0] hover:brightness-110 active:scale-95 text-white text-xs sm:text-sm font-bold shadow-md shadow-[#204696]/20 transition-all cursor-pointer whitespace-nowrap"
+                  >
+                    Accept All
+                  </button>
+                </div>
 
-              {/* Action Buttons */}
-              <div className="grid grid-cols-2 gap-2 pt-1">
-                <button
-                  type="button"
-                  onClick={handleAcceptEssential}
-                  className="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white hover:bg-slate-50 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-semibold transition-all cursor-pointer text-center active:scale-95 shadow-2xs"
-                >
-                  Essential Only
-                </button>
-
-                <button
-                  type="button"
-                  onClick={handleAcceptAll}
-                  className="w-full px-3 py-2 rounded-xl bg-[#204696] hover:bg-[#1a3d8c] active:scale-95 text-white text-xs font-semibold shadow-sm shadow-[#204696]/25 transition-all cursor-pointer text-center"
-                >
-                  Accept All
-                </button>
               </div>
             </div>
           </div>
