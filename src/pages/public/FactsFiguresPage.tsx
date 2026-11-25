@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import {
-  Plane,
-  Truck,
-  IdCard,
-  Building2,
+  PlaneTakeoff,
+  Globe2,
+  Route,
+  Boxes,
   Users,
   ShieldCheck,
   ArrowRight,
@@ -67,60 +67,60 @@ export const FactsFiguresPage: React.FC<FactsFiguresPageProps> = ({ onNavigate }
       id: 'total-flights',
       target: 15000,
       suffix: '+',
-      label: 'Total flights',
-      icon: Plane,
-      type: 'plane',
-      iconBaseTransform: '-rotate-45',
-      iconHoverTransform: 'group-hover:-translate-y-1.5 group-hover:translate-x-1 group-hover:scale-110',
+      label: 'Total Flights',
+      icon: PlaneTakeoff,
       badge: 'Turnaround SLA',
+      podTheme: isLight
+        ? 'bg-blue-50/90 text-[#204696] border-blue-100 group-hover:bg-[#204696] group-hover:text-white group-hover:border-[#204696] group-hover:shadow-lg group-hover:shadow-[#204696]/25'
+        : 'bg-blue-950/40 text-[#58C1EB] border-blue-900/60 group-hover:bg-[#204696] group-hover:text-white group-hover:border-[#58C1EB] group-hover:shadow-lg group-hover:shadow-blue-950/60',
       fact: 'Coordinating scheduled commercial, freighter, and private charter turnarounds across Accra, Kumasi, and Tamale.',
     },
     {
       id: 'intl-flights',
       target: 8000,
       suffix: '+',
-      label: 'International flights',
-      icon: Plane,
-      type: 'plane',
-      iconBaseTransform: '-rotate-45',
-      iconHoverTransform: 'group-hover:-translate-y-1.5 group-hover:translate-x-1 group-hover:scale-110',
+      label: 'International Flights',
+      icon: Globe2,
       badge: 'Terminal 3 Hub',
+      podTheme: isLight
+        ? 'bg-sky-50/90 text-[#009EE0] border-sky-100 group-hover:bg-[#009EE0] group-hover:text-white group-hover:border-[#009EE0] group-hover:shadow-lg group-hover:shadow-[#009EE0]/25'
+        : 'bg-sky-950/40 text-[#38BDF8] border-sky-900/60 group-hover:bg-[#009EE0] group-hover:text-white group-hover:border-[#38BDF8] group-hover:shadow-lg group-hover:shadow-sky-950/60',
       fact: 'Serving premier global airlines connecting Ghana to destinations across Europe, North America, the Middle East, and Africa.',
     },
     {
       id: 'domestic-flights',
       target: 7000,
       suffix: '+',
-      label: 'Domestic flights',
-      icon: Plane,
-      type: 'plane',
-      iconBaseTransform: '-rotate-45',
-      iconHoverTransform: 'group-hover:-translate-y-1.5 group-hover:translate-x-1 group-hover:scale-110',
+      label: 'Domestic Flights',
+      icon: Route,
       badge: 'Regional Network',
+      podTheme: isLight
+        ? 'bg-emerald-50/90 text-[#3B7A1C] border-emerald-100 group-hover:bg-[#72BF44] group-hover:text-white group-hover:border-[#72BF44] group-hover:shadow-lg group-hover:shadow-[#72BF44]/25'
+        : 'bg-emerald-950/40 text-[#72BF44] border-emerald-900/60 group-hover:bg-[#72BF44] group-hover:text-white group-hover:border-[#72BF44] group-hover:shadow-lg group-hover:shadow-emerald-950/60',
       fact: 'Powering high-frequency domestic flights linking Kotoka (ACC), Prempeh I (KMS), and Tamale International (TML).',
     },
     {
       id: 'cargo',
       target: 12000,
       suffix: '+',
-      label: 'Tonnes of cargo .',
-      icon: Truck,
-      type: 'cargo',
-      iconBaseTransform: '',
-      iconHoverTransform: 'group-hover:translate-x-1.5 group-hover:scale-105',
+      label: 'Tonnes of Air Cargo',
+      icon: Boxes,
       badge: '~60% Market Share',
+      podTheme: isLight
+        ? 'bg-indigo-50/90 text-[#0F2E53] border-indigo-100 group-hover:bg-[#0F2E53] group-hover:text-white group-hover:border-[#0F2E53] group-hover:shadow-lg group-hover:shadow-[#0F2E53]/25'
+        : 'bg-indigo-950/40 text-indigo-300 border-indigo-900/60 group-hover:bg-[#0F2E53] group-hover:text-white group-hover:border-indigo-400 group-hover:shadow-lg group-hover:shadow-indigo-950/60',
       fact: 'Handling over 60% of Ghana air freight through our EU RA3-certified bonded warehouse and cold-chain vaults.',
     },
     {
       id: 'employees',
       target: 1000,
       suffix: '+',
-      label: 'Employees',
-      icon: IdCard,
-      type: 'badge',
-      iconBaseTransform: '',
-      iconHoverTransform: 'group-hover:-rotate-3 group-hover:scale-110',
+      label: 'Certified Employees',
+      icon: Users,
       badge: '100% Certified',
+      podTheme: isLight
+        ? 'bg-slate-100/90 text-[#204696] border-slate-200 group-hover:bg-[#204696] group-hover:text-white group-hover:border-[#204696] group-hover:shadow-lg group-hover:shadow-[#204696]/25'
+        : 'bg-slate-800/70 text-sky-300 border-slate-700 group-hover:bg-[#204696] group-hover:text-white group-hover:border-[#58C1EB] group-hover:shadow-lg group-hover:shadow-blue-950/60',
       fact: '1,000+ IATA and GCAA-certified ramp technicians, passenger agents, OCC flight dispatchers, and GSE engineers.',
     },
   ];
@@ -162,39 +162,36 @@ export const FactsFiguresPage: React.FC<FactsFiguresPageProps> = ({ onNavigate }
         }
       `}</style>
 
-      {/* Signature Top Tri-Color Accent Line */}
-      <div className="h-[3.5px] w-full bg-gradient-to-r from-[#204696] via-[#009EE0] to-[#72BF44]" />
+      {/* Hero Header in Signature Aviance Blue Grid */}
+      <section className="relative overflow-hidden bg-gradient-to-br from-[#11244C] via-[#1A3670] to-[#204696] text-white py-14 sm:py-20 lg:py-24">
+        <div className="absolute inset-0 opacity-10 pointer-events-none">
+          <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff_1px,transparent_1px),linear-gradient(to_bottom,#ffffff_1px,transparent_1px)] bg-[size:4rem_4rem]" />
+        </div>
+
+        <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 space-y-4">
+          <div className="flex items-center gap-3">
+            <h1 className="text-3xl sm:text-4xl lg:text-[46px] font-bold tracking-[-0.028em] text-white leading-[1.14]">
+              Facts and Figures 2025
+            </h1>
+            <button
+              onClick={handleReplayAnimation}
+              title="Replay counter animation"
+              aria-label="Replay counter animation"
+              className="p-2 rounded-full text-blue-200 hover:text-white hover:bg-white/10 transition-all cursor-pointer hover:rotate-180 duration-500"
+            >
+              <RotateCcw className="w-5 h-5" />
+            </button>
+          </div>
+          <p className="text-base sm:text-lg text-blue-100/90 max-w-3xl leading-relaxed font-normal">
+            Official operational performance, cargo volumes, and workforce metrics across Aviance Ghana's national airport network.
+          </p>
+        </div>
+      </section>
 
       {/* Main Facts and Figures Content Area */}
-      <div className="flex-1 flex flex-col justify-center py-14 sm:py-20 lg:py-28 pb-24 sm:pb-32 px-4 sm:px-6 lg:px-8">
+      <div className="flex-1 flex flex-col justify-center py-12 sm:py-16 lg:py-20 pb-24 sm:pb-32 px-4 sm:px-6 lg:px-8">
         <div className="max-w-6xl mx-auto w-full space-y-16 sm:space-y-20">
           
-          {/* Centered Page Title */}
-          <div className="text-center space-y-3">
-            <div className="inline-flex items-center gap-2">
-              <h1 className={`text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight ${
-                isLight ? 'text-[#204696]' : 'text-white'
-              }`}>
-                Facts and Figures 2025
-              </h1>
-              <button
-                onClick={handleReplayAnimation}
-                title="Replay counter animation"
-                aria-label="Replay counter animation"
-                className={`p-1.5 rounded-full transition-all cursor-pointer opacity-70 hover:opacity-100 hover:rotate-180 duration-500 ${
-                  isLight ? 'text-[#204696] hover:bg-blue-50' : 'text-sky-400 hover:bg-slate-800'
-                }`}
-              >
-                <RotateCcw className="w-4 h-4" />
-              </button>
-            </div>
-            <p className={`text-xs sm:text-sm max-w-xl mx-auto font-normal ${
-              isLight ? 'text-slate-500' : 'text-slate-400'
-            }`}>
-              Official operational performance, cargo volumes, and workforce metrics across Aviance Ghana's national airport network.
-            </p>
-          </div>
-
           {/* 5 Animated Metric Cards with Themed Micro-Hover and Staggered Entrance */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6 sm:gap-6 lg:gap-5 items-stretch">
             {officialFigures.map((item, index) => {
@@ -215,16 +212,16 @@ export const FactsFiguresPage: React.FC<FactsFiguresPageProps> = ({ onNavigate }
                   {/* Subtle Top Card Accent on Hover */}
                   <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-[#204696] via-[#009EE0] to-[#72BF44] opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-t-2xl" />
 
-                  {/* Icon with Themed Micro-Hover Physics */}
-                  <div className="w-14 h-14 flex items-center justify-center mb-3.5 transition-transform duration-300">
+                  {/* Executive Squircle Badge Pod */}
+                  <div className={`w-14 h-14 sm:w-16 sm:h-16 rounded-2xl flex items-center justify-center mb-4 border transition-all duration-300 shadow-2xs group-hover:scale-105 group-hover:-translate-y-1 ${item.podTheme}`}>
                     <Icon
-                      className={`w-10 h-10 text-[#204696] transition-all duration-300 ${item.iconBaseTransform} ${item.iconHoverTransform}`}
-                      strokeWidth={1.9}
+                      className="w-7 h-7 sm:w-8 sm:h-8 transition-transform duration-300 group-hover:scale-110"
+                      strokeWidth={2}
                     />
                   </div>
 
                   {/* Animated Counter Telemetry Number */}
-                  <div className={`text-2xl sm:text-3xl font-extrabold tracking-tight font-mono transition-colors duration-200 group-hover:text-[#204696] ${
+                  <div className={`text-2xl sm:text-3xl font-extrabold tracking-tight font-heading transition-colors duration-200 group-hover:text-[#204696] ${
                     isLight ? 'text-slate-900' : 'text-white group-hover:text-[#58C1EB]'
                   }`}>
                     <AnimatedCounter
@@ -254,15 +251,11 @@ export const FactsFiguresPage: React.FC<FactsFiguresPageProps> = ({ onNavigate }
           </div>
 
           {/* 3 Quick Factual Highlight Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-5 pt-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-4">
             {keyFacts.map((kf, i) => (
               <div
                 key={i}
-                className={`p-5 rounded-2xl border text-left space-y-1.5 transition-all duration-200 hover:shadow-xs ${
-                  isLight
-                    ? 'bg-slate-50/70 border-slate-200/80 text-slate-700 hover:bg-slate-50'
-                    : 'bg-[#0B1528] border-slate-800/80 text-slate-300 hover:bg-[#0D182E]'
-                }`}
+                className="pt-5 border-t border-slate-200 dark:border-slate-800 text-left space-y-1.5"
               >
                 <div className="flex items-center gap-2">
                   <span className="w-1.5 h-3.5 rounded-full bg-[#204696]" />
@@ -309,9 +302,9 @@ export const FactsFiguresPage: React.FC<FactsFiguresPageProps> = ({ onNavigate }
           <div className="pt-4 flex flex-wrap items-center justify-center gap-2.5 text-xs">
             <button
               onClick={() => onNavigate('/about')}
-              className={`px-3.5 py-1.5 rounded-lg border font-medium transition-all cursor-pointer ${
+              className={`px-4 py-1.5 rounded-full border font-bold text-xs uppercase tracking-wider transition-all duration-300 hover:-translate-y-0.5 active:scale-95 cursor-pointer shadow-2xs ${
                 isLight
-                  ? 'bg-slate-50 hover:bg-slate-100 text-slate-700 border-slate-200'
+                  ? 'bg-slate-50 hover:bg-white hover:border-[#204696] hover:text-[#204696] text-slate-700 border-slate-200'
                   : 'bg-slate-900 hover:bg-slate-800 text-slate-300 border-slate-700'
               }`}
             >
@@ -319,9 +312,9 @@ export const FactsFiguresPage: React.FC<FactsFiguresPageProps> = ({ onNavigate }
             </button>
             <button
               onClick={() => onNavigate('/management')}
-              className={`px-3.5 py-1.5 rounded-lg border font-medium transition-all cursor-pointer ${
+              className={`px-4 py-1.5 rounded-full border font-bold text-xs uppercase tracking-wider transition-all duration-300 hover:-translate-y-0.5 active:scale-95 cursor-pointer shadow-2xs ${
                 isLight
-                  ? 'bg-slate-50 hover:bg-slate-100 text-slate-700 border-slate-200'
+                  ? 'bg-slate-50 hover:bg-white hover:border-[#204696] hover:text-[#204696] text-slate-700 border-slate-200'
                   : 'bg-slate-900 hover:bg-slate-800 text-slate-300 border-slate-700'
               }`}
             >
@@ -329,9 +322,9 @@ export const FactsFiguresPage: React.FC<FactsFiguresPageProps> = ({ onNavigate }
             </button>
             <button
               onClick={() => onNavigate('/customers')}
-              className={`px-3.5 py-1.5 rounded-lg border font-medium transition-all cursor-pointer ${
+              className={`px-4 py-1.5 rounded-full border font-bold text-xs uppercase tracking-wider transition-all duration-300 hover:-translate-y-0.5 active:scale-95 cursor-pointer shadow-2xs ${
                 isLight
-                  ? 'bg-slate-50 hover:bg-slate-100 text-slate-700 border-slate-200'
+                  ? 'bg-slate-50 hover:bg-white hover:border-[#204696] hover:text-[#204696] text-slate-700 border-slate-200'
                   : 'bg-slate-900 hover:bg-slate-800 text-slate-300 border-slate-700'
               }`}
             >
@@ -339,9 +332,9 @@ export const FactsFiguresPage: React.FC<FactsFiguresPageProps> = ({ onNavigate }
             </button>
             <button
               onClick={() => onNavigate('/code-of-conduct')}
-              className={`px-3.5 py-1.5 rounded-lg border font-medium transition-all cursor-pointer ${
+              className={`px-4 py-1.5 rounded-full border font-bold text-xs uppercase tracking-wider transition-all duration-300 hover:-translate-y-0.5 active:scale-95 cursor-pointer shadow-2xs ${
                 isLight
-                  ? 'bg-slate-50 hover:bg-slate-100 text-slate-700 border-slate-200'
+                  ? 'bg-slate-50 hover:bg-white hover:border-[#204696] hover:text-[#204696] text-slate-700 border-slate-200'
                   : 'bg-slate-900 hover:bg-slate-800 text-slate-300 border-slate-700'
               }`}
             >
@@ -349,9 +342,9 @@ export const FactsFiguresPage: React.FC<FactsFiguresPageProps> = ({ onNavigate }
             </button>
             <button
               onClick={() => onNavigate('/certifications')}
-              className={`px-3.5 py-1.5 rounded-lg border font-medium transition-all cursor-pointer ${
+              className={`px-4 py-1.5 rounded-full border font-bold text-xs uppercase tracking-wider transition-all duration-300 hover:-translate-y-0.5 active:scale-95 cursor-pointer shadow-2xs ${
                 isLight
-                  ? 'bg-slate-50 hover:bg-slate-100 text-slate-700 border-slate-200'
+                  ? 'bg-slate-50 hover:bg-white hover:border-[#204696] hover:text-[#204696] text-slate-700 border-slate-200'
                   : 'bg-slate-900 hover:bg-slate-800 text-slate-300 border-slate-700'
               }`}
             >

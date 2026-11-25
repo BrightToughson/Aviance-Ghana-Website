@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Plane, Luggage, Fuel, Users, ShieldCheck, ArrowRight, Play, Pause } from 'lucide-react';
 import { useTheme } from '../../context/ThemeContext';
 import { useLanguage } from '../../context/LanguageContext';
+import { useSwipeGesture } from '../../hooks/useSwipeGesture';
 
 export const TurnaroundTimeline: React.FC = () => {
   const { isLight } = useTheme();
@@ -58,6 +59,13 @@ export const TurnaroundTimeline: React.FC = () => {
       checklist: ['Nose gear bypass pin removed', 'Intercom headset clearance confirmed', 'Towbarless tractor pushback completed', 'Final salute & safe flight dispatch']
     }
   ];
+
+  const { handlers: timelineSwipeHandlers } = useSwipeGesture({
+    onSwipeLeft: () => setActiveStep((prev) => (prev < steps.length - 1 ? prev + 1 : 0)),
+    onSwipeRight: () => setActiveStep((prev) => (prev > 0 ? prev - 1 : steps.length - 1)),
+    threshold: 40,
+    enableMouseDrag: true,
+  });
 
   return (
     <div className={`border rounded-2xl p-6 sm:p-10 shadow-2xl transition-all ${
@@ -116,11 +124,14 @@ export const TurnaroundTimeline: React.FC = () => {
         })}
       </div>
 
-      {/* Active Step Showcase */}
+      {/* Active Step Showcase with Swipe Gestures */}
       {steps[activeStep] && (
-        <div className={`border rounded-xl p-6 sm:p-8 grid grid-cols-1 lg:grid-cols-3 gap-6 items-center animate-in fade-in duration-200 ${
-          isLight ? 'bg-slate-50 border-slate-200' : 'bg-slate-950 border-slate-800/90'
-        }`}>
+        <div
+          {...timelineSwipeHandlers}
+          className={`border rounded-xl p-6 sm:p-8 grid grid-cols-1 lg:grid-cols-3 gap-6 items-center animate-in fade-in duration-200 select-none cursor-grab active:cursor-grabbing ${
+            isLight ? 'bg-slate-50 border-slate-200' : 'bg-slate-950 border-slate-800/90'
+          }`}
+        >
           <div className="lg:col-span-2 space-y-3">
             <div className="flex items-center gap-3">
               <span className={`font-mono text-xs font-bold px-2 py-0.5 rounded border ${

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   GraduationCap,
   ShieldCheck,
@@ -25,8 +25,11 @@ import {
   FileCheck,
   BadgeCheck,
   ChevronRight,
+  ChevronLeft,
   Send
 } from 'lucide-react';
+import { SlidePagination } from '../../components/ui/SlidePagination';
+import { useSwipeGesture } from '../../hooks/useSwipeGesture';
 
 // Authentic Aviance Training Room & Academy Photography
 import TRAINING_ROOM_IMG from '../../assets/aviance_images/image_show/1740561240681.jpg'; // Real Aviance Training Room with instructor and class
@@ -160,8 +163,8 @@ export const TrainingPage: React.FC<TrainingPageProps> = ({ onNavigate }) => {
     {
       id: 'small-room',
       name: 'Small Training Room',
-      capacityNumber: 8,
-      capacityText: 'capacity of 8 people.',
+      capacityNumber: 6,
+      capacityText: 'capacity of 6 people.',
       icon: Building2,
       badge: 'Briefings & Meetings',
       idealFor: 'Executive debriefs, airline client meetings, one-on-one evaluations, and dispatch reviews.',
@@ -169,6 +172,47 @@ export const TrainingPage: React.FC<TrainingPageProps> = ({ onNavigate }) => {
       image: TRAINING_ROOM_IMG,
     }
   ];
+
+  // Rolling Showcase of 4 Courses
+  const [visibleCoursesCount, setVisibleCoursesCount] = useState(4);
+  const [courseSlide, setCourseSlide] = useState(0);
+  const [isCoursesPaused, setIsCoursesPaused] = useState(false);
+
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth < 640) {
+        setVisibleCoursesCount(1);
+      } else if (window.innerWidth < 1024) {
+        setVisibleCoursesCount(2);
+      } else if (window.innerWidth < 1280) {
+        setVisibleCoursesCount(3);
+      } else {
+        setVisibleCoursesCount(4);
+      }
+    };
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  const maxCourseSlide = Math.max(0, courses.length - visibleCoursesCount);
+
+  // Auto-advance courses every 4.5 seconds
+  useEffect(() => {
+    if (isCoursesPaused) return;
+    const interval = setInterval(() => {
+      setCourseSlide((prev) => (prev >= maxCourseSlide ? 0 : prev + 1));
+    }, 4500);
+    return () => clearInterval(interval);
+  }, [isCoursesPaused, maxCourseSlide]);
+
+  // Touch swipe & mouse drag gestures
+  const { handlers: courseSwipeHandlers } = useSwipeGesture({
+    onSwipeLeft: () => setCourseSlide((prev) => Math.min(prev + 1, maxCourseSlide)),
+    onSwipeRight: () => setCourseSlide((prev) => Math.max(prev - 1, 0)),
+    threshold: 40,
+    enableMouseDrag: true,
+  });
 
   const handleCopyEmail = () => {
     navigator.clipboard.writeText('info@avianceghana.com');
@@ -199,107 +243,79 @@ export const TrainingPage: React.FC<TrainingPageProps> = ({ onNavigate }) => {
             <span>/</span>
             <span className="text-[#204696] font-semibold">Training</span>
           </div>
-
-          <div className="flex items-center gap-2">
-            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-              GCAA & IATA ISAGO Aligned
-            </span>
-          </div>
         </div>
       </div>
 
-      {/* Hero Section */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-[#11244C] via-[#1A3670] to-[#204696] text-white py-12 sm:py-16 lg:py-20">
-        {/* Subtle aeronautical runway grid backdrop */}
-        <div className="absolute inset-0 opacity-10 pointer-events-none">
-          <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff_1px,transparent_1px),linear-gradient(to_bottom,#ffffff_1px,transparent_1px)] bg-[size:4rem_4rem]" />
-        </div>
-
-        {/* Decorative ambient glowing orbs */}
-        <div className="absolute -top-24 -right-24 w-96 h-96 bg-[#009EE0]/20 rounded-full blur-3xl pointer-events-none" />
-        <div className="absolute -bottom-24 -left-24 w-96 h-96 bg-[#72BF44]/15 rounded-full blur-3xl pointer-events-none" />
-
+      {/* Hero Section — Clean Header without dark banner */}
+      <section className="bg-white border-b border-slate-200 py-12 sm:py-16 lg:py-20 relative overflow-hidden">
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
             
             <div className="lg:col-span-7 space-y-6">
-              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-xs sm:text-sm font-semibold text-blue-100">
+              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-blue-50 border border-blue-100 text-xs sm:text-sm font-semibold text-[#204696]">
                 <GraduationCap className="w-4 h-4 text-[#009EE0]" />
-                <span>Aviance Ghana Training & Academy</span>
+                <span>Aviance Ghana Training &amp; Academy</span>
               </div>
 
               <div className="space-y-3">
-                <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black tracking-tight text-white uppercase">
+                <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black tracking-tight text-slate-900 uppercase">
                   TRAINING
                 </h1>
-                <p className="text-base sm:text-xl text-blue-100/90 font-light leading-relaxed max-w-2xl">
+                <p className="text-base sm:text-xl text-slate-600 font-normal leading-relaxed max-w-2xl">
                   Aviance Ghana provides practical aviation training designed to strengthen safety, operational performance and service delivery across international airport environments.
                 </p>
               </div>
 
               {/* Key Quick Facts Pills */}
               <div className="flex flex-wrap gap-2.5 pt-1">
-                <div className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-white/10 backdrop-blur-md border border-white/15 text-xs">
-                  <BadgeCheck className="w-4 h-4 text-emerald-400" />
-                  <span className="font-semibold text-white">9 Certified Courses</span>
+                <div className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-slate-50 border border-slate-200 text-xs">
+                  <BadgeCheck className="w-4 h-4 text-emerald-600" />
+                  <span className="font-semibold text-slate-800">9 Certified Courses</span>
                 </div>
-                <div className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-white/10 backdrop-blur-md border border-white/15 text-xs">
-                  <Building2 className="w-4 h-4 text-[#009EE0]" />
-                  <span className="font-semibold text-white">3 Training Rooms</span>
+                <div className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-slate-50 border border-slate-200 text-xs">
+                  <Building2 className="w-4 h-4 text-[#204696]" />
+                  <span className="font-semibold text-slate-800">3 Training Rooms</span>
                 </div>
-                <div className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-white/10 backdrop-blur-md border border-white/15 text-xs">
-                  <MapPin className="w-4 h-4 text-amber-300" />
-                  <span className="font-semibold text-white">Kotoka Airport Base</span>
+                <div className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-slate-50 border border-slate-200 text-xs">
+                  <FileCheck className="w-4 h-4 text-[#72BF44]" />
+                  <span className="font-semibold text-slate-800">IATA / GCAA Compliant</span>
                 </div>
               </div>
 
               {/* Action Buttons */}
-              <div className="flex flex-wrap items-center gap-3 pt-2">
-                <a
-                  href="mailto:info@avianceghana.com?subject=Aviance%20Ghana%20Training%20%26%20Room%20Hire%20Inquiry"
-                  className="inline-flex items-center gap-2 px-6 py-3.5 rounded-xl bg-[#009EE0] hover:bg-[#008bc5] text-white text-sm font-bold shadow-lg shadow-[#009EE0]/30 transition-all cursor-pointer"
-                >
-                  <Mail className="w-4 h-4" />
-                  Email info@avianceghana.com
-                </a>
+              <div className="flex flex-wrap gap-3 pt-2">
                 <button
                   onClick={() => {
-                    const elem = document.getElementById('room-hire-section');
-                    if (elem) elem.scrollIntoView({ behavior: 'smooth' });
+                    const el = document.getElementById('courses-section');
+                    el?.scrollIntoView({ behavior: 'smooth' });
                   }}
-                  className="inline-flex items-center gap-2 px-5 py-3.5 rounded-xl bg-white/10 hover:bg-white/20 text-white text-sm font-semibold border border-white/20 backdrop-blur-sm transition-all cursor-pointer"
+                  className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-[#204696] hover:bg-[#153170] text-white text-xs sm:text-sm font-bold shadow-md shadow-[#204696]/20 transition-all cursor-pointer"
                 >
-                  <Building2 className="w-4 h-4 text-blue-200" />
-                  View Training Rooms
+                  <span>Explore 9 Accredited Courses</span>
+                  <ArrowRight className="w-4 h-4" />
+                </button>
+                <button
+                  onClick={() => {
+                    const el = document.getElementById('rooms-section');
+                    el?.scrollIntoView({ behavior: 'smooth' });
+                  }}
+                  className="inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-white hover:bg-slate-50 text-slate-700 text-xs sm:text-sm font-semibold border border-slate-200 shadow-xs transition-all cursor-pointer"
+                >
+                  <Building2 className="w-4 h-4 text-[#204696]" />
+                  <span>Hire Training Facility</span>
                 </button>
               </div>
             </div>
 
-            {/* Authentic Classroom Photo Showcase Card */}
+            {/* Authentic Classroom Photo Showcase */}
             <div className="lg:col-span-5">
-              <div className="relative rounded-2xl overflow-hidden border border-white/20 shadow-2xl shadow-black/40 group bg-slate-950">
+              <div className="relative rounded-2xl overflow-hidden group bg-slate-100 shadow-xl border border-slate-200/90">
                 <div className="relative aspect-[4/3] w-full overflow-hidden">
                   <img
                     src={TRAINING_ROOM_IMG}
                     alt="Aviance Ghana Training Room in session with instructors and students"
                     className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-700"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/25 to-transparent pointer-events-none" />
-                  
-                  <div className="absolute top-3 left-3 bg-[#204696]/90 backdrop-blur-md text-white text-[10px] font-bold uppercase tracking-wider px-3 py-1 rounded-full border border-[#58C1EB]/40 flex items-center gap-1.5 shadow">
-                    <span className="w-1.5 h-1.5 rounded-full bg-[#72BF44] animate-pulse" />
-                    Kotoka Airport Academy Base
-                  </div>
-
-                  <div className="absolute bottom-3 left-3 right-3 text-left">
-                    <span className="text-[10px] font-mono font-bold text-[#58C1EB] uppercase tracking-wider block">
-                      Official Training Room
-                    </span>
-                    <h3 className="text-white text-sm sm:text-base font-bold drop-shadow">
-                      Certified Ground Operations Induction & Safety Class
-                    </h3>
-                  </div>
                 </div>
               </div>
             </div>
@@ -311,8 +327,8 @@ export const TrainingPage: React.FC<TrainingPageProps> = ({ onNavigate }) => {
       {/* Main Body Content */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-20 lg:py-24 pb-24 sm:pb-32 space-y-16 sm:space-y-24 lg:space-y-32">
         
-        {/* SECTION 1: COURSES OFFERED */}
-        <section className="space-y-8">
+        {/* SECTION 1: COURSES OFFERED (ROLLING SHOWCASE OF 4) */}
+        <section id="courses-section" className="space-y-6 scroll-mt-24">
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-slate-200 pb-5">
             <div>
               <div className="inline-flex items-center gap-1.5 text-xs font-bold text-[#204696] uppercase tracking-wider mb-1">
@@ -323,59 +339,111 @@ export const TrainingPage: React.FC<TrainingPageProps> = ({ onNavigate }) => {
                 <span>Courses Offered</span>
               </h2>
             </div>
-            <p className="text-xs sm:text-sm text-slate-500 max-w-md">
-              Specialized ground handling and safety modules tailored for airlines, airport authorities, and handling personnel.
-            </p>
+            
+            <div className="flex items-center justify-between md:justify-end gap-4">
+              <p className="text-xs sm:text-sm text-slate-500 max-w-md hidden sm:block">
+                Specialized ground handling and safety modules tailored for airlines and personnel.
+              </p>
+              
+              {/* Rolling Chevron Controls */}
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => setCourseSlide((prev) => Math.max(0, prev - 1))}
+                  disabled={courseSlide === 0}
+                  className="w-9 h-9 rounded-full border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 disabled:opacity-30 disabled:cursor-not-allowed flex items-center justify-center transition-all shadow-xs cursor-pointer"
+                  aria-label="Previous courses"
+                  title="Previous courses"
+                >
+                  <ChevronLeft className="w-4 h-4" />
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setCourseSlide((prev) => Math.min(maxCourseSlide, prev + 1))}
+                  disabled={courseSlide >= maxCourseSlide}
+                  className="w-9 h-9 rounded-full border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 disabled:opacity-30 disabled:cursor-not-allowed flex items-center justify-center transition-all shadow-xs cursor-pointer"
+                  aria-label="Next courses"
+                  title="Next courses"
+                >
+                  <ChevronRight className="w-4 h-4" />
+                </button>
+              </div>
+            </div>
           </div>
 
-          {/* 9 Courses Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-            {courses.map((course, idx) => {
-              const IconComp = course.icon;
-              return (
-                <div
-                  key={course.id}
-                  className="group relative bg-white rounded-2xl p-6 border border-slate-200/90 hover:border-[#204696]/40 hover:shadow-xl transition-all duration-300 flex flex-col justify-between"
-                >
-                  <div className="space-y-4">
-                    <div className="flex items-center justify-between">
-                      <div className="w-12 h-12 rounded-xl bg-blue-50 text-[#204696] flex items-center justify-center group-hover:bg-[#204696] group-hover:text-white transition-all duration-300 shadow-sm">
-                        <IconComp className="w-6 h-6" />
-                      </div>
-                      <span className="text-[11px] font-semibold px-2.5 py-1 rounded-full bg-slate-100 text-slate-600 border border-slate-200">
-                        {course.tag}
-                      </span>
-                    </div>
+          {/* Rolling Showcase Container with Drag/Swipe Support */}
+          <div
+            {...courseSwipeHandlers}
+            onMouseEnter={() => setIsCoursesPaused(true)}
+            onMouseLeave={() => setIsCoursesPaused(false)}
+            className="relative select-none cursor-grab active:cursor-grabbing space-y-4"
+          >
+            <div className="overflow-hidden -mx-3 py-2">
+              <div
+                className="flex transition-transform duration-700 ease-out"
+                style={{
+                  transform: `translateX(-${courseSlide * (100 / visibleCoursesCount)}%)`
+                }}
+              >
+                {courses.map((course, idx) => {
+                  const IconComp = course.icon;
+                  return (
+                    <div
+                      key={course.id}
+                      className="w-full sm:w-1/2 lg:w-1/3 xl:w-1/4 shrink-0 px-3"
+                    >
+                      <div className="h-full flex flex-col justify-between p-6 bg-white rounded-2xl border border-slate-200/90 hover:border-[#204696]/40 hover:shadow-lg transition-all duration-300 space-y-4 text-left group">
+                        <div className="space-y-4">
+                          <div className="flex items-center justify-between">
+                            <div className="w-12 h-12 rounded-xl bg-blue-50 text-[#204696] flex items-center justify-center group-hover:bg-[#204696] group-hover:text-white transition-all duration-300 shadow-xs">
+                              <IconComp className="w-6 h-6" />
+                            </div>
+                            <span className="text-[10px] font-semibold px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-600 border border-slate-200">
+                              {course.tag}
+                            </span>
+                          </div>
 
-                    <div>
-                      <div className="text-[11px] font-bold text-[#009EE0] uppercase tracking-wider mb-1">
-                        Course #{idx + 1}
-                      </div>
-                      <h3 className="text-base sm:text-lg font-bold text-[#11244C] group-hover:text-[#204696] transition-colors">
-                        {course.title}
-                      </h3>
-                      <p className="text-xs sm:text-sm text-slate-600 mt-2 leading-relaxed">
-                        {course.description}
-                      </p>
-                    </div>
-                  </div>
+                          <div>
+                            <div className="text-[11px] font-bold text-[#009EE0] uppercase tracking-wider mb-1">
+                              Course #{idx + 1}
+                            </div>
+                            <h3 className="text-base font-bold text-[#11244C] group-hover:text-[#204696] transition-colors leading-snug">
+                              {course.title}
+                            </h3>
+                            <p className="text-xs text-slate-600 mt-2 leading-relaxed line-clamp-3">
+                              {course.description}
+                            </p>
+                          </div>
+                        </div>
 
-                  <div className="pt-4 mt-4 border-t border-slate-100 flex items-center justify-between">
-                    <span className="text-[11px] font-semibold text-slate-500">
-                      {course.category}
-                    </span>
-                    <span className="text-[11px] font-bold text-[#204696] bg-blue-50 px-2.5 py-0.5 rounded-full border border-blue-100">
-                      Accredited Course
-                    </span>
-                  </div>
-                </div>
-              );
-            })}
+                        <div className="pt-3 mt-auto border-t border-slate-100 flex items-center justify-between text-xs">
+                          <span className="text-[11px] font-semibold text-slate-500 truncate max-w-[55%]">
+                            {course.category}
+                          </span>
+                          <span className="text-[10px] font-bold text-[#204696] bg-blue-50 px-2.5 py-0.5 rounded-full border border-blue-100 shrink-0">
+                            Accredited
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Slide Pagination Capsule */}
+            <div className="flex items-center justify-center pt-2">
+              <SlidePagination
+                current={courseSlide}
+                total={maxCourseSlide + 1}
+                onChange={setCourseSlide}
+              />
+            </div>
           </div>
         </section>
 
         {/* SECTION 2: TRAINING ROOM HIRE */}
-        <section id="room-hire-section" className="space-y-8 scroll-mt-24">
+        <section id="rooms-section" className="space-y-8 scroll-mt-24">
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-slate-200 pb-5">
             <div>
               <div className="inline-flex items-center gap-1.5 text-xs font-bold text-[#72BF44] uppercase tracking-wider mb-1">
@@ -392,16 +460,16 @@ export const TrainingPage: React.FC<TrainingPageProps> = ({ onNavigate }) => {
           </div>
 
           {/* 3 Training Rooms Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {rooms.map((room) => {
               const RoomIcon = room.icon;
               return (
                 <div
                   key={room.id}
-                  className="group relative bg-white rounded-2xl border border-slate-200/90 shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden flex flex-col justify-between"
+                  className="group flex flex-col justify-between space-y-4 transition-all"
                 >
                   {room.image && (
-                    <div className="relative aspect-[16/10] w-full overflow-hidden bg-slate-950">
+                    <div className="relative aspect-[16/10] w-full overflow-hidden rounded-xl bg-slate-950">
                       <img
                         src={room.image}
                         alt={room.name}
@@ -414,7 +482,7 @@ export const TrainingPage: React.FC<TrainingPageProps> = ({ onNavigate }) => {
                     </div>
                   )}
 
-                  <div className="p-6 space-y-5 flex-1 flex flex-col justify-between">
+                  <div className="space-y-4 flex-1 flex flex-col justify-between">
                     <div>
                       {/* Header */}
                       <div className="flex items-start justify-between">
@@ -491,15 +559,15 @@ export const TrainingPage: React.FC<TrainingPageProps> = ({ onNavigate }) => {
             <div className="flex flex-wrap items-center justify-center gap-4 pt-4">
               <a
                 href="mailto:info@avianceghana.com?subject=Aviance%20Ghana%20Training%20%26%20Room%20Hire%20Inquiry"
-                className="inline-flex items-center gap-2 px-6 py-3.5 rounded-xl bg-[#009EE0] hover:bg-[#0089c2] text-white text-sm font-bold shadow-lg shadow-[#009EE0]/30 transition-all cursor-pointer"
+                className="btn-accent group !py-3.5 !px-7"
               >
                 <Mail className="w-4 h-4" />
-                Email info@avianceghana.com
+                <span>Email info@avianceghana.com</span>
               </a>
 
               <button
                 onClick={handleCopyEmail}
-                className="inline-flex items-center gap-2 px-5 py-3.5 rounded-xl bg-white/10 hover:bg-white/20 text-white text-sm font-semibold border border-white/20 backdrop-blur-md transition-all cursor-pointer"
+                className="inline-flex items-center gap-2 px-7 py-3.5 rounded-full bg-white/10 hover:bg-white/20 text-white text-xs sm:text-sm font-bold uppercase tracking-wider border border-white/25 backdrop-blur-md transition-all duration-300 hover:-translate-y-0.5 active:scale-95 cursor-pointer shadow-sm"
               >
                 {copiedEmail ? (
                   <>

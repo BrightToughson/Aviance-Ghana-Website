@@ -1,6 +1,7 @@
 import React from 'react';
 import {
   ArrowLeft,
+  ArrowRight,
   CheckCircle2,
   Phone,
   Mail,
@@ -34,7 +35,8 @@ import TRAINING_IMG from '../../assets/aviance_images/image_show/1740561240681.j
 interface ServiceVisuals {
   primary: string;
   primaryCaption: string;
-  secondary?: Array<{ img: string; title: string; desc: string }>;
+  imagePosition?: string;
+  secondary?: Array<{ img: string; title: string; desc: string; imagePosition?: string }>;
 }
 
 const getServiceVisuals = (slug: string): ServiceVisuals => {
@@ -43,16 +45,19 @@ const getServiceVisuals = (slug: string): ServiceVisuals => {
       return {
         primary: PASSENGER_IMG,
         primaryCaption: 'Kotoka Terminal 3 DCS Check-In Counters & Frontline Passenger Handling',
+        imagePosition: 'object-top',
         secondary: [
           {
             img: PASSENGER_TEAM_IMG,
             title: 'Frontline Customer Service Team',
-            desc: 'Dedicated passenger liaison, boarding gate supervisors, and PRM mobility care.'
+            desc: 'Dedicated passenger liaison, boarding gate supervisors, and PRM mobility care.',
+            imagePosition: 'object-top'
           },
           {
             img: PASSENGER_CREW_IMG,
             title: 'Flight Crew & Partner Facilitation',
-            desc: 'Close turnaround collaboration with international airline flight captains and crews.'
+            desc: 'Close turnaround collaboration with international airline flight captains and crews.',
+            imagePosition: 'object-top'
           }
         ]
       };
@@ -60,16 +65,19 @@ const getServiceVisuals = (slug: string): ServiceVisuals => {
       return {
         primary: RAMP_IMG,
         primaryCaption: 'Heavy Apron Turnaround: SCHOPF F300 Towbarless Pushback Tractor at Boeing 787',
+        imagePosition: 'object-[center_35%]',
         secondary: [
           {
             img: RAMP_CARGO_IMG,
             title: 'Precision Aircraft Cargo & Baggage Loading',
-            desc: 'Aviance Tug TR-52 staging containerized cargo dollies for lower-deck loading.'
+            desc: 'Aviance Tug TR-52 staging containerized cargo dollies for lower-deck loading.',
+            imagePosition: 'object-center'
           },
           {
             img: RAMP_TRACTOR_IMG,
             title: 'Airside Fleet Mobility & Marshalling',
-            desc: 'Strict IATA ISAGO compliance across ramp corridors and airside maneuvering areas.'
+            desc: 'Strict IATA ISAGO compliance across ramp corridors and airside maneuvering areas.',
+            imagePosition: 'object-[center_30%]'
           }
         ]
       };
@@ -77,11 +85,13 @@ const getServiceVisuals = (slug: string): ServiceVisuals => {
       return {
         primary: VIP_IMG,
         primaryCaption: 'Executive Charter Aircraft Ground Handling & Diplomatic Flight Protocol',
+        imagePosition: 'object-top',
         secondary: [
           {
             img: VIP_LOUNGE_IMG,
             title: 'Executive Apron Escort & Lounge Hospitality',
-            desc: 'Fast-track customs, immigration coordination, and private tarmac passenger transfers.'
+            desc: 'Fast-track customs, immigration coordination, and private tarmac passenger transfers.',
+            imagePosition: 'object-center'
           }
         ]
       };
@@ -89,16 +99,19 @@ const getServiceVisuals = (slug: string): ServiceVisuals => {
       return {
         primary: GSE_IMG,
         primaryCaption: 'Certified GSE Heavy Maintenance Engineering Workshop & Equipment Overhauls',
+        imagePosition: 'object-[center_35%]',
         secondary: [
           {
             img: RAMP_IMG,
             title: 'Modern Eco-Friendly GSE Fleet',
-            desc: '$1M+ investment in high-efficiency pushback tractors, GPUs, and belt loaders.'
+            desc: '$1M+ investment in high-efficiency pushback tractors, GPUs, and belt loaders.',
+            imagePosition: 'object-[center_35%]'
           },
           {
             img: RAMP_TRACTOR_IMG,
             title: '24/7 Mobile Airside Breakdown Response',
-            desc: 'Immediate ramp-side troubleshooting and preventive hydraulic/electrical inspections.'
+            desc: 'Immediate ramp-side troubleshooting and preventive hydraulic/electrical inspections.',
+            imagePosition: 'object-[center_30%]'
           }
         ]
       };
@@ -106,33 +119,39 @@ const getServiceVisuals = (slug: string): ServiceVisuals => {
       return {
         primary: CARGO_IMG,
         primaryCaption: 'Aviance Cold Room Storage & EU RA3 Certified Screening Infrastructure',
+        imagePosition: 'object-[center_20%]',
         secondary: [
           {
             img: CARGO_WH_IMG,
             title: 'Air Cargo Warehouse Pallet Inspection',
-            desc: 'Temperature-controlled perishables handling and customs bonded warehouse staging.'
+            desc: 'Temperature-controlled perishables handling and customs bonded warehouse staging.',
+            imagePosition: 'object-[center_25%]'
           }
         ]
       };
     case 'baggage':
       return {
         primary: BAGGAGE_IMG,
-        primaryCaption: 'Kotoka Terminal 3 Baggage Makeup Hall & WorldTracer Reconciliation Desk'
+        primaryCaption: 'Kotoka Terminal 3 Baggage Makeup Hall & WorldTracer Reconciliation Desk',
+        imagePosition: 'object-center'
       };
     case 'operations':
       return {
         primary: OCC_IMG,
-        primaryCaption: '24/7 Operations Control Centre & Turnaround Intercom Coordination'
+        primaryCaption: '24/7 Operations Control Centre & Turnaround Intercom Coordination',
+        imagePosition: 'object-center'
       };
     case 'training':
       return {
         primary: TRAINING_IMG,
-        primaryCaption: 'Aviance Ghana Certified Aviation Training Academy Classroom'
+        primaryCaption: 'Aviance Ghana Certified Aviation Training Academy Classroom',
+        imagePosition: 'object-top'
       };
     default:
       return {
         primary: RAMP_IMG,
-        primaryCaption: 'Aviance Ghana ISAGO Certified Ground Operations'
+        primaryCaption: 'Aviance Ghana ISAGO Certified Ground Operations',
+        imagePosition: 'object-[center_35%]'
       };
   }
 };
@@ -193,102 +212,77 @@ export const ServiceDetailPage: React.FC<ServiceDetailPageProps> = ({
   const visuals = getServiceVisuals(service.slug);
 
   return (
-    <div className="pb-24 sm:pb-32 space-y-16 sm:space-y-24 lg:space-y-32">
-      {/* Hero Header in Official Aviance Blue */}
-      <div className={`relative py-14 sm:py-20 lg:py-24 border-b overflow-hidden transition-colors ${
-        isLight
-          ? 'bg-gradient-to-b from-blue-50 via-slate-50 to-white border-slate-200'
-          : 'bg-gradient-to-b from-[#11244C] via-[#0C1933] to-[#08101E] border-[#204696]/30'
-      }`}>
-        <div className={`absolute top-0 right-1/4 w-96 h-96 rounded-full blur-3xl pointer-events-none ${
-          isLight ? 'bg-[#204696]/5' : 'bg-[#204696]/20'
-        }`} />
-        <div className="absolute inset-0 opacity-20">
-          <img
-            src={visuals.primary}
-            alt={service.title}
-            referrerPolicy="no-referrer"
-            className="w-full h-full object-cover object-center"
-          />
+    <div className={`min-h-screen pb-24 sm:pb-32 transition-colors ${isLight ? 'bg-white text-slate-800' : 'bg-[#0B1528] text-slate-100'}`}>
+      {/* Breadcrumb Bar */}
+      <div className={`border-b transition-colors ${isLight ? 'bg-white border-slate-200/80' : 'bg-[#08101E] border-slate-800'}`}>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex items-center justify-between text-xs sm:text-sm">
+          <div className="flex items-center gap-2 text-slate-500">
+            <button
+              onClick={() => onNavigate('/')}
+              className="hover:text-[#204696] font-medium transition-colors cursor-pointer"
+            >
+              Home
+            </button>
+            <span>/</span>
+            <button
+              onClick={() => onNavigate('/services')}
+              className="hover:text-[#204696] font-medium transition-colors cursor-pointer"
+            >
+              Services
+            </button>
+            <span>/</span>
+            <span className="text-[#204696] font-semibold">{getLocalizedTitle(service)}</span>
+          </div>
+        </div>
+      </div>
+
+      {/* Hero Header in Signature Aviance Blue Grid */}
+      <section className="relative overflow-hidden bg-gradient-to-br from-[#11244C] via-[#1A3670] to-[#204696] text-white py-14 sm:py-20 lg:py-24">
+        <div className="absolute inset-0 opacity-10 pointer-events-none">
+          <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff_1px,transparent_1px),linear-gradient(to_bottom,#ffffff_1px,transparent_1px)] bg-[size:4rem_4rem]" />
         </div>
 
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-4">
           <button
             onClick={() => onNavigate('/services')}
-            className={`inline-flex items-center gap-1.5 text-xs font-semibold transition-colors ${
-              isLight ? 'text-slate-600 hover:text-[#204696]' : 'text-slate-400 hover:text-[#58C1EB]'
-            }`}
+            className="inline-flex items-center gap-1.5 text-xs font-semibold text-blue-200 hover:text-white transition-colors cursor-pointer"
           >
             <ArrowLeft className="w-3.5 h-3.5" />
             <span>Back to Services</span>
           </button>
 
-          <div className="flex items-center gap-2.5">
-            <span className="w-1.5 h-6 rounded-full bg-gradient-to-b from-[#204696] via-[#009EE0] to-[#72BF44]" />
-            <h2 className={`text-xs sm:text-sm font-extrabold uppercase tracking-widest ${
-              isLight ? 'text-[#204696]' : 'text-[#58C1EB]'
-            }`}>
-              {service.category} <span className="text-[#009EE0]">·</span> <span className={isLight ? 'text-[#3B7A1C]' : 'text-[#72BF44]'}>IATA ISAGO Compliant</span> <span className="text-[#009EE0]">·</span> <span className="text-slate-500 font-medium">{service.operatingHours}</span>
-            </h2>
-          </div>
-
-          <h1 className={`text-3xl sm:text-5xl font-extrabold tracking-tight text-balance ${
-            isLight ? 'text-slate-900' : 'text-white'
-          }`}>
+          <h1 className="text-3xl sm:text-4xl lg:text-[46px] font-bold tracking-[-0.028em] text-white leading-[1.14]">
             {getLocalizedTitle(service)}
           </h1>
 
-          <p className={`text-base max-w-3xl leading-relaxed ${
-            isLight ? 'text-slate-600' : 'text-slate-300'
-          }`}>
+          <p className="text-base sm:text-lg text-blue-100/90 font-normal leading-relaxed max-w-3xl">
             {getLocalizedDesc(service)}
           </p>
 
-          <div className="pt-4 flex flex-wrap gap-2">
+          <div className="pt-2 flex flex-wrap gap-2">
             {service.locations.map((loc) => (
-              <span key={loc} className={`px-3 py-1 rounded-lg text-xs font-medium flex items-center gap-1.5 border ${
-                isLight
-                  ? 'bg-white border-slate-200 text-slate-800 shadow-2xs'
-                  : 'bg-slate-950/80 border-slate-700/80 text-slate-200'
-              }`}>
-                <MapPin className={`w-3.5 h-3.5 ${isLight ? 'text-[#204696]' : 'text-[#58C1EB]'}`} /> {loc}
+              <span key={loc} className="px-3 py-1 rounded-lg text-xs font-medium flex items-center gap-1.5 border border-white/20 bg-white/10 text-white backdrop-blur-md">
+                <MapPin className="w-3.5 h-3.5 text-[#58C1EB]" /> {loc}
               </span>
             ))}
           </div>
         </div>
-      </div>
+      </section>
 
       {/* Main Body */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-12 sm:pt-16">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
           {/* Left 2 Cols: Detailed Scope & Features */}
           <div className="lg:col-span-2 space-y-12">
             
             {/* Primary Visual Showcase Card */}
-            <div className={`overflow-hidden rounded-2xl border shadow-xl relative transition-all ${
-              isLight ? 'bg-white border-slate-200/90 shadow-slate-200/60' : 'bg-[#0C1933] border-[#204696]/40 shadow-[#204696]/10'
-            }`}>
-              <div className="relative aspect-[16/9] w-full overflow-hidden bg-slate-950">
+            <div className="overflow-hidden rounded-2xl relative transition-all shadow-lg border border-slate-200/90 dark:border-slate-800">
+              <div className="relative aspect-[4/3] sm:aspect-[16/10] lg:aspect-[16/10] max-h-[540px] w-full overflow-hidden bg-slate-950">
                 <img
                   src={visuals.primary}
                   alt={visuals.primaryCaption}
-                  className="w-full h-full object-cover object-center hover:scale-105 transition-transform duration-700"
+                  className={`w-full h-full object-cover ${visuals.imagePosition || 'object-center'} hover:scale-105 transition-transform duration-700`}
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/25 to-transparent pointer-events-none" />
-                <div className="absolute top-4 left-4 flex flex-wrap items-center gap-2">
-                  <span className="px-3 py-1 rounded-full text-[11px] font-bold tracking-wider uppercase bg-[#204696]/90 text-white backdrop-blur-md border border-[#58C1EB]/40 flex items-center gap-1.5 shadow-md">
-                    <span className="w-1.5 h-1.5 rounded-full bg-[#72BF44] animate-pulse" />
-                    Verified Aviance Operations
-                  </span>
-                  <span className="px-3 py-1 rounded-full text-[11px] font-semibold bg-black/60 text-slate-200 backdrop-blur-md border border-white/10 hidden sm:inline-flex">
-                    Kotoka International Airport (ACC)
-                  </span>
-                </div>
-                <div className="absolute bottom-4 left-4 right-4">
-                  <p className="text-white text-sm sm:text-base font-bold drop-shadow-md">
-                    {visuals.primaryCaption}
-                  </p>
-                </div>
               </div>
             </div>
 
@@ -328,7 +322,7 @@ export const ServiceDetailPage: React.FC<ServiceDetailPageProps> = ({
                         <img
                           src={sec.img}
                           alt={sec.title}
-                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                          className={`w-full h-full object-cover ${sec.imagePosition || 'object-center'} group-hover:scale-105 transition-transform duration-500`}
                         />
                         <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-60 group-hover:opacity-40 transition-opacity" />
                       </div>
@@ -407,10 +401,10 @@ export const ServiceDetailPage: React.FC<ServiceDetailPageProps> = ({
 
           {/* Right Col: Contact & Action Panel */}
           <div className="space-y-6">
-            <div className={`border rounded-2xl p-6 space-y-6 sticky top-28 shadow-xl ${
+            <div className={`p-6 space-y-6 sticky top-28 border-t-2 border-[#204696] ${
               isLight
-                ? 'bg-white border-slate-200/90 shadow-slate-200/60'
-                : 'bg-[#0A162C]/95 border-[#204696]/40'
+                ? 'bg-slate-50/80 border-slate-200'
+                : 'bg-[#0A162C]/60'
             }`}>
               <div>
                 <div className={`text-xs font-semibold uppercase tracking-wider mb-1 ${
@@ -425,7 +419,7 @@ export const ServiceDetailPage: React.FC<ServiceDetailPageProps> = ({
 
               <div className="space-y-3 text-xs">
                 <div className={`p-3 rounded-lg border space-y-1 ${
-                  isLight ? 'bg-slate-50 border-slate-200' : 'bg-[#071120] border-[#204696]/25'
+                  isLight ? 'bg-white border-slate-200' : 'bg-[#071120] border-[#204696]/25'
                 }`}>
                   <div className={`flex items-center gap-1.5 font-medium ${isLight ? 'text-slate-600' : 'text-slate-400'}`}>
                     <Clock className={`w-3.5 h-3.5 ${isLight ? 'text-[#204696]' : 'text-[#58C1EB]'}`} /> Operational Availability
@@ -434,7 +428,7 @@ export const ServiceDetailPage: React.FC<ServiceDetailPageProps> = ({
                 </div>
 
                 <div className={`p-3 rounded-lg border space-y-1 ${
-                  isLight ? 'bg-slate-50 border-slate-200' : 'bg-slate-950 border-slate-800/80'
+                  isLight ? 'bg-white border-slate-200' : 'bg-slate-950 border-slate-800/80'
                 }`}>
                   <div className={`flex items-center gap-1.5 font-medium ${isLight ? 'text-slate-600' : 'text-slate-400'}`}>
                     <Phone className={`w-3.5 h-3.5 ${isLight ? 'text-[#204696]' : 'text-[#58C1EB]'}`} /> Operations Desk Phone
@@ -443,7 +437,7 @@ export const ServiceDetailPage: React.FC<ServiceDetailPageProps> = ({
                 </div>
 
                 <div className={`p-3 rounded-lg border space-y-1 ${
-                  isLight ? 'bg-slate-50 border-slate-200' : 'bg-slate-950 border-slate-800/80'
+                  isLight ? 'bg-white border-slate-200' : 'bg-slate-950 border-slate-800/80'
                 }`}>
                   <div className={`flex items-center gap-1.5 font-medium ${isLight ? 'text-slate-600' : 'text-slate-400'}`}>
                     <Mail className={`w-3.5 h-3.5 ${isLight ? 'text-[#204696]' : 'text-[#58C1EB]'}`} /> Direct Liaison Email
@@ -457,25 +451,25 @@ export const ServiceDetailPage: React.FC<ServiceDetailPageProps> = ({
               </div>
 
               {/* Action Buttons */}
-              <div className="pt-2 space-y-2">
+              <div className="pt-2 space-y-2.5">
                 {service.slug === 'cargo' ? (
                   <button
                     onClick={onOpenCargoModal}
-                    className="w-full py-2.5 bg-[#204696] hover:bg-[#183878] text-white font-bold text-xs rounded-xl transition-colors shadow-sm text-center"
+                    className="w-full btn-primary text-xs !py-3 shadow-md shadow-[#204696]/20"
                   >
                     {t('common.quoteCargo', 'Request Air Cargo Handling Quote')}
                   </button>
                 ) : service.slug === 'baggage' ? (
                   <button
                     onClick={() => onNavigate('/find-my-bag')}
-                    className="w-full py-2.5 bg-[#204696] hover:bg-[#183878] text-white font-bold text-xs rounded-xl transition-colors shadow-sm text-center"
+                    className="w-full btn-primary text-xs !py-3 shadow-md shadow-[#204696]/20"
                   >
                     {t('nav.findMyBag', 'Open Find My Bag Portal')}
                   </button>
                 ) : (
                   <button
                     onClick={() => onNavigate('/contact')}
-                    className="w-full py-2.5 bg-[#204696] hover:bg-[#183878] text-white font-bold text-xs rounded-xl transition-colors shadow-sm text-center"
+                    className="w-full btn-primary text-xs !py-3 shadow-md shadow-[#204696]/20"
                   >
                     {t('nav.contact', 'Contact Operations Department')}
                   </button>
@@ -483,22 +477,17 @@ export const ServiceDetailPage: React.FC<ServiceDetailPageProps> = ({
 
                 <button
                   onClick={() => onNavigate('/contact')}
-                  className={`w-full py-2.5 font-semibold text-xs rounded-xl transition-colors text-center border ${
-                    isLight
-                      ? 'bg-slate-100 hover:bg-slate-200 text-slate-800 border-slate-200'
-                      : 'bg-slate-800 hover:bg-slate-700 text-slate-200 border-slate-700'
-                  }`}
+                  className="w-full btn-link justify-center text-xs py-2 group cursor-pointer"
                 >
-                  {t('footer.headOffice', 'General Head Office Enquiry')}
+                  <span className="link-label">{t('footer.headOffice', 'General Head Office Enquiry')}</span>
+                  <ArrowRight className="w-4 h-4 text-[#72BF44] group-hover:translate-x-1.5 transition-transform duration-300" />
                 </button>
               </div>
             </div>
 
             {/* Related Services */}
             {fallbackRelated.length > 0 && (
-              <div className={`border rounded-2xl p-6 space-y-3 shadow-xl ${
-                isLight ? 'bg-white border-slate-200/90' : 'bg-[#0C1933]/90 border-[#204696]/30'
-              }`}>
+              <div className="space-y-3 pt-6 border-t border-slate-200 dark:border-slate-800">
                 <div className={`text-xs font-semibold uppercase tracking-wider ${
                   isLight ? 'text-slate-600' : 'text-slate-400'
                 }`}>

@@ -5,12 +5,14 @@ import {
   Thermometer,
   ArrowRight,
   Phone,
+  Mail,
   Scale
 } from 'lucide-react';
 import { useTheme } from '../../context/ThemeContext';
 import { useLanguage } from '../../context/LanguageContext';
 
 // Authentic Aviance Cargo Village Photography
+import CARGO_OFFICIAL_IMG from '../../assets/aviance_images/services/cargo_official.jpg'; // Official Aviance Cargo Facility & Cold Chain
 import CARGO_SERVICES_IMG from '../../assets/aviance_images/services/cargo_services.jpg'; // Cold room & screening facility
 import CARGO_WAREHOUSE_IMG from '../../assets/aviance_images/services/passenger_services.jpg'; // Warehouse pallet rack carton inspection
 import CARGO_VILLAGE_IMG from '../../assets/aviance_images/1780574568846.jpg'; // Cargo village exterior & apron forklift fleet
@@ -21,71 +23,145 @@ interface CargoPageProps {
   onOpenCargoModal: () => void;
 }
 
-export const CargoPage: React.FC<CargoPageProps> = ({ onNavigate: _onNavigate, onOpenCargoModal }) => {
+export const CargoPage: React.FC<CargoPageProps> = ({ onNavigate, onOpenCargoModal }) => {
   const { isLight } = useTheme();
   const { t } = useLanguage();
 
   return (
-    <div className="pb-24 sm:pb-32 space-y-16 sm:space-y-24 lg:space-y-32">
-      {/* Hero in Official Aviance Blue */}
-      <div className={`relative py-14 sm:py-20 lg:py-24 border-b overflow-hidden transition-colors ${
-        isLight
-          ? 'bg-gradient-to-b from-blue-50 via-slate-50 to-white border-slate-200'
-          : 'bg-gradient-to-b from-[#11244C] via-[#0C1933] to-[#08101E] border-[#204696]/30'
-      }`}>
-        {/* Subtle Ambient Backing Glow */}
-        <div className={`absolute top-0 right-1/4 w-96 h-96 rounded-full blur-3xl pointer-events-none ${
-          isLight ? 'bg-[#204696]/5' : 'bg-[#204696]/20'
-        }`} />
-        <div className="absolute inset-0 opacity-20">
-          <img
-            src={CARGO_VILLAGE_IMG}
-            alt="Aviance Cargo Village air cargo loading"
-            referrerPolicy="no-referrer"
-            className="w-full h-full object-cover object-center"
-          />
-        </div>
-
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-5">
-          <div className="flex items-center gap-2.5">
-            <span className="w-1.5 h-6 rounded-full bg-gradient-to-b from-[#204696] via-[#009EE0] to-[#72BF44]" />
-            <h2 className={`text-xs sm:text-sm font-extrabold uppercase tracking-widest ${
-              isLight ? 'text-[#204696]' : 'text-[#58C1EB]'
-            }`}>
-              Aviance Cargo Village <span className="text-[#009EE0]">·</span> <span className={isLight ? 'text-[#3B7A1C]' : 'text-[#72BF44]'}>Kotoka International Airport</span>
-            </h2>
-          </div>
-
-          <h1 className={`text-3xl sm:text-5xl font-extrabold tracking-tight leading-tight ${
-            isLight ? 'text-slate-900' : 'text-white'
-          }`}>
-            {t('pages.cargo.title', 'Air Cargo Logistics & Cold Chain Infrastructure')}
-          </h1>
-
-          <p className={`text-base max-w-2xl leading-relaxed ${
-            isLight ? 'text-slate-600' : 'text-slate-300'
-          }`}>
-            {t('pages.cargo.desc', 'Ghana’s premier EU RA3-certified air freight handling terminal. Providing continuous cold-chain perishable vaults, pharmaceutical Good Distribution Practice (GDP) handling, dangerous goods staging, and direct customs integration.')}
-          </p>
-
-          <div className="pt-2 flex flex-wrap gap-3">
-            <a
-              href="tel:+233593816076"
-              className={`px-5 py-3 border text-xs font-semibold rounded-xl transition-colors flex items-center gap-2 ${
-                isLight
-                  ? 'bg-white border-slate-200 text-slate-800 hover:bg-slate-100 shadow-2xs'
-                  : 'bg-slate-950 border-slate-700/80 hover:bg-slate-800 text-slate-200'
-              }`}
+    <div className={`min-h-screen pb-24 sm:pb-32 transition-colors ${isLight ? 'bg-white text-slate-800' : 'bg-[#0B1528] text-slate-100'}`}>
+      {/* Breadcrumb Bar */}
+      <div className={`border-b transition-colors ${isLight ? 'bg-white border-slate-200/80' : 'bg-[#08101E] border-slate-800'}`}>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex items-center justify-between text-xs sm:text-sm">
+          <div className="flex items-center gap-2 text-slate-500">
+            <button
+              onClick={() => onNavigate('/')}
+              className="hover:text-[#204696] font-medium transition-colors cursor-pointer"
             >
-              <Phone className={`w-3.5 h-3.5 ${isLight ? 'text-[#204696]' : 'text-[#58C1EB]'}`} />
-              <span>{t('pages.cargo.hotline', 'Cargo Operations Desk (+233 (0) 59 381 6076)')}</span>
-            </a>
+              Home
+            </button>
+            <span>/</span>
+            <button
+              onClick={() => onNavigate('/services')}
+              className="hover:text-[#204696] font-medium transition-colors cursor-pointer"
+            >
+              Services
+            </button>
+            <span>/</span>
+            <span className="text-[#204696] font-semibold">Cargo Services</span>
           </div>
         </div>
       </div>
 
+      {/* Hero Header — Aviance Blue Grid Banner */}
+      <section className="relative overflow-hidden bg-gradient-to-br from-[#11244C] via-[#1A3670] to-[#204696] text-white py-14 sm:py-20 lg:py-24">
+        {/* Subtle aeronautical blueprint grid */}
+        <div className="absolute inset-0 opacity-10 pointer-events-none">
+          <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff_1px,transparent_1px),linear-gradient(to_bottom,#ffffff_1px,transparent_1px)] bg-[size:4rem_4rem]" />
+        </div>
+
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-5">
+          <h1 className="text-3xl sm:text-4xl lg:text-[46px] font-bold tracking-[-0.028em] text-white leading-[1.14]">
+            {t('pages.cargo.title', 'Air Cargo Logistics & Cold Chain Infrastructure')}
+          </h1>
+
+          <p className="text-base sm:text-lg text-blue-100/90 font-normal leading-relaxed max-w-3xl">
+            {t('pages.cargo.desc', 'Ghana’s premier EU RA3-certified air freight handling terminal. Providing continuous cold-chain perishable vaults, pharmaceutical Good Distribution Practice (GDP) handling, dangerous goods staging, and direct customs integration.')}
+          </p>
+
+          <div className="pt-2 flex flex-wrap items-center gap-3">
+            <a
+              href="tel:+233593816076"
+              className="px-5 py-3 border border-white/20 bg-white/10 hover:bg-white/15 text-white text-xs sm:text-sm font-semibold rounded-xl backdrop-blur-md transition-all flex items-center gap-2"
+            >
+              <Phone className="w-3.5 h-3.5 text-[#72BF44]" />
+              <span>{t('pages.cargo.hotline', 'Cargo Operations Desk (+233 (0) 59 381 6076)')}</span>
+            </a>
+            <button
+              onClick={onOpenCargoModal}
+              className="px-6 py-3 rounded-xl bg-[#009EE0] hover:bg-[#008bc5] text-white text-xs sm:text-sm font-bold shadow-lg shadow-[#009EE0]/20 transition-all flex items-center gap-2 cursor-pointer"
+            >
+              <span>Submit Cargo Rate Inquiry</span>
+              <ArrowRight className="w-4 h-4" />
+            </button>
+          </div>
+        </div>
+      </section>
+
       {/* Main Specs */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-16 sm:space-y-24 lg:space-y-32">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-12 sm:pt-16 space-y-16 sm:space-y-24 lg:space-y-32">
+        
+        {/* Official Scope & Key Services — Open 2-Column Layout */}
+        <section className="py-6 sm:py-10">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-14 items-center">
+            {/* Left Column: Scope & Key Services */}
+            <div className="lg:col-span-7 space-y-6 text-left">
+              <div>
+                <h2 className={`text-2xl sm:text-3xl lg:text-4xl font-extrabold uppercase tracking-tight ${
+                  isLight ? 'text-slate-900' : 'text-white'
+                }`}>
+                  Cargo Services
+                </h2>
+                <div className={`mt-4 space-y-3 text-sm sm:text-base leading-relaxed ${
+                  isLight ? 'text-slate-700' : 'text-slate-200'
+                }`}>
+                  <p>
+                    Aviance Ghana provides secure and efficient import and export cargo handling services supported by experienced teams, established procedures and modern cargo systems.
+                  </p>
+                  <p>
+                    With a current market share of approximately <strong className={isLight ? 'text-slate-900 font-bold' : 'text-white font-bold'}>60% in 2025</strong>, our cargo operations support airline customers, freight partners and authorised clearing agents while maintaining a strong focus on safety, security, accuracy and service delivery.
+                  </p>
+                </div>
+              </div>
+
+              <div>
+                <h3 className={`text-base sm:text-lg font-bold mb-3 ${
+                  isLight ? 'text-slate-900' : 'text-white'
+                }`}>
+                  Key services
+                </h3>
+                <ul className={`space-y-2.5 text-sm sm:text-base ${
+                  isLight ? 'text-slate-700' : 'text-slate-200'
+                }`}>
+                  {[
+                    'Import and export cargo handling.',
+                    'Cargo acceptance and documentation support.',
+                    'Warehouse handling and storage.',
+                    'Special cargo handling, subject to applicable requirements.',
+                    'Cargo messaging and tracking support.',
+                    'Coordination with airlines and authorised clearing agents.'
+                  ].map((item, idx) => (
+                    <li key={idx} className="flex items-start gap-2.5">
+                      <span className="text-slate-400 dark:text-slate-500 font-bold select-none">•</span>
+                      <span>{item}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              <div className="pt-2 flex flex-wrap items-center gap-6 text-xs sm:text-sm font-semibold">
+                <a href="tel:+233593816076" className="inline-flex items-center gap-2 text-[#204696] dark:text-[#58C1EB] hover:underline">
+                  <Phone className="w-4 h-4 text-[#72BF44]" />
+                  <span>CONTACT: +233 (0) 59 381 60 76</span>
+                </a>
+                <a href="mailto:robertamenyah@avianceghana.com" className="inline-flex items-center gap-2 text-[#204696] dark:text-[#58C1EB] hover:underline">
+                  <Mail className="w-4 h-4 text-[#009EE0]" />
+                  <span className="underline">robertamenyah@avianceghana.com</span>
+                </a>
+              </div>
+            </div>
+
+            {/* Right Column: Authentic Page Image */}
+            <div className="lg:col-span-5">
+              <div className="relative rounded-2xl overflow-hidden shadow-lg border border-slate-200/80 dark:border-slate-800 group">
+                <img
+                  src={CARGO_OFFICIAL_IMG}
+                  alt="Aviance Ghana Cargo Services"
+                  className="w-full h-auto max-h-[520px] object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
+                />
+              </div>
+            </div>
+          </div>
+        </section>
         
         {/* Cargo Facilities & Operations Photo Showcase */}
         <section className="space-y-6">
@@ -95,13 +171,13 @@ export const CargoPage: React.FC<CargoPageProps> = ({ onNavigate: _onNavigate, o
             <div>
               <div className="flex items-center gap-2 mb-1">
                 <span className="w-1.5 h-4 rounded-full bg-gradient-to-b from-[#204696] via-[#009EE0] to-[#72BF44]" />
-                <span className={`text-xs font-extrabold uppercase tracking-wider ${
+                <span className={`text-[11px] sm:text-xs font-bold uppercase tracking-[0.12em] ${
                   isLight ? 'text-[#204696]' : 'text-[#58C1EB]'
                 }`}>
                   Authentic Facility Showcase
                 </span>
               </div>
-              <h2 className={`text-xl sm:text-2xl font-bold ${isLight ? 'text-slate-900' : 'text-white'}`}>
+              <h2 className={`text-2xl sm:text-3xl font-bold tracking-[-0.025em] leading-snug ${isLight ? 'text-slate-900' : 'text-white'}`}>
                 Aviance Cargo Hub Infrastructure & Ramp Handling
               </h2>
             </div>
@@ -112,20 +188,15 @@ export const CargoPage: React.FC<CargoPageProps> = ({ onNavigate: _onNavigate, o
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
             {/* 1. Cold Room */}
-            <div className={`group rounded-2xl border overflow-hidden shadow-lg flex flex-col transition-all duration-300 hover:-translate-y-1 ${
-              isLight ? 'bg-white border-slate-200/90 shadow-slate-200/50' : 'bg-[#0C1933]/90 border-[#204696]/30'
-            }`}>
-              <div className="relative aspect-[16/11] overflow-hidden bg-slate-950">
+            <div className="group flex flex-col space-y-3">
+              <div className="relative aspect-[16/11] overflow-hidden rounded-xl bg-slate-950">
                 <img
                   src={CARGO_SERVICES_IMG}
                   alt="Aviance Cold Room and Screening Hall"
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                 />
-                <div className="absolute top-3 left-3 bg-[#204696]/90 backdrop-blur-md text-white text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full border border-[#58C1EB]/30">
-                  +2°C to +8°C Cold Chain
-                </div>
               </div>
-              <div className="p-4 flex-1 flex flex-col justify-between">
+              <div className="space-y-1">
                 <div>
                   <h3 className={`text-sm font-bold ${isLight ? 'text-slate-900' : 'text-white'}`}>
                     Cold Storage & Screening Hub
@@ -138,20 +209,15 @@ export const CargoPage: React.FC<CargoPageProps> = ({ onNavigate: _onNavigate, o
             </div>
 
             {/* 2. Warehouse Inspection */}
-            <div className={`group rounded-2xl border overflow-hidden shadow-lg flex flex-col transition-all duration-300 hover:-translate-y-1 ${
-              isLight ? 'bg-white border-slate-200/90 shadow-slate-200/50' : 'bg-[#0C1933]/90 border-[#204696]/30'
-            }`}>
-              <div className="relative aspect-[16/11] overflow-hidden bg-slate-950">
+            <div className="group flex flex-col space-y-3">
+              <div className="relative aspect-[16/11] overflow-hidden rounded-xl bg-slate-950">
                 <img
                   src={CARGO_WAREHOUSE_IMG}
                   alt="Warehouse pallet intake and carton screening"
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                 />
-                <div className="absolute top-3 left-3 bg-[#204696]/90 backdrop-blur-md text-white text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full border border-[#58C1EB]/30">
-                  Pallet Inspection
-                </div>
               </div>
-              <div className="p-4 flex-1 flex flex-col justify-between">
+              <div className="space-y-1">
                 <div>
                   <h3 className={`text-sm font-bold ${isLight ? 'text-slate-900' : 'text-white'}`}>
                     Bonded Warehouse Staging
@@ -164,20 +230,15 @@ export const CargoPage: React.FC<CargoPageProps> = ({ onNavigate: _onNavigate, o
             </div>
 
             {/* 3. Cargo Village Apron */}
-            <div className={`group rounded-2xl border overflow-hidden shadow-lg flex flex-col transition-all duration-300 hover:-translate-y-1 ${
-              isLight ? 'bg-white border-slate-200/90 shadow-slate-200/50' : 'bg-[#0C1933]/90 border-[#204696]/30'
-            }`}>
-              <div className="relative aspect-[16/11] overflow-hidden bg-slate-950">
+            <div className="group flex flex-col space-y-3">
+              <div className="relative aspect-[16/11] overflow-hidden rounded-xl bg-slate-950">
                 <img
                   src={CARGO_VILLAGE_IMG}
                   alt="Aviance Cargo Village air cargo loading and forklifts"
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                 />
-                <div className="absolute top-3 left-3 bg-[#204696]/90 backdrop-blur-md text-white text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full border border-[#58C1EB]/30">
-                  Cargo Village
-                </div>
               </div>
-              <div className="p-4 flex-1 flex flex-col justify-between">
+              <div className="space-y-1">
                 <div>
                   <h3 className={`text-sm font-bold ${isLight ? 'text-slate-900' : 'text-white'}`}>
                     Heavy Forklift Fleet Staging
@@ -190,20 +251,15 @@ export const CargoPage: React.FC<CargoPageProps> = ({ onNavigate: _onNavigate, o
             </div>
 
             {/* 4. Ramp ULD Loading */}
-            <div className={`group rounded-2xl border overflow-hidden shadow-lg flex flex-col transition-all duration-300 hover:-translate-y-1 ${
-              isLight ? 'bg-white border-slate-200/90 shadow-slate-200/50' : 'bg-[#0C1933]/90 border-[#204696]/30'
-            }`}>
-              <div className="relative aspect-[16/11] overflow-hidden bg-slate-950">
+            <div className="group flex flex-col space-y-3">
+              <div className="relative aspect-[16/11] overflow-hidden rounded-xl bg-slate-950">
                 <img
                   src={CARGO_RAMP_IMG}
                   alt="Aviance Tug TR-52 loading cargo container onto dolly"
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                 />
-                <div className="absolute top-3 left-3 bg-[#204696]/90 backdrop-blur-md text-white text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full border border-[#58C1EB]/30">
-                  Airside Turnaround
-                </div>
               </div>
-              <div className="p-4 flex-1 flex flex-col justify-between">
+              <div className="space-y-1">
                 <div>
                   <h3 className={`text-sm font-bold ${isLight ? 'text-slate-900' : 'text-white'}`}>
                     Airside ULD Ramp Delivery
@@ -219,11 +275,7 @@ export const CargoPage: React.FC<CargoPageProps> = ({ onNavigate: _onNavigate, o
 
         {/* Core Pillars */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className={`border rounded-2xl p-6 space-y-3 shadow-lg transition-all ${
-            isLight
-              ? 'bg-white border-slate-200/90 shadow-slate-200/60'
-              : 'bg-[#0C1933]/90 border-[#204696]/30 shadow-[#204696]/5'
-          }`}>
+          <div className="pt-6 border-t border-slate-200 dark:border-slate-800 space-y-3">
             <div className={`w-10 h-10 rounded-xl border flex items-center justify-center ${
               isLight
                 ? 'bg-blue-50 text-[#204696] border-blue-200'
@@ -239,11 +291,7 @@ export const CargoPage: React.FC<CargoPageProps> = ({ onNavigate: _onNavigate, o
             </p>
           </div>
 
-          <div className={`border rounded-2xl p-6 space-y-3 shadow-lg transition-all ${
-            isLight
-              ? 'bg-white border-slate-200/90 shadow-slate-200/60'
-              : 'bg-[#0C1933]/90 border-[#204696]/30 shadow-[#204696]/5'
-          }`}>
+          <div className="pt-6 border-t border-slate-200 dark:border-slate-800 space-y-3">
             <div className={`w-10 h-10 rounded-xl border flex items-center justify-center ${
               isLight
                 ? 'bg-blue-50 text-[#204696] border-blue-200'
@@ -259,11 +307,7 @@ export const CargoPage: React.FC<CargoPageProps> = ({ onNavigate: _onNavigate, o
             </p>
           </div>
 
-          <div className={`border rounded-2xl p-6 space-y-3 shadow-lg transition-all ${
-            isLight
-              ? 'bg-white border-slate-200/90 shadow-slate-200/60'
-              : 'bg-[#0C1933]/90 border-[#204696]/30 shadow-[#204696]/5'
-          }`}>
+          <div className="pt-6 border-t border-slate-200 dark:border-slate-800 space-y-3">
             <div className={`w-10 h-10 rounded-xl border flex items-center justify-center ${
               isLight
                 ? 'bg-blue-50 text-[#204696] border-blue-200'
@@ -277,74 +321,6 @@ export const CargoPage: React.FC<CargoPageProps> = ({ onNavigate: _onNavigate, o
             <p className={`text-xs leading-relaxed ${isLight ? 'text-slate-600' : 'text-slate-400'}`}>
               {t('pages.cargo.dgDesc', 'Specialized roller-bed staging areas for wide-body freighter pallets (PMC, PAG, AMF, AKE). Precision calibrated digital weigh bridges and tie-down net securing under IATA AHM.')}
             </p>
-          </div>
-        </div>
-
-        {/* Operational Flow & ICUMS Integration */}
-        <div className={`border rounded-2xl p-8 space-y-6 shadow-xl transition-all ${
-          isLight
-            ? 'bg-white border-slate-200/90 shadow-slate-200/60'
-            : 'bg-[#0C1933]/95 border-[#204696]/35 shadow-[#204696]/10'
-        }`}>
-          <div className={`flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b pb-4 ${
-            isLight ? 'border-slate-200' : 'border-slate-800'
-          }`}>
-            <div>
-              <div className={`text-xs font-semibold uppercase tracking-wider ${
-                isLight ? 'text-[#0284C7]' : 'text-[#58C1EB]'
-              }`}>
-                Logistics Architecture
-              </div>
-              <h2 className={`text-xl sm:text-2xl font-bold ${isLight ? 'text-slate-900' : 'text-white'}`}>
-                Cargo Village Operational Workflow
-              </h2>
-            </div>
-            <span className={`text-xs font-mono font-semibold ${isLight ? 'text-emerald-700' : 'text-emerald-400'}`}>
-              ICUMS Integrated (Ghana Revenue Authority)
-            </span>
-          </div>
-
-          <div className="p-4 rounded-2xl bg-blue-50/70 border border-blue-200/80 text-xs text-slate-700 leading-relaxed space-y-1 mb-4">
-            <div className="flex items-center gap-2 font-bold text-slate-900">
-              <ShieldCheck className="w-4 h-4 text-[#204696]" />
-              <span>Aviation Regulatory & Cargo Carriage Limits</span>
-            </div>
-            <p>
-              Aviance Ghana Limited provides air cargo handling, cold vault warehousing, and tarmac transfer as an independent ground service provider under IATA Standard Ground Handling Agreements (SGHA). All carriage contracts, liability limitations for cargo loss, damage or delay, and Air Waybill (AWB) conditions are governed strictly by the contracting air carrier, the Montreal Convention 1999, the Warsaw Convention, and Ghana Customs (GRA ICUMS) statutes.
-            </p>
-          </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 text-xs">
-            <div className={`p-4 rounded-xl border space-y-1.5 ${
-              isLight ? 'bg-slate-50 border-slate-200' : 'bg-slate-950 border-slate-800'
-            }`}>
-              <span className={`font-mono font-bold ${isLight ? 'text-[#204696]' : 'text-[#58C1EB]'}`}>STAGE 01</span>
-              <div className={`text-sm font-semibold ${isLight ? 'text-slate-900' : 'text-white'}`}>Cargo Intake & Verification</div>
-              <p className={isLight ? 'text-slate-600' : 'text-slate-400'}>Air Waybill validation, dimension checks, dangerous goods checklist verification, and physical receipt.</p>
-            </div>
-
-            <div className={`p-4 rounded-xl border space-y-1.5 ${
-              isLight ? 'bg-slate-50 border-slate-200' : 'bg-slate-950 border-slate-800'
-            }`}>
-              <span className={`font-mono font-bold ${isLight ? 'text-[#204696]' : 'text-[#58C1EB]'}`}>STAGE 02</span>
-              <div className={`text-sm font-semibold ${isLight ? 'text-slate-900' : 'text-white'}`}>Security Screening & Staging</div>
-              <p className={isLight ? 'text-slate-600' : 'text-slate-400'}>Dual-view cargo X-ray screening, EU RA3 verification stamp, and transfer to ambient or cold vault storage.</p>
-            </div>
-
-            <div className={`p-4 rounded-xl border space-y-1.5 ${
-              isLight ? 'bg-slate-50 border-slate-200' : 'bg-slate-950 border-slate-800'
-            }`}>
-              <span className={`font-mono font-bold ${isLight ? 'text-[#204696]' : 'text-[#58C1EB]'}`}>STAGE 03</span>
-              <div className={`text-sm font-semibold ${isLight ? 'text-slate-900' : 'text-white'}`}>Pallet ULD Assembly</div>
-              <p className={isLight ? 'text-slate-600' : 'text-slate-400'}>Pallet contour shaping, netting, weigh bridge recording, and e-manifest transmission to aircraft loadmaster.</p>
-            </div>
-
-            <div className={`p-4 rounded-xl border space-y-1.5 ${
-              isLight ? 'bg-slate-50 border-slate-200' : 'bg-slate-950 border-slate-800'
-            }`}>
-              <span className={`font-mono font-bold ${isLight ? 'text-[#204696]' : 'text-[#58C1EB]'}`}>STAGE 04</span>
-              <div className={`text-sm font-semibold ${isLight ? 'text-slate-900' : 'text-white'}`}>Tarmac Transfer & Loading</div>
-              <p className={isLight ? 'text-slate-600' : 'text-slate-400'}>Tug tractor transport to aircraft stand, main-deck or lower-deck high loader transfer, hold locks engaged.</p>
-            </div>
           </div>
         </div>
       </div>

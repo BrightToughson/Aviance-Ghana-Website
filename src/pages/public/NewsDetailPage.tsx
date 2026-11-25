@@ -13,6 +13,13 @@ import {
   MessageCircle,
   Linkedin,
   Twitter,
+  Facebook,
+  FileDown,
+  Download,
+  FileText,
+  PhoneCall,
+  Mail,
+  Calendar,
   Sparkles,
   Award,
   CheckCircle2,
@@ -30,6 +37,10 @@ import {
 import { NewsArticle } from '../../types';
 import { useTheme } from '../../context/ThemeContext';
 
+// Authentic operational imagery for multimedia fallback
+import imgCargoVillage from '../../assets/aviance_images/image_show/1780574568846.jpg';
+import imgPushback from '../../assets/aviance_images/image_show/1791968160594.jpg';
+
 interface NewsDetailPageProps {
   article: NewsArticle;
   allNews: NewsArticle[];
@@ -43,7 +54,7 @@ export const NewsDetailPage: React.FC<NewsDetailPageProps> = ({ article, allNews
   const [bookmarked, setBookmarked] = useState(false);
   const [fontSize, setFontSize] = useState<'normal' | 'large'>('normal');
   const [scrollProgress, setScrollProgress] = useState(0);
-  const [lightboxImage, setLightboxImage] = useState<{ src: string; caption: string } | null>(null);
+  const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
 
   // Track reading scroll progress
   useEffect(() => {
@@ -71,72 +82,6 @@ export const NewsDetailPage: React.FC<NewsDetailPageProps> = ({ article, allNews
       return () => document.removeEventListener('click', handleOutsideClick);
     }
   }, [menuOpen]);
-
-  // Handle escape key to close lightbox
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
-        setLightboxImage(null);
-      }
-    };
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, []);
-
-  // Social Sharing Handlers
-  const currentUrl = typeof window !== 'undefined' ? window.location.href : '';
-
-  const handleCopyLink = () => {
-    if (navigator.clipboard) {
-      navigator.clipboard.writeText(currentUrl);
-      setCopiedLink(true);
-      setMenuOpen(false);
-      setTimeout(() => setCopiedLink(false), 2500);
-    }
-  };
-
-  const handleShareLinkedIn = () => {
-    window.open(
-      `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(currentUrl)}`,
-      '_blank',
-      'noopener,noreferrer'
-    );
-    setMenuOpen(false);
-  };
-
-  const handleShareTwitter = () => {
-    window.open(
-      `https://twitter.com/intent/tweet?text=${encodeURIComponent(article.title)}&url=${encodeURIComponent(currentUrl)}`,
-      '_blank',
-      'noopener,noreferrer'
-    );
-    setMenuOpen(false);
-  };
-
-  const handleShareWhatsApp = () => {
-    window.open(
-      `https://api.whatsapp.com/send?text=${encodeURIComponent(article.title + ' — ' + currentUrl)}`,
-      '_blank',
-      'noopener,noreferrer'
-    );
-    setMenuOpen(false);
-  };
-
-  const handlePrint = () => {
-    window.print();
-    setMenuOpen(false);
-  };
-
-  // Next / Previous Navigation across authentic articles
-  const currentIndex = allNews.findIndex((n) => n.id === article.id);
-  const prevArticle = currentIndex > 0 ? allNews[currentIndex - 1] : allNews[allNews.length - 1];
-  const nextArticle = currentIndex < allNews.length - 1 ? allNews[currentIndex + 1] : allNews[0];
-  const related = allNews.filter((n) => n.id !== article.id).slice(0, 3);
-
-  // Check if article is CEO welcome (matches user screenshot for side-by-side layout)
-  const isCeoArticle =
-    article.slug.includes('richard-backhouse') ||
-    article.slug.includes('chief-executive-officer');
 
   // Secondary photos for event articles
   const secondaryPhotos: Record<string, { src: string; caption: string }[]> = {
@@ -224,82 +169,118 @@ export const NewsDetailPage: React.FC<NewsDetailPageProps> = ({ article, allNews
 
   const extraPhotos = secondaryPhotos[article.slug] || [];
 
+  // Curated multimedia photos: either secondary photos or fallback curated operational photos
+  const fallbackPhotos = [
+    {
+      src: imgPushback,
+      caption: 'Aviance Ghana Heavy Aircraft Pushback & Apron Turnaround Staging'
+    },
+    {
+      src: imgCargoVillage,
+      caption: 'Aviance Cargo Village Bonded Terminal & Cold-Chain Facility'
+    }
+  ];
+
+  const multimediaPhotos = [
+    {
+      src: article.featuredImage,
+      caption: `${article.title} — Official Media Asset`
+    },
+    ...(extraPhotos.length > 0 ? extraPhotos : fallbackPhotos)
+  ];
+
+  const activePhoto = lightboxIndex !== null ? multimediaPhotos[lightboxIndex] || multimediaPhotos[0] : null;
+
+  // Handle keyboard navigation for lightbox (Esc to close, Arrow keys to cycle photos)
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (lightboxIndex === null) return;
+      if (e.key === 'Escape') {
+        setLightboxIndex(null);
+      } else if (e.key === 'ArrowRight') {
+        setLightboxIndex((prev) => (prev !== null ? (prev + 1) % multimediaPhotos.length : 0));
+      } else if (e.key === 'ArrowLeft') {
+        setLightboxIndex((prev) => (prev !== null ? (prev - 1 + multimediaPhotos.length) % multimediaPhotos.length : 0));
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [lightboxIndex, multimediaPhotos.length]);
+
+  // Social Sharing Handlers
+  const currentUrl = typeof window !== 'undefined' ? window.location.href : '';
+
+  const handleCopyLink = () => {
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(currentUrl);
+      setCopiedLink(true);
+      setMenuOpen(false);
+      setTimeout(() => setCopiedLink(false), 2500);
+    }
+  };
+
+  const handleShareLinkedIn = () => {
+    window.open(
+      `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(currentUrl)}`,
+      '_blank',
+      'noopener,noreferrer'
+    );
+    setMenuOpen(false);
+  };
+
+  const handleShareTwitter = () => {
+    window.open(
+      `https://twitter.com/intent/tweet?text=${encodeURIComponent(article.title)}&url=${encodeURIComponent(currentUrl)}`,
+      '_blank',
+      'noopener,noreferrer'
+    );
+    setMenuOpen(false);
+  };
+
+  const handleShareWhatsApp = () => {
+    window.open(
+      `https://api.whatsapp.com/send?text=${encodeURIComponent(article.title + ' — ' + currentUrl)}`,
+      '_blank',
+      'noopener,noreferrer'
+    );
+    setMenuOpen(false);
+  };
+
+  const handleShareFacebook = () => {
+    window.open(
+      `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(currentUrl)}`,
+      '_blank',
+      'noopener,noreferrer'
+    );
+    setMenuOpen(false);
+  };
+
+  const handleEmail = () => {
+    window.location.href = `mailto:?subject=${encodeURIComponent(article.title)}&body=${encodeURIComponent('Read this official press release from Aviance Ghana:\n\n' + currentUrl)}`;
+    setMenuOpen(false);
+  };
+
+  const handlePrint = () => {
+    window.print();
+    setMenuOpen(false);
+  };
+
+  // Next / Previous Navigation across authentic articles
+  const currentIndex = allNews.findIndex((n) => n.id === article.id);
+  const prevArticle = currentIndex > 0 ? allNews[currentIndex - 1] : allNews[allNews.length - 1];
+  const nextArticle = currentIndex < allNews.length - 1 ? allNews[currentIndex + 1] : allNews[0];
+  const related = allNews.filter((n) => n.id !== article.id).slice(0, 3);
+
+  // Check if article is CEO welcome (matches user screenshot for side-by-side layout)
+  const isCeoArticle =
+    article.slug.includes('richard-backhouse') ||
+    article.slug.includes('chief-executive-officer');
+
   // Formatted date matching screenshot: "Oct 14"
   const formattedDate = new Date(article.publishedAt).toLocaleDateString('en-US', {
     month: 'short',
     day: 'numeric'
   });
-
-  // Dynamic Key Notes generator tailored with official Aviance brand context
-  const getKeyNotes = (art: NewsArticle): string[] => {
-    const notes: string[] = [];
-
-    if (art.slug.includes('breast-cancer-awareness')) {
-      notes.push('Active Corporate Social Responsibility supporting community healthcare, early detection, and civic development across Ghana.');
-      notes.push('Joined partner Delta Air Lines and BCI founder Dr. Beatrice Wiafe Addai for community walk in Asante Mampong.');
-      notes.push('Executive delegation led by CEO Richard Backhouse with solidarity from Kumasi airport operations team.');
-      notes.push('Promoting health education and solidarity with families and communities affected by breast cancer.');
-      return notes;
-    }
-
-    if (art.slug.includes('tf-group-games')) {
-      notes.push('Aviance Ghana crowned Overall Champions at the annual Teachers’ Fund Group Games.');
-      notes.push('Five championship honours won: Football, Volleyball, Men’s Sack Race, and CEO Challenge.');
-      notes.push('CEO Richard Backhouse added to the team’s honours with a personal victory in the CEO Challenge.');
-      notes.push('Fostering corporate camaraderie, fitness, and team solidarity away from airport airside duties.');
-      return notes;
-    }
-
-    if (art.category.includes('CSR') || art.category.includes('Community')) {
-      notes.push('Active Corporate Social Responsibility supporting community healthcare, early detection, and civic development across Ghana.');
-      if (art.excerpt) notes.push(art.excerpt);
-      notes.push('Strengthening community partnerships and grassroots engagement in local station communities.');
-      notes.push('Operations delivered in strict conformance with IATA ISAGO standards and GCAA safety regulations.');
-      return notes;
-    }
-
-    if (art.category.includes('Leadership') || art.category.includes('Executive')) {
-      notes.push('Strengthening aviation governance, executive leadership, safety culture, and sustainable commercial network growth.');
-      notes.push('Nationwide network stewardship across Accra (ACC), Prempeh I Kumasi (KMS), and Tamale (TML).');
-      notes.push('Focusing on ramp safety, on-time turnaround reliability, and premium airline customer experience.');
-      notes.push('Operations delivered in strict conformance with IATA ISAGO standards and GCAA safety regulations.');
-      return notes;
-    }
-
-    if (art.category.includes('Sports') || art.category.includes('Culture')) {
-      notes.push('Fostering team cohesion, recreational wellness, and corporate camaraderie across Teachers’ Fund group companies.');
-      if (art.excerpt) notes.push(art.excerpt);
-      notes.push('Celebrating athletic excellence and staff engagement beyond the airport terminal.');
-      notes.push('Building strong interpersonal relationships and shared corporate pride.');
-      return notes;
-    }
-
-    if (art.category.includes('Trade') || art.category.includes('Stakeholders')) {
-      notes.push('Showcasing world-class ground handling and cargo terminal capacity to bilateral trade stakeholders and international investors.');
-      if (art.excerpt) notes.push(art.excerpt);
-      notes.push('Strengthening Ghana’s role as West Africa’s premier air logistics and passenger transit hub.');
-      notes.push('Strict compliance with international aviation security, customs, and safety regulations.');
-      return notes;
-    }
-
-    if (art.category.includes('Cargo') || art.category.includes('Healthcare')) {
-      notes.push('State-of-the-art EU RA3 certified cold-chain terminal guaranteeing uninterrupted temperature control.');
-      if (art.excerpt) notes.push(art.excerpt);
-      notes.push('Rapid pharmaceutical, perishable, and diplomatic airfreight handling at Kotoka International Airport.');
-      notes.push('Operations delivered in strict conformance with IATA ISAGO standards and GCAA safety regulations.');
-      return notes;
-    }
-
-    // Default high-profile notes
-    notes.push('Strategic milestone reinforcing Aviance Ghana’s position as Ghana’s premier aviation ground handling service provider.');
-    if (art.excerpt) notes.push(art.excerpt);
-    notes.push('Operations delivered in strict conformance with IATA ISAGO standards and GCAA safety regulations.');
-    if (art.tags && art.tags.length > 0) {
-      notes.push(`Key Stakeholders & Focus: ${art.tags.slice(0, 4).join(' • ')}`);
-    }
-
-    return notes.slice(0, 4);
-  };
 
   // Dynamic Editorial Pull-Quote tailored for high-impact magazine presentation
   const getEditorialQuote = (art: NewsArticle): string => {
@@ -455,7 +436,6 @@ export const NewsDetailPage: React.FC<NewsDetailPageProps> = ({ article, allNews
     return { location, organization, label };
   };
 
-  const keyNotes = getKeyNotes(article);
   const editorialQuote = getEditorialQuote(article);
   const operationalPillars = getOperationalPillars(article);
   const plaqueInfo = getPlaqueInfo(article);
@@ -468,9 +448,9 @@ export const NewsDetailPage: React.FC<NewsDetailPageProps> = ({ article, allNews
       return (
         <div
           key={index}
-          className="my-7 p-6 sm:p-7 rounded-2xl bg-gradient-to-r from-blue-50/90 via-indigo-50/40 to-slate-50 border border-blue-200/90 space-y-3 shadow-xs"
+          className="my-7 p-5 sm:p-6 border-l-4 border-[#204696] bg-slate-50/80 rounded-r-xl space-y-3"
         >
-          <div className="flex items-center justify-between pb-2 border-b border-blue-100">
+          <div className="flex items-center justify-between pb-2 border-b border-slate-200">
             <p className="text-xs font-extrabold text-[#204696] uppercase tracking-wider flex items-center gap-1.5">
               <Award className="w-4 h-4 text-amber-500" /> Honours & Tournament Recognition
             </p>
@@ -528,8 +508,8 @@ export const NewsDetailPage: React.FC<NewsDetailPageProps> = ({ article, allNews
       </div>
 
       {/* Top Utility Bar (Breadcrumbs, Back to News, Text Size Toggle) - Sticky under main navbar */}
-      <div className="sticky top-[83.5px] z-30 bg-white/95 backdrop-blur-md border-b border-slate-200/90 mb-8 sm:mb-14 lg:mb-16 shadow-xs transition-all">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-2.5 sm:py-3 flex items-center justify-between gap-3">
+      <div className="sticky top-[83.5px] z-30 bg-white/95 backdrop-blur-md border-b border-slate-200/90 mb-6 sm:mb-10 shadow-xs transition-all">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2.5 sm:py-3 flex items-center justify-between gap-3">
           <div className="flex items-center gap-2 sm:gap-3 text-xs sm:text-sm min-w-0">
             <button
               onClick={() => onNavigate('/news')}
@@ -542,7 +522,10 @@ export const NewsDetailPage: React.FC<NewsDetailPageProps> = ({ article, allNews
 
             <span className="text-slate-300 shrink-0">/</span>
 
-            <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-blue-50 text-[#204696] border border-blue-200 truncate shrink-0">
+            <span
+              onClick={() => onNavigate('/news')}
+              className="text-xs font-medium text-slate-500 hover:text-[#204696] transition-colors cursor-pointer truncate shrink-0"
+            >
               {article.category}
             </span>
 
@@ -591,250 +574,161 @@ export const NewsDetailPage: React.FC<NewsDetailPageProps> = ({ article, allNews
         </div>
       </div>
 
-      {/* Main Reading Card with Official Aviance Logo Identity Stripe */}
-      <article className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="rounded-3xl border border-slate-200/90 bg-white shadow-xl shadow-slate-200/60 overflow-hidden">
-          
-          {/* Official Tri-Color Identity Stripe (Cobalt Blue, Azure Cyan, Leaf Green) */}
-          <div className="h-1.5 w-full bg-gradient-to-r from-[#204696] via-[#009EE0] to-[#72BF44]" />
+      {/* Main Content Area — Two-Column Swissport-Style Layout */}
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-12">
 
-          <div className="p-6 sm:p-10 lg:p-12 space-y-8">
+        {/* 1. Header & Headline (Clean Swissport Style — No Tag Pills) */}
+        <div className="max-w-4xl space-y-3 mb-6 sm:mb-8 text-left">
+          <div className="flex items-center gap-2.5 flex-wrap">
+            <span className="text-xs font-bold uppercase tracking-wider text-[#204696]">
+              Media Release
+            </span>
+            <span className="text-slate-300">&bull;</span>
+            <span className="flex items-center gap-1.5 text-xs text-slate-500 font-medium">
+              <Calendar className="w-3.5 h-3.5 text-slate-400" />
+              {new Date(article.publishedAt).toLocaleDateString('en-GB', {
+                day: '2-digit',
+                month: 'short',
+                year: 'numeric'
+              })}
+            </span>
+            <span className="text-slate-300">&bull;</span>
+            <span className="flex items-center gap-1 text-xs text-slate-500 font-medium">
+              <Clock className="w-3.5 h-3.5 text-[#009EE0]" />
+              {article.readTimeMinutes || 3} min read
+            </span>
+          </div>
 
-            {/* Meta Bar: Avatar, John Aryeh · Aug 11 · 1 min read, and Share / Menu */}
-            <div className="flex items-center justify-between pb-6 border-b border-slate-200 flex-wrap gap-4">
-              <div className="flex items-center gap-3.5">
-                {/* User Avatar Circle */}
-                <div className="relative">
-                  <div className="w-11 h-11 rounded-full bg-gradient-to-br from-[#204696] to-[#0F2E53] text-white flex items-center justify-center font-bold shadow-xs">
-                    {article.authorName.charAt(0)}
-                  </div>
-                  <span className="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 rounded-full bg-[#72BF44] border-2 border-white" title="Verified Official Media Desk" />
-                </div>
+          <h1 className="text-2xl sm:text-4xl lg:text-[44px] font-bold text-[#0F2E53] tracking-[-0.028em] leading-[1.16]">
+            {article.title}
+          </h1>
+        </div>
 
-                <div className="text-xs sm:text-sm flex flex-wrap items-center gap-2 text-slate-600 font-medium">
-                  <span className="font-bold text-[#0F2E53]">
-                    {article.authorName}
-                  </span>
-                  <span className="text-slate-300">&bull;</span>
-                  <span>{formattedDate}</span>
-                  <span className="text-slate-300">&bull;</span>
-                  <span className="inline-flex items-center gap-1 text-slate-500">
-                    <Clock className="w-3.5 h-3.5 text-[#009EE0]" />
-                    {article.readTimeMinutes} min read
-                  </span>
-                </div>
-              </div>
+        {/* 2. Grand Hero Image (Swissport Style) */}
+        {article.featuredImage && (
+          <div className="space-y-3 mb-8 sm:mb-12">
+            <div
+              className="rounded-2xl sm:rounded-3xl overflow-hidden bg-slate-900 group cursor-pointer relative shadow-md border border-slate-200/80"
+              onClick={() => setLightboxIndex(0)}
+            >
+              <img
+                src={article.featuredImage}
+                alt={article.title}
+                className={`w-full h-auto object-cover ${
+                  isCeoArticle || article.featuredImage.includes('richard_backhouse')
+                    ? 'object-top max-h-[580px] sm:max-h-[640px]'
+                    : 'object-center max-h-[500px] sm:max-h-[560px]'
+                } group-hover:scale-[1.01] transition-transform duration-500 ease-out`}
+              />
+            </div>
 
-              {/* Share actions & Options dropdown */}
+            {/* Media Plaque Underneath Hero */}
+            <div className="p-3.5 sm:p-4 rounded-xl bg-gradient-to-r from-slate-50 via-white to-slate-50 border border-slate-200/90 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs shadow-2xs">
               <div className="flex items-center gap-2">
-                <div className="hidden sm:flex items-center gap-1.5 text-xs text-slate-500 mr-1">
-                  <button
-                    onClick={handleShareLinkedIn}
-                    className="p-2 rounded-xl border border-slate-200 hover:bg-blue-50 hover:border-blue-200 text-blue-600 transition-colors cursor-pointer shadow-2xs"
-                    title="Share on LinkedIn"
-                  >
-                    <Linkedin className="w-4 h-4" />
-                  </button>
-                  <button
-                    onClick={handleShareTwitter}
-                    className="p-2 rounded-xl border border-slate-200 hover:bg-sky-50 hover:border-sky-200 text-sky-500 transition-colors cursor-pointer shadow-2xs"
-                    title="Share on X"
-                  >
-                    <Twitter className="w-4 h-4" />
-                  </button>
-                  <button
-                    onClick={handleShareWhatsApp}
-                    className="p-2 rounded-xl border border-slate-200 hover:bg-emerald-50 hover:border-emerald-200 text-emerald-600 transition-colors cursor-pointer shadow-2xs"
-                    title="Share on WhatsApp"
-                  >
-                    <MessageCircle className="w-4 h-4 text-[#72BF44]" />
-                  </button>
-                  <button
-                    onClick={handleCopyLink}
-                    className="p-2 rounded-xl border border-slate-200 hover:bg-slate-100 text-slate-700 transition-colors cursor-pointer shadow-2xs"
-                    title="Copy Story Link"
-                  >
-                    {copiedLink ? <Check className="w-4 h-4 text-[#72BF44]" /> : <Copy className="w-4 h-4 text-[#204696]" />}
-                  </button>
-                </div>
+                <Building2 className="w-4 h-4 text-[#204696] shrink-0" />
+                <span className="font-bold text-[#0F2E53]">{plaqueInfo.organization}</span>
+                <span className="text-slate-300">&bull;</span>
+                <span className="text-slate-600 flex items-center gap-1">
+                  <MapPin className="w-3.5 h-3.5 text-[#72BF44]" />
+                  <span>{plaqueInfo.location}</span>
+                </span>
+              </div>
+              <div className="flex items-center gap-2 text-[11px] text-slate-500 font-medium">
+                <span className="flex items-center gap-1">
+                  <ShieldCheck className="w-3.5 h-3.5 text-[#72BF44]" />
+                  <span>ISAGO Accredited Ground Service</span>
+                </span>
+              </div>
+            </div>
+          </div>
+        )}
 
-                {/* Three Dots Menu (⋮) */}
-                <div className="relative">
-                  <button
-                    id="article-options-trigger"
-                    onClick={() => setMenuOpen(!menuOpen)}
-                    className="w-10 h-10 rounded-full hover:bg-slate-100 flex items-center justify-center text-slate-500 hover:text-slate-900 transition-colors cursor-pointer"
-                    title="Share and reading options"
-                  >
-                    <MoreVertical className="w-5 h-5" />
-                  </button>
+        {/* 3. Swissport Two-Column Body Layout with Left Social Rail */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 xl:gap-12 items-start text-left">
 
-                  {/* Dropdown Menu */}
-                  {menuOpen && (
-                    <div
-                      id="article-options-menu"
-                      className="absolute right-0 top-12 z-30 w-56 rounded-2xl border border-slate-200 bg-white shadow-2xl p-2 space-y-1 animate-fade-in"
-                    >
-                      <div className="px-3 py-1.5 text-[10px] font-extrabold text-slate-400 uppercase tracking-wider">
-                        Share & Actions
-                      </div>
+          {/* Far Left Column (Desktop Social Share Rail: 1 Col) */}
+          <div className="hidden lg:flex lg:col-span-1 flex-col items-center sticky top-28 pt-2">
+            <div className="flex flex-col items-center gap-2 p-2 rounded-2xl bg-white border border-slate-200 shadow-md">
+              <button
+                onClick={handleShareWhatsApp}
+                className="p-2.5 rounded-xl hover:bg-emerald-50 text-slate-600 hover:text-[#72BF44] transition-all cursor-pointer"
+                title="Share on WhatsApp"
+              >
+                <MessageCircle className="w-5 h-5 text-[#72BF44]" />
+              </button>
 
-                      <button
-                        onClick={handleCopyLink}
-                        className="w-full px-3 py-2 text-xs font-semibold rounded-xl hover:bg-slate-100 text-slate-700 flex items-center justify-between cursor-pointer text-left transition-colors"
-                      >
-                        <span className="flex items-center gap-2">
-                          <Copy className="w-3.5 h-3.5 text-[#204696]" />
-                          <span>Copy Story Link</span>
-                        </span>
-                        {copiedLink && <Check className="w-3.5 h-3.5 text-[#72BF44] font-bold" />}
-                      </button>
+              <button
+                onClick={handleShareFacebook}
+                className="p-2.5 rounded-xl hover:bg-blue-50 text-slate-600 hover:text-[#1877F2] transition-all cursor-pointer"
+                title="Share on Facebook"
+              >
+                <Facebook className="w-5 h-5 text-[#1877F2]" />
+              </button>
 
-                      <button
-                        onClick={handleShareLinkedIn}
-                        className="w-full px-3 py-2 text-xs font-semibold rounded-xl hover:bg-slate-100 text-slate-700 flex items-center gap-2 cursor-pointer text-left transition-colors"
-                      >
-                        <Linkedin className="w-3.5 h-3.5 text-blue-600" />
-                        <span>Share to LinkedIn</span>
-                      </button>
+              <button
+                onClick={handleShareTwitter}
+                className="p-2.5 rounded-xl hover:bg-sky-50 text-slate-600 hover:text-sky-500 transition-all cursor-pointer"
+                title="Share on X (Twitter)"
+              >
+                <Twitter className="w-5 h-5 text-sky-500" />
+              </button>
 
-                      <button
-                        onClick={handleShareTwitter}
-                        className="w-full px-3 py-2 text-xs font-semibold rounded-xl hover:bg-slate-100 text-slate-700 flex items-center gap-2 cursor-pointer text-left transition-colors"
-                      >
-                        <Twitter className="w-3.5 h-3.5 text-sky-500" />
-                        <span>Share to X (Twitter)</span>
-                      </button>
+              <button
+                onClick={handleShareLinkedIn}
+                className="p-2.5 rounded-xl hover:bg-blue-50 text-slate-600 hover:text-blue-600 transition-all cursor-pointer"
+                title="Share on LinkedIn"
+              >
+                <Linkedin className="w-5 h-5 text-blue-600" />
+              </button>
 
-                      <button
-                        onClick={handleShareWhatsApp}
-                        className="w-full px-3 py-2 text-xs font-semibold rounded-xl hover:bg-slate-100 text-slate-700 flex items-center gap-2 cursor-pointer text-left transition-colors"
-                      >
-                        <MessageCircle className="w-3.5 h-3.5 text-[#72BF44]" />
-                        <span>Share via WhatsApp</span>
-                      </button>
+              <button
+                onClick={handleEmail}
+                className="p-2.5 rounded-xl hover:bg-slate-100 text-slate-600 hover:text-[#204696] transition-all cursor-pointer"
+                title="Email Article"
+              >
+                <Mail className="w-5 h-5" />
+              </button>
 
-                      <div className="border-t border-slate-100 my-1" />
+              <div className="w-5 h-[1px] bg-slate-200 my-1" />
 
-                      <button
-                        onClick={handlePrint}
-                        className="w-full px-3 py-2 text-xs font-semibold rounded-xl hover:bg-slate-100 text-slate-700 flex items-center gap-2 cursor-pointer text-left transition-colors"
-                      >
-                        <Printer className="w-3.5 h-3.5 text-slate-500" />
-                        <span>Print / PDF Story</span>
-                      </button>
-                    </div>
-                  )}
-                </div>
+              <button
+                onClick={handleCopyLink}
+                className="p-2.5 rounded-xl hover:bg-slate-100 text-slate-600 hover:text-[#204696] transition-all cursor-pointer"
+                title="Copy Link"
+              >
+                {copiedLink ? <Check className="w-5 h-5 text-[#72BF44]" /> : <Copy className="w-5 h-5 text-[#204696]" />}
+              </button>
+            </div>
+          </div>
+
+          {/* Main Story Column (7 Cols on Desktop) */}
+          <div className="col-span-1 lg:col-span-7 space-y-6">
+
+            {/* Mobile Share Bar (< lg) */}
+            <div className="flex lg:hidden items-center justify-between pb-4 border-b border-slate-200">
+              <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">Share Story</span>
+              <div className="flex items-center gap-1.5">
+                <button onClick={handleShareWhatsApp} className="p-2 rounded-lg bg-emerald-50 text-[#72BF44]"><MessageCircle className="w-4 h-4" /></button>
+                <button onClick={handleShareFacebook} className="p-2 rounded-lg bg-blue-50 text-[#1877F2]"><Facebook className="w-4 h-4" /></button>
+                <button onClick={handleShareTwitter} className="p-2 rounded-lg bg-sky-50 text-sky-500"><Twitter className="w-4 h-4" /></button>
+                <button onClick={handleShareLinkedIn} className="p-2 rounded-lg bg-blue-50 text-blue-600"><Linkedin className="w-4 h-4" /></button>
+                <button onClick={handleCopyLink} className="p-2 rounded-lg bg-slate-100 text-[#204696]">{copiedLink ? <Check className="w-4 h-4 text-[#72BF44]" /> : <Copy className="w-4 h-4" />}</button>
               </div>
             </div>
 
-            {/* Category Tag & Headline */}
-            <div className="space-y-3">
-              <div className="flex items-center gap-2">
-                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-blue-50 text-[#204696] border border-blue-200 shadow-2xs">
-                  <span className="w-2 h-2 rounded-full bg-[#72BF44]" />
-                  {article.category}
-                </span>
-                <span className="text-xs font-semibold text-slate-400">
-                  Official Press Release
-                </span>
-              </div>
-
-              <h1 className="text-2xl sm:text-4xl lg:text-[42px] font-extrabold text-[#0F2E53] tracking-tight leading-[1.22]">
-                {article.title}
-              </h1>
-            </div>
-
-            {/* GRAND FEATURED PHOTO SHOWCASE (Center-Flow) */}
-            {article.featuredImage && (
-              <div className="space-y-2">
-                <div
-                  className="rounded-2xl overflow-hidden border border-slate-200 shadow-xl bg-slate-100 group cursor-pointer relative"
-                  onClick={() => setLightboxImage({ src: article.featuredImage, caption: isCeoArticle ? 'Richard Backhouse — Chief Executive Officer, Aviance Ghana' : article.title })}
-                >
-                  <img
-                    src={article.featuredImage}
-                    alt={article.title}
-                    className={`w-full h-auto object-cover object-center ${
-                      isCeoArticle ? 'max-h-[520px]' : 'max-h-[460px] sm:max-h-[520px]'
-                    } group-hover:scale-[1.015] transition-transform duration-500 ease-out`}
-                  />
-                  <div className="absolute top-3.5 left-3.5 px-3 py-1 rounded-full bg-[#0F2E53]/90 backdrop-blur-md text-white text-xs font-bold flex items-center gap-1.5 shadow-md">
-                    <span className="w-2 h-2 rounded-full bg-[#72BF44]" />
-                    <span>{plaqueInfo.label}</span>
-                  </div>
-                  <div
-                    className="absolute top-3.5 right-3.5 p-2 rounded-full bg-white/90 backdrop-blur-md text-[#204696] hover:bg-white text-xs font-semibold shadow-md transition-colors"
-                    title="Click to expand full image"
-                  >
-                    <Maximize2 className="w-4 h-4" />
-                  </div>
-                </div>
-
-                {/* Integrated Media Plaque Underneath Hero */}
-                <div className="p-3.5 sm:p-4 rounded-xl bg-gradient-to-r from-slate-50 via-white to-slate-50 border border-slate-200/90 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs shadow-2xs">
-                  <div className="flex items-center gap-2">
-                    <Building2 className="w-4 h-4 text-[#204696] shrink-0" />
-                    <span className="font-bold text-[#0F2E53]">{plaqueInfo.organization}</span>
-                    <span className="text-slate-300">&bull;</span>
-                    <span className="text-slate-600 flex items-center gap-1">
-                      <MapPin className="w-3.5 h-3.5 text-[#72BF44]" />
-                      <span>{plaqueInfo.location}</span>
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-2 text-[11px] text-slate-500 font-medium">
-                    <span className="flex items-center gap-1">
-                      <ShieldCheck className="w-3.5 h-3.5 text-[#72BF44]" />
-                      <span>ISAGO Accredited Ground Service</span>
-                    </span>
-                  </div>
-                </div>
+            {/* Swissport-Style Bold Introductory Lead Paragraph */}
+            {paragraphs[0] && (
+              <div className="border-l-4 border-[#204696] pl-5 sm:pl-6 py-2 my-2 bg-slate-100/60 rounded-r-2xl">
+                <p className="text-lg sm:text-[21px] font-semibold text-slate-900 leading-relaxed tracking-[-0.015em]">
+                  {paragraphs[0]}
+                </p>
               </div>
             )}
 
-            {/* KEY NOTES & STRATEGIC TAKEAWAYS / EXECUTIVE MANDATE (Executive Summary Box) */}
-            <div className="rounded-2xl bg-gradient-to-br from-blue-50/90 via-slate-50 to-emerald-50/40 border border-blue-100/90 shadow-xs overflow-hidden">
-              <div className="h-1.5 w-full bg-gradient-to-r from-[#204696] via-[#009EE0] to-[#72BF44]" />
-              <div className="p-5 sm:p-6 space-y-3.5">
-                <div className="flex items-center justify-between flex-wrap gap-2">
-                  <div className="flex items-center gap-2.5">
-                    <div className="w-7 h-7 rounded-lg bg-[#204696] text-white flex items-center justify-center shadow-xs">
-                      <Sparkles className="w-4 h-4 text-[#72BF44]" />
-                    </div>
-                    <h4 className="text-sm sm:text-base font-extrabold text-[#0F2E53] tracking-tight">
-                      {isCeoArticle ? 'Key Notes & Executive Mandate' : 'Key Notes & Strategic Takeaways'}
-                    </h4>
-                  </div>
-                  <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-[#72BF44]/20 text-[#256029] border border-[#72BF44]/40 flex items-center gap-1">
-                    <CheckCircle2 className="w-3.5 h-3.5 text-[#72BF44]" /> Verified Release Facts
-                  </span>
-                </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 pt-1">
-                  {keyNotes.map((note, idx) => (
-                    <div key={idx} className="p-3 rounded-xl bg-white border border-slate-200/80 flex items-start gap-2.5 text-xs text-slate-800 shadow-2xs">
-                      <CheckCircle2 className="w-4 h-4 text-[#72BF44] mt-0.5 shrink-0" />
-                      <span className="font-semibold leading-relaxed text-xs">{note}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-
-            {/* CONTINUOUS EDITORIAL NARRATIVE FLOW */}
+            {/* Article Narrative Paragraphs */}
             <div className={`space-y-6 ${
               fontSize === 'large' ? 'text-lg leading-relaxed' : 'text-base leading-relaxed'
-            } text-[#1E293B] font-normal`}>
-
-              {/* Paragraph 1: Styled lead with brand border */}
-              {paragraphs[0] && (
-                <div className="border-l-4 border-[#204696] pl-5 sm:pl-6 py-1.5">
-                  <p className="text-lg sm:text-[21px] font-semibold text-[#0F2E53] leading-relaxed">
-                    {paragraphs[0]}
-                  </p>
-                </div>
-              )}
+            } text-slate-700 font-normal`}>
 
               {/* Paragraph 2 */}
               {paragraphs[1] && (
@@ -844,87 +738,24 @@ export const NewsDetailPage: React.FC<NewsDetailPageProps> = ({ article, allNews
               )}
 
               {/* Editorial Pull-Quote Callout with Aviance Brand Colors */}
-              <div className="my-7 p-6 sm:p-7 rounded-2xl bg-gradient-to-r from-blue-50/90 via-sky-50/40 to-slate-50 border-l-4 border-[#204696] space-y-2 shadow-xs">
+              <div className="my-7 p-6 sm:p-7 border-l-4 border-[#204696] bg-gradient-to-r from-blue-50/60 via-slate-50 to-emerald-50/30 rounded-r-2xl space-y-3 shadow-2xs">
                 <div className="flex items-start gap-3.5">
-                  <Quote className="w-6 h-6 text-[#009EE0] shrink-0 mt-0.5" />
-                  <div className="space-y-1">
-                    <p className="text-sm sm:text-base font-semibold text-[#0F2E53] italic leading-relaxed">
+                  <Quote className="w-7 h-7 text-[#009EE0] shrink-0 mt-0.5" />
+                  <div className="space-y-1.5">
+                    <p className="text-base sm:text-lg font-semibold text-[#0F2E53] italic leading-relaxed">
                       &ldquo;{editorialQuote}&rdquo;
                     </p>
                     <p className="text-xs font-bold text-slate-500 pt-1 flex items-center gap-1.5">
-                      <span className="w-1.5 h-1.5 rounded-full bg-[#72BF44]" />
+                      <span className="w-2 h-2 rounded-full bg-[#72BF44]" />
                       <span>Aviance Corporate Communications Desk</span>
                     </p>
                   </div>
                 </div>
               </div>
 
-              {/* Paragraph 3 (if present) */}
-              {paragraphs[2] && (
-                <div className="leading-relaxed text-[#1E293B]">
-                  {renderParagraphContent(paragraphs[2], 2)}
-                </div>
-              )}
-
-              {/* IN-STORY FIELD EVENT HIGHLIGHTS GALLERY (Embedded Mosaic) */}
-              {extraPhotos.length > 0 && (
-                <div className="my-8 pt-2 space-y-4">
-                  <div className="flex items-center justify-between pb-2 border-b border-slate-200">
-                    <span className="text-xs font-bold uppercase tracking-wider text-slate-800 flex items-center gap-2">
-                      <Camera className="w-4 h-4 text-[#204696]" />
-                      <span>Field Event Highlights ({extraPhotos.length})</span>
-                    </span>
-                    <span className="text-xs font-semibold text-[#204696]">
-                      Click photo to expand in full-screen
-                    </span>
-                  </div>
-
-                  {/* Multi-Column Photo Mosaic Grid */}
-                  <div className={`grid gap-4.5 ${
-                    extraPhotos.length === 1
-                      ? 'grid-cols-1'
-                      : extraPhotos.length === 2
-                        ? 'grid-cols-1 sm:grid-cols-2'
-                        : 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3'
-                  }`}>
-                    {extraPhotos.map((photo, pIdx) => (
-                      <figure
-                        key={pIdx}
-                        className="rounded-2xl overflow-hidden border border-slate-200 shadow-md bg-white group cursor-pointer transition-all hover:shadow-lg hover:border-slate-300"
-                        onClick={() => setLightboxImage(photo)}
-                      >
-                        <div className="relative overflow-hidden aspect-[4/3] bg-slate-100">
-                          <img
-                            src={photo.src}
-                            alt={photo.caption}
-                            className="w-full h-full object-cover group-hover:scale-[1.03] transition-transform duration-500"
-                          />
-                          <div className="absolute top-2.5 left-2.5 px-2.5 py-0.5 rounded-full bg-[#0F2E53]/90 backdrop-blur-md text-white text-[10px] font-bold flex items-center gap-1 shadow-md">
-                            <Camera className="w-3 h-3 text-[#72BF44]" />
-                            <span>Event Photo 0{pIdx + 1}</span>
-                          </div>
-                          <div className="absolute top-2.5 right-2.5 p-1.5 rounded-full bg-white/90 backdrop-blur-md text-[#204696] hover:bg-white text-xs font-semibold shadow-md transition-colors">
-                            <Maximize2 className="w-3.5 h-3.5" />
-                          </div>
-                        </div>
-                        <figcaption className="p-3.5 bg-white border-t border-slate-100 flex items-center justify-between text-xs text-slate-700">
-                          <span className="font-semibold text-slate-800 text-xs leading-snug line-clamp-2">
-                            {photo.caption}
-                          </span>
-                          <span className="text-[11px] text-[#204696] font-bold shrink-0 ml-2 inline-flex items-center gap-1 group-hover:translate-x-0.5 transition-transform">
-                            <Eye className="w-3.5 h-3.5 text-[#72BF44]" />
-                            <span>Zoom</span>
-                          </span>
-                        </figcaption>
-                      </figure>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {/* Remaining Paragraphs (Paragraph 4 & Onwards) */}
-              {paragraphs.slice(3).map((paragraph, index) => {
-                const actualIndex = index + 3;
+              {/* Remaining Paragraphs */}
+              {paragraphs.slice(2).map((paragraph, index) => {
+                const actualIndex = index + 2;
                 return (
                   <React.Fragment key={actualIndex}>
                     {renderParagraphContent(paragraph, actualIndex)}
@@ -933,13 +764,13 @@ export const NewsDetailPage: React.FC<NewsDetailPageProps> = ({ article, allNews
               })}
 
               {/* Operational Impact & Strategic Priorities (2×2 Grid) */}
-              <div className="pt-6 pb-2 space-y-3.5 border-t border-slate-100">
+              <div className="pt-6 pb-2 space-y-3.5 border-t border-slate-200">
                 <p className="text-xs font-bold text-[#204696] uppercase tracking-wider flex items-center gap-1.5">
                   <ShieldCheck className="w-4 h-4 text-[#72BF44]" /> Operational Impact & Strategic Priorities
                 </p>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   {operationalPillars.map((pillar, idx) => (
-                    <div key={idx} className="p-4 rounded-xl bg-slate-50 border border-slate-200/90 flex items-start gap-3 text-xs shadow-2xs">
+                    <div key={idx} className="p-4 rounded-xl bg-white border border-slate-200 flex items-start gap-3 text-xs shadow-2xs">
                       <CheckCircle2 className="w-4 h-4 text-[#72BF44] shrink-0 mt-0.5" />
                       <div>
                         <p className="font-bold text-slate-800 leading-snug">{pillar.title}</p>
@@ -961,27 +792,11 @@ export const NewsDetailPage: React.FC<NewsDetailPageProps> = ({ article, allNews
                   <span>Aviance Corporate Creed</span>
                 </div>
               </div>
+
             </div>
 
-            {/* Article Tags */}
-            {article.tags && article.tags.length > 0 && (
-              <div className="pt-6 border-t border-slate-200 flex flex-wrap items-center gap-2">
-                <span className="text-xs font-bold text-slate-500 uppercase tracking-wider mr-1">
-                  Topics:
-                </span>
-                {article.tags.map((t) => (
-                  <span
-                    key={t}
-                    className="px-3 py-1 rounded-full text-xs font-medium bg-slate-100 text-slate-700 border border-slate-200"
-                  >
-                    #{t}
-                  </span>
-                ))}
-              </div>
-            )}
-
-            {/* Author Attribution & Quick Share Banner with Logo Colors */}
-            <div className="p-6 rounded-2xl bg-gradient-to-r from-slate-50 via-white to-blue-50/40 border border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            {/* Author Attribution */}
+            <div className="p-6 rounded-2xl bg-white border border-slate-200 shadow-2xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <div className="flex items-center gap-3.5">
                 <div className="w-11 h-11 rounded-full bg-[#204696] text-white flex items-center justify-center font-bold text-sm shadow-md">
                   {article.authorName.charAt(0)}
@@ -989,76 +804,175 @@ export const NewsDetailPage: React.FC<NewsDetailPageProps> = ({ article, allNews
                 <div>
                   <p className="text-xs sm:text-sm font-bold text-slate-900 flex items-center gap-1.5">
                     <span>Published by {article.authorName}</span>
-                    <span className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 font-semibold">Official</span>
+                    <span className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 font-semibold">Official Desk</span>
                   </p>
                   <p className="text-[11px] text-slate-600 font-medium">
                     Corporate Communications Desk &bull; Aviance Ghana Limited
                   </p>
                 </div>
               </div>
+            </div>
 
-              {/* Quick Share Buttons */}
-              <div className="flex items-center gap-2">
-                <button
-                  onClick={handleShareLinkedIn}
-                  className="p-2 rounded-xl bg-white border border-slate-200 text-slate-700 hover:text-blue-600 hover:border-blue-300 transition-all cursor-pointer shadow-2xs"
-                  title="Share to LinkedIn"
-                >
-                  <Linkedin className="w-4 h-4 text-blue-600" />
-                </button>
-                <button
-                  onClick={handleShareTwitter}
-                  className="p-2 rounded-xl bg-white border border-slate-200 text-slate-700 hover:text-sky-500 hover:border-sky-300 transition-all cursor-pointer shadow-2xs"
-                  title="Share to X"
-                >
-                  <Twitter className="w-4 h-4 text-sky-500" />
-                </button>
-                <button
-                  onClick={handleShareWhatsApp}
-                  className="p-2 rounded-xl bg-white border border-slate-200 text-slate-700 hover:text-emerald-600 hover:border-emerald-300 transition-all cursor-pointer shadow-2xs"
-                  title="Share to WhatsApp"
-                >
-                  <MessageCircle className="w-4 h-4 text-[#72BF44]" />
-                </button>
-                <button
-                  onClick={handleCopyLink}
-                  className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-[#204696] hover:bg-[#183570] text-white text-xs font-bold transition-all cursor-pointer shadow-sm"
-                >
-                  {copiedLink ? (
-                    <>
-                      <Check className="w-3.5 h-3.5 text-white" />
-                      <span>Copied!</span>
-                    </>
-                  ) : (
-                    <>
-                      <Copy className="w-3.5 h-3.5 text-white" />
-                      <span>Copy Link</span>
-                    </>
-                  )}
-                </button>
+          </div>
+
+          {/* Right Sidebar Column (4 Cols on Desktop: Multimedia, PDF, Media Relations) */}
+          <div className="col-span-1 lg:col-span-4 sticky top-28 space-y-6">
+
+            {/* 1. MULTIMEDIA SECTION (Swissport Style) */}
+            <div className="p-6 rounded-2xl bg-white border border-slate-200 shadow-sm space-y-4">
+              <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+                <h3 className="font-bold text-base text-slate-900 tracking-tight flex items-center gap-2">
+                  <Camera className="w-4 h-4 text-[#204696]" />
+                  <span>Multimedia</span>
+                </h3>
+                <div className="flex items-center gap-2 text-xs font-bold text-[#204696]">
+                  <span
+                    onClick={() => setLightboxIndex(0)}
+                    className="hover:underline cursor-pointer"
+                  >
+                    View All ({multimediaPhotos.length})
+                  </span>
+                </div>
+              </div>
+
+              {/* Multimedia Thumbnails Grid (Swissport Style) */}
+              <div className="grid grid-cols-2 gap-3">
+                {multimediaPhotos.slice(0, 4).map((photo, pIdx) => (
+                  <div
+                    key={pIdx}
+                    onClick={() => setLightboxIndex(pIdx)}
+                    className="group relative rounded-xl overflow-hidden aspect-[4/3] bg-slate-100 border border-slate-200 cursor-pointer shadow-2xs hover:shadow-md transition-all"
+                  >
+                    <img
+                      src={photo.src}
+                      alt={photo.caption}
+                      className={`w-full h-full object-cover group-hover:scale-110 transition-transform duration-500 ease-out ${
+                        photo.src.includes('richard_backhouse') ? 'object-top' : 'object-center'
+                      }`}
+                    />
+                    <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-1 text-white text-xs font-bold">
+                      <Eye className="w-4 h-4 text-[#72BF44]" />
+                      <span>Zoom</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              <p className="text-[11px] text-slate-500 leading-relaxed">
+                Official high-resolution photography cleared for editorial & press publication.
+              </p>
+            </div>
+
+            {/* 2. DOWNLOAD PDF SECTION (Swissport Style) */}
+            <div className="p-6 rounded-2xl bg-white border border-slate-200 shadow-sm space-y-4">
+              <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+                <h3 className="font-bold text-base text-slate-900 tracking-tight flex items-center gap-2">
+                  <FileDown className="w-4 h-4 text-[#204696]" />
+                  <span>Download PDF</span>
+                </h3>
+                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-blue-50 text-[#204696] border border-blue-200">
+                  Official Release
+                </span>
+              </div>
+
+              <div
+                onClick={handlePrint}
+                className="group p-3.5 rounded-xl border border-slate-200 hover:border-[#204696] bg-slate-50/70 hover:bg-blue-50/40 transition-all duration-300 cursor-pointer flex items-start gap-3"
+              >
+                <div className="w-10 h-10 rounded-lg bg-red-50 text-red-600 border border-red-200 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+                  <FileText className="w-5 h-5" />
+                </div>
+                <div className="space-y-1 min-w-0 flex-1">
+                  <p className="text-xs font-bold text-slate-900 group-hover:text-[#204696] transition-colors line-clamp-2 leading-snug">
+                    AvianceGhana_MediaRelease_{article.slug.slice(0, 35)}.pdf
+                  </p>
+                  <div className="flex items-center gap-2 text-[11px] text-slate-500">
+                    <span>PDF Release</span>
+                    <span>&bull;</span>
+                    <span>1.2 MB</span>
+                    <span>&bull;</span>
+                    <span className="text-[#204696] font-bold inline-flex items-center gap-1 group-hover:underline">
+                      <Download className="w-3 h-3" />
+                      <span>Save / Print</span>
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* 3. MEDIA RELATIONS CONTACT DESK */}
+            <div className="p-6 rounded-2xl bg-gradient-to-br from-slate-50 via-white to-blue-50/30 border border-slate-200 shadow-sm space-y-4">
+              <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+                <h3 className="font-bold text-base text-slate-900 tracking-tight flex items-center gap-2">
+                  <Building2 className="w-4 h-4 text-[#204696]" />
+                  <span>Media Relations</span>
+                </h3>
+                <span className="w-2.5 h-2.5 rounded-full bg-[#72BF44]" title="Press Desk Open" />
+              </div>
+
+              <div className="space-y-3 text-xs text-slate-600">
+                <p className="font-medium text-slate-700 leading-relaxed">
+                  For official inquiries, spokesperson interviews, or high-res broadcast footage:
+                </p>
+
+                <div className="space-y-2.5 pt-1 font-semibold">
+                  <a
+                    href="mailto:media@avianceghana.com"
+                    className="flex items-center gap-2.5 text-slate-800 hover:text-[#204696] transition-colors"
+                  >
+                    <Mail className="w-4 h-4 text-[#009EE0] shrink-0" />
+                    <span>media@avianceghana.com</span>
+                  </a>
+
+                  <div className="flex items-center gap-2.5 text-slate-800">
+                    <PhoneCall className="w-4 h-4 text-[#72BF44] shrink-0" />
+                    <span>+233 (0) 302 778 022</span>
+                  </div>
+
+                  <div className="flex items-center gap-2.5 text-slate-600">
+                    <MapPin className="w-4 h-4 text-[#204696] shrink-0" />
+                    <span>Kotoka Int. Airport, Terminal 3, Accra</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* 4. CERTIFIED ACCREDITATION BADGE */}
+            <div className="p-5 rounded-2xl bg-[#0F2E53] text-white shadow-md space-y-2.5">
+              <div className="flex items-center gap-2 text-xs font-bold text-[#72BF44]">
+                <ShieldCheck className="w-4 h-4" />
+                <span>Certified Ground Handling Provider</span>
+              </div>
+              <p className="text-xs text-slate-300 leading-relaxed">
+                Delivering passenger turnaround, ramp handling, and air cargo under IATA ISAGO & EU RA3 certification.
+              </p>
+              <div className="pt-1 flex items-center gap-2 text-[10px] text-slate-400 font-mono">
+                <span className="px-2 py-0.5 rounded bg-white/10 text-white">GCAA Certified</span>
+                <span className="px-2 py-0.5 rounded bg-white/10 text-white">ISAGO Registered</span>
               </div>
             </div>
 
           </div>
 
         </div>
-      </article>
 
-      {/* Story Navigator: Previous & Next Article Cards */}
-      <section className="max-w-4xl mx-auto px-4 sm:px-6 pt-10">
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      </main>
+
+      {/* Story Navigator: Previous & Next Article */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-10 border-t border-slate-200">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
           {/* Previous Story */}
           {prevArticle && (
             <div
               onClick={() => onNavigate(`/news/${prevArticle.slug}`)}
-              className="p-5 rounded-2xl border border-slate-200 bg-white hover:border-[#204696]/60 shadow-xs hover:shadow-md transition-all cursor-pointer group flex items-center justify-between"
+              className="py-3 hover:opacity-80 transition-all cursor-pointer group flex items-center justify-between"
             >
               <div className="space-y-1">
-                <span className="text-[10px] font-extrabold uppercase tracking-wider text-slate-400 flex items-center gap-1">
-                  <ChevronLeft className="w-3 h-3 group-hover:-translate-x-0.5 transition-transform text-[#204696]" />
+                <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500 flex items-center gap-1">
+                  <ChevronLeft className="w-3.5 h-3.5 group-hover:-translate-x-0.5 transition-transform text-[#204696]" />
                   Previous Story
                 </span>
-                <p className="text-xs sm:text-sm font-bold text-slate-900 group-hover:text-[#204696] transition-colors line-clamp-1">
+                <p className="text-sm font-bold text-slate-900 group-hover:text-[#204696] transition-colors line-clamp-1">
                   {prevArticle.title}
                 </p>
               </div>
@@ -1069,14 +983,14 @@ export const NewsDetailPage: React.FC<NewsDetailPageProps> = ({ article, allNews
           {nextArticle && (
             <div
               onClick={() => onNavigate(`/news/${nextArticle.slug}`)}
-              className="p-5 rounded-2xl border border-slate-200 bg-white hover:border-[#204696]/60 shadow-xs hover:shadow-md transition-all cursor-pointer group flex items-center justify-between text-right"
+              className="py-3 hover:opacity-80 transition-all cursor-pointer group flex items-center justify-between text-right"
             >
               <div className="space-y-1 ml-auto">
-                <span className="text-[10px] font-extrabold uppercase tracking-wider text-slate-400 flex items-center justify-end gap-1">
+                <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500 flex items-center justify-end gap-1">
                   Next Story
-                  <ChevronRight className="w-3 h-3 group-hover:translate-x-0.5 transition-transform text-[#204696]" />
+                  <ChevronRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform text-[#204696]" />
                 </span>
-                <p className="text-xs sm:text-sm font-bold text-slate-900 group-hover:text-[#204696] transition-colors line-clamp-1">
+                <p className="text-sm font-bold text-slate-900 group-hover:text-[#204696] transition-colors line-clamp-1">
                   {nextArticle.title}
                 </p>
               </div>
@@ -1087,9 +1001,9 @@ export const NewsDetailPage: React.FC<NewsDetailPageProps> = ({ article, allNews
 
       {/* Related Stories Section Below Article */}
       {related.length > 0 && (
-        <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-12 space-y-6">
+        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-12 space-y-6">
           <div className="flex items-center justify-between">
-            <h3 className="text-xl font-bold text-[#0F2E53]">
+            <h3 className="text-xl sm:text-2xl font-bold tracking-[-0.02em] text-[#0F2E53]">
               More News from Aviance Ghana
             </h3>
             <button
@@ -1105,29 +1019,39 @@ export const NewsDetailPage: React.FC<NewsDetailPageProps> = ({ article, allNews
               <div
                 key={r.id}
                 onClick={() => onNavigate(`/news/${r.slug}`)}
-                className="group cursor-pointer rounded-2xl border border-slate-200 bg-white hover:border-[#204696]/50 shadow-xs hover:shadow-lg transition-all duration-300 flex flex-col justify-between overflow-hidden"
+                className="group cursor-pointer flex flex-col justify-between space-y-3"
               >
-                <div className="relative h-36 overflow-hidden bg-slate-100">
+                <div className="relative aspect-[16/10] rounded-xl overflow-hidden bg-slate-100">
                   <img
                     src={r.featuredImage}
                     alt={r.title}
-                    className="w-full h-full object-cover group-hover:scale-105 transition duration-500"
+                    className={`w-full h-full object-cover group-hover:scale-105 transition duration-500 ${
+                      r.featuredImage.includes('richard_backhouse') ? 'object-top' : 'object-center'
+                    }`}
                     loading="lazy"
                   />
-                  <span className="absolute top-2 left-2 px-2 py-0.5 rounded text-[9px] font-bold bg-[#204696] text-white">
-                    {r.category}
-                  </span>
+                  {/* Media Count Tag Only (Swissport Style) */}
+                  <div className="absolute top-2.5 right-2.5 px-2 py-0.5 rounded-full bg-slate-900/60 backdrop-blur-md text-white text-[10px] font-semibold flex items-center gap-1 shadow-sm border border-white/15 pointer-events-none">
+                    <Camera className="w-3 h-3 text-white/90" />
+                    <span>{(secondaryPhotos[r.slug]?.length || 0) + 1}</span>
+                  </div>
                 </div>
 
-                <div className="p-4 space-y-2 flex-1 flex flex-col justify-between">
+                <div className="space-y-2 flex-1 flex flex-col justify-between">
                   <div>
-                    <span className="text-[10px] text-slate-400 font-medium">
-                      {new Date(r.publishedAt).toLocaleDateString('en-GB', {
-                        day: '2-digit',
-                        month: 'short',
-                        year: 'numeric'
-                      })}
-                    </span>
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className="text-[10px] font-bold text-[#204696] uppercase tracking-wider">
+                        {r.category}
+                      </span>
+                      <span className="text-slate-300">&bull;</span>
+                      <span className="text-[10px] text-slate-400 font-medium">
+                        {new Date(r.publishedAt).toLocaleDateString('en-GB', {
+                          day: '2-digit',
+                          month: 'short',
+                          year: 'numeric'
+                        })}
+                      </span>
+                    </div>
                     <h4 className="text-xs sm:text-sm font-bold text-slate-900 group-hover:text-[#204696] transition-colors line-clamp-2 mt-0.5">
                       {r.title}
                     </h4>
@@ -1154,35 +1078,264 @@ export const NewsDetailPage: React.FC<NewsDetailPageProps> = ({ article, allNews
         </button>
       </div>
 
-      {/* Lightbox Modal for Photo Zooming */}
-      {lightboxImage && (
+      {/* Lightbox Modal (Swissport-Inspired Media Viewer — "More Nicer") */}
+      {lightboxIndex !== null && activePhoto && (
         <div
-          className="fixed inset-0 z-50 bg-slate-950/90 backdrop-blur-md flex items-center justify-center p-4 animate-fade-in cursor-pointer"
-          onClick={() => setLightboxImage(null)}
+          className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-3 sm:p-6 lg:p-8 animate-fade-in cursor-pointer overflow-y-auto"
+          onClick={() => setLightboxIndex(null)}
         >
+          {/* Floating Close Button outside card (Top-Left Swissport Signature) */}
+          <button
+            onClick={() => setLightboxIndex(null)}
+            className="fixed top-5 left-5 z-50 hidden sm:flex items-center gap-2 text-white/80 hover:text-white transition-colors cursor-pointer group"
+            title="Close viewer (Esc)"
+          >
+            <span className="w-10 h-10 rounded-full bg-white/10 group-hover:bg-white/20 backdrop-blur-md border border-white/20 flex items-center justify-center transition-all shadow-lg">
+              <X className="w-5 h-5" />
+            </span>
+            <span className="text-xs font-semibold tracking-wide uppercase opacity-0 group-hover:opacity-100 transition-opacity">
+              Close
+            </span>
+          </button>
+
+          {/* Floating Close Button (Top-Right on Mobile) */}
+          <button
+            onClick={() => setLightboxIndex(null)}
+            className="fixed top-4 right-4 z-50 sm:hidden w-10 h-10 rounded-full bg-white/20 hover:bg-white text-white hover:text-slate-900 backdrop-blur-md border border-white/30 flex items-center justify-center transition-all cursor-pointer shadow-xl active:scale-95"
+            title="Close viewer"
+          >
+            <X className="w-5 h-5" />
+          </button>
+
+          {/* Modal Card Frame (Swissport Pure White Card) */}
           <div
-            className="relative max-w-4xl max-h-[90vh] bg-slate-900 rounded-2xl overflow-hidden shadow-2xl border border-white/20 cursor-auto"
+            className="relative bg-white rounded-2xl sm:rounded-3xl shadow-[0_25px_70px_rgba(0,0,0,0.35)] border border-slate-200/80 max-w-5xl lg:max-w-6xl w-full overflow-hidden p-6 sm:p-8 lg:p-10 cursor-auto my-auto"
             onClick={(e) => e.stopPropagation()}
           >
+            {/* In-Card Close Button on top-right */}
             <button
-              onClick={() => setLightboxImage(null)}
-              className="absolute top-4 right-4 z-10 p-2.5 rounded-full bg-black/60 hover:bg-black/90 text-white transition-all cursor-pointer shadow-lg"
-              title="Close image view (Esc)"
+              onClick={() => setLightboxIndex(null)}
+              className="absolute top-5 right-5 sm:top-6 sm:right-6 z-20 w-9 h-9 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 hover:text-slate-900 flex items-center justify-center transition-all cursor-pointer shadow-xs active:scale-95"
+              title="Close viewer (Esc)"
             >
-              <X className="w-5 h-5" />
+              <X className="w-4 h-4" />
             </button>
-            <img
-              src={lightboxImage.src}
-              alt={lightboxImage.caption}
-              className="w-full h-auto max-h-[75vh] object-contain mx-auto"
-            />
-            <div className="p-4 sm:p-5 bg-slate-950 border-t border-white/10 text-center space-y-1">
-              <p className="text-sm font-semibold text-white">
-                {lightboxImage.caption}
-              </p>
-              <p className="text-[11px] text-slate-400">
-                Aviance Ghana Official Media Archive &bull; Press Esc to close
-              </p>
+
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-10 items-stretch">
+
+              {/* Left Column: Media & Story Information (Swissport Style) */}
+              <div className="lg:col-span-4 flex flex-col justify-between space-y-6 text-left border-b lg:border-b-0 lg:border-r border-slate-100 pb-6 lg:pb-0 lg:pr-8">
+                <div className="space-y-4">
+                  {/* Headline (Swissport Bold Style) */}
+                  <h3 className="text-lg sm:text-xl lg:text-2xl font-bold text-slate-900 leading-snug tracking-tight pr-6">
+                    {article.title}
+                  </h3>
+
+                  {/* ID & Legal Info (Swissport Exact Layout) */}
+                  <div className="space-y-2 text-xs text-slate-500 pt-2 border-t border-slate-100">
+                    <div>
+                      <span className="text-[10px] font-bold tracking-wider text-slate-400 uppercase block">
+                        ID
+                      </span>
+                      <p className="font-mono text-slate-900 font-bold text-sm tracking-wide">
+                        {139000 + (lightboxIndex + 1) * 24}
+                      </p>
+                    </div>
+
+                    <div>
+                      <p className="text-slate-600 font-medium text-xs">
+                        &copy; Aviance Ghana Limited
+                      </p>
+                    </div>
+
+                    <div className="pt-1">
+                      <p className="text-slate-500 text-xs leading-relaxed font-normal">
+                        {activePhoto.caption}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Bottom Left: Share & Download Button */}
+                <div className="space-y-4 pt-4 border-t border-slate-100">
+                  {/* Share Icons Row (Swissport Style) */}
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-bold uppercase tracking-wider text-slate-900 block">
+                        Share
+                      </span>
+                      {copiedLink && (
+                        <span className="text-[11px] font-bold text-[#72BF44] animate-fade-in flex items-center gap-1">
+                          <Check className="w-3 h-3" /> Copied!
+                        </span>
+                      )}
+                    </div>
+
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <button
+                        onClick={handleCopyLink}
+                        className="w-8 h-8 rounded-full bg-slate-50 hover:bg-slate-100 text-slate-700 hover:text-[#204696] transition-all cursor-pointer border border-slate-200 flex items-center justify-center shadow-xs"
+                        title="Copy Story Link"
+                      >
+                        <Copy className="w-3.5 h-3.5" />
+                      </button>
+
+                      <button
+                        onClick={handleShareFacebook}
+                        className="w-8 h-8 rounded-full bg-slate-50 hover:bg-blue-50 text-slate-700 hover:text-[#1877F2] transition-all cursor-pointer border border-slate-200 flex items-center justify-center shadow-xs"
+                        title="Share on Facebook"
+                      >
+                        <Facebook className="w-3.5 h-3.5" />
+                      </button>
+
+                      <button
+                        onClick={handleShareTwitter}
+                        className="w-8 h-8 rounded-full bg-slate-50 hover:bg-slate-100 text-slate-700 hover:text-black transition-all cursor-pointer border border-slate-200 flex items-center justify-center shadow-xs"
+                        title="Share on X"
+                      >
+                        <Twitter className="w-3.5 h-3.5" />
+                      </button>
+
+                      <button
+                        onClick={handleShareLinkedIn}
+                        className="w-8 h-8 rounded-full bg-slate-50 hover:bg-blue-50 text-slate-700 hover:text-[#0A66C2] transition-all cursor-pointer border border-slate-200 flex items-center justify-center shadow-xs"
+                        title="Share on LinkedIn"
+                      >
+                        <Linkedin className="w-3.5 h-3.5" />
+                      </button>
+
+                      <button
+                        onClick={handleEmail}
+                        className="w-8 h-8 rounded-full bg-slate-50 hover:bg-slate-100 text-slate-700 hover:text-[#204696] transition-all cursor-pointer border border-slate-200 flex items-center justify-center shadow-xs"
+                        title="Email Media Asset"
+                      >
+                        <Mail className="w-3.5 h-3.5" />
+                      </button>
+
+                      <button
+                        onClick={handleShareWhatsApp}
+                        className="w-8 h-8 rounded-full bg-slate-50 hover:bg-emerald-50 text-slate-700 hover:text-[#25D366] transition-all cursor-pointer border border-slate-200 flex items-center justify-center shadow-xs"
+                        title="Share on WhatsApp"
+                      >
+                        <MessageCircle className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Download High-Res Button */}
+                  <a
+                    href={activePhoto.src}
+                    download={`Aviance_Media_Asset_${lightboxIndex + 1}.jpg`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-full inline-flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-[#204696] hover:bg-[#153170] text-white text-xs sm:text-sm font-bold shadow-md hover:shadow-lg transition-all cursor-pointer active:scale-[0.99]"
+                  >
+                    <Download className="w-4 h-4 text-[#72BF44]" />
+                    <span>Download Media Asset</span>
+                  </a>
+                </div>
+              </div>
+
+              {/* Right Column: Main Image Showcase, Thumbnails Strip & Counter */}
+              <div className="lg:col-span-8 flex flex-col justify-between space-y-4">
+                
+                {/* Main Large Image Stage */}
+                <div className="relative rounded-2xl overflow-hidden bg-slate-950 flex items-center justify-center h-[320px] sm:h-[420px] lg:h-[470px] shadow-inner group">
+                  <img
+                    src={activePhoto.src}
+                    alt={activePhoto.caption}
+                    className="w-full h-full object-contain mx-auto transition-all duration-300"
+                  />
+
+                  {/* Top-Right Action Controls on Image (Swissport Style) */}
+                  <div className="absolute top-3.5 right-3.5 flex items-center gap-2 z-10">
+                    <a
+                      href={activePhoto.src}
+                      download={`Aviance_Photo_${lightboxIndex + 1}.jpg`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="w-9 h-9 rounded-full bg-black/60 hover:bg-[#204696] text-white/90 hover:text-white backdrop-blur-md flex items-center justify-center transition-all cursor-pointer shadow-md"
+                      title="Download image"
+                    >
+                      <Download className="w-4 h-4" />
+                    </a>
+
+                    <a
+                      href={activePhoto.src}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="w-9 h-9 rounded-full bg-black/60 hover:bg-[#204696] text-white/90 hover:text-white backdrop-blur-md flex items-center justify-center transition-all cursor-pointer shadow-md"
+                      title="Open full resolution in new tab"
+                    >
+                      <Maximize2 className="w-4 h-4" />
+                    </a>
+                  </div>
+
+                  {/* Previous Photo Arrow */}
+                  {multimediaPhotos.length > 1 && (
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setLightboxIndex((prev) => (prev !== null ? (prev - 1 + multimediaPhotos.length) % multimediaPhotos.length : 0));
+                      }}
+                      className="absolute left-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-black/60 hover:bg-black/90 text-white backdrop-blur-md flex items-center justify-center transition-all cursor-pointer shadow-md active:scale-95 z-10"
+                      aria-label="Previous photo"
+                    >
+                      <ChevronLeft className="w-5 h-5" />
+                    </button>
+                  )}
+
+                  {/* Next Photo Arrow */}
+                  {multimediaPhotos.length > 1 && (
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setLightboxIndex((prev) => (prev !== null ? (prev + 1) % multimediaPhotos.length : 0));
+                      }}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-black/60 hover:bg-black/90 text-white backdrop-blur-md flex items-center justify-center transition-all cursor-pointer shadow-md active:scale-95 z-10"
+                      aria-label="Next photo"
+                    >
+                      <ChevronRight className="w-5 h-5" />
+                    </button>
+                  )}
+                </div>
+
+                {/* Bottom Row: Thumbnails Strip on Left, Counter on Right (Swissport Style) */}
+                <div className="flex items-center justify-between gap-4 pt-1">
+                  {/* Thumbnails Strip */}
+                  <div className="flex items-center gap-2.5 overflow-x-auto py-1">
+                    {multimediaPhotos.map((photo, idx) => (
+                      <button
+                        key={idx}
+                        onClick={() => setLightboxIndex(idx)}
+                        className={`relative rounded-lg overflow-hidden w-16 h-12 sm:w-20 sm:h-14 shrink-0 transition-all cursor-pointer border ${
+                          idx === lightboxIndex
+                            ? 'border-[#204696] ring-2 ring-[#204696] ring-offset-2 opacity-100 scale-105 shadow-md'
+                            : 'border-slate-200 opacity-60 hover:opacity-100'
+                        }`}
+                        aria-label={`View photo ${idx + 1}`}
+                      >
+                        <img
+                          src={photo.src}
+                          alt=""
+                          className={`w-full h-full object-cover ${
+                            photo.src.includes('richard_backhouse') ? 'object-top' : 'object-center'
+                          }`}
+                        />
+                      </button>
+                    ))}
+                  </div>
+
+                  {/* Counter: "1 of 1" or "1 of 3" (Swissport Style) */}
+                  <div className="text-right shrink-0">
+                    <span className="text-xs sm:text-sm font-mono font-bold text-slate-500 whitespace-nowrap">
+                      {lightboxIndex + 1} of {multimediaPhotos.length}
+                    </span>
+                  </div>
+                </div>
+
+              </div>
+
             </div>
           </div>
         </div>

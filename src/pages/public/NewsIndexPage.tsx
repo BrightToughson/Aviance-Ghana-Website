@@ -16,14 +16,15 @@ import {
   Tag,
   Building2,
   Award,
-  Shuffle,
-  Play,
-  Pause,
   Loader2,
-  CheckCircle2
+  CheckCircle2,
+  LayoutGrid,
+  Layers
 } from 'lucide-react';
 import { NewsArticle } from '../../types';
 import { useTheme } from '../../context/ThemeContext';
+import { SlidePagination } from '../../components/ui/SlidePagination';
+import { useSwipeGesture } from '../../hooks/useSwipeGesture';
 
 interface NewsIndexPageProps {
   news: NewsArticle[];
@@ -39,14 +40,81 @@ export const NewsIndexPage: React.FC<NewsIndexPageProps> = ({ news, onNavigate }
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const sentinelRef = useRef<HTMLDivElement | null>(null);
 
+  // Rolling mode & responsive items
+  const [viewMode, setViewMode] = useState<'rolling' | 'grid'>('rolling');
+  const [newsSlide, setNewsSlide] = useState(0);
+  const [isNewsPaused, setIsNewsPaused] = useState(false);
+  const [visibleCardsCount, setVisibleCardsCount] = useState(3);
+
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth < 640) {
+        setVisibleCardsCount(1);
+      } else if (window.innerWidth < 1024) {
+        setVisibleCardsCount(2);
+      } else {
+        setVisibleCardsCount(3);
+      }
+    };
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  // Unified Gestures for News Carousel (Touch Swipe & Desktop Mouse Drag)
+  const { handlers: newsSwipeHandlers } = useSwipeGesture({
+    onSwipeLeft: () => setNewsSlide((prev) => Math.min(prev + 1, maxNewsSlide)),
+    onSwipeRight: () => setNewsSlide((prev) => Math.max(prev - 1, 0)),
+    threshold: 45,
+    enableMouseDrag: true,
+  });
+
+  // Rolling mode & touch swipe for Photo Highlights / Moments Gallery
+  const [momentsSlide, setMomentsSlide] = useState(0);
+  const [isMomentsPaused, setIsMomentsPaused] = useState(false);
+  const maxMomentsSlide = Math.max(0, 6 - visibleCardsCount);
+
+  // Auto-advance moments
+  useEffect(() => {
+    if (isMomentsPaused) return;
+    const interval = setInterval(() => {
+      setMomentsSlide((prev) => (prev >= maxMomentsSlide ? 0 : prev + 1));
+    }, 4800);
+    return () => clearInterval(interval);
+  }, [isMomentsPaused, maxMomentsSlide]);
+
+  // Unified Gestures for Moments Carousel (Touch Swipe & Desktop Mouse Drag)
+  const { handlers: momentsSwipeHandlers } = useSwipeGesture({
+    onSwipeLeft: () => setMomentsSlide((prev) => Math.min(prev + 1, maxMomentsSlide)),
+    onSwipeRight: () => setMomentsSlide((prev) => Math.max(prev - 1, 0)),
+    threshold: 45,
+    enableMouseDrag: true,
+  });
+
+  // Media count per article for Swissport-style tag
+  const getMediaCount = (slug: string): number => {
+    const counts: Record<string, number> = {
+      'aviance-ghana-emerges-as-overall-champions-at-tf-group-games': 4,
+      'aviance-ghana-walks-for-breast-cancer-awareness-in-asante-mampong': 3,
+      'aviance-ghana-supports-the-orbis-flying-eye-hospital-programme': 3,
+      'aviance-ghana-commences-domestic-operations': 3,
+      'aviance-ghana-hosts-uk-parliamentary-delegation': 2,
+      'aviance-ghana-at-2024-asogli-yam-festival': 2,
+      'we-are-expanding-our-horizons': 2,
+      'aviance-ghana-wins-best-growing-company-cargo-ground-handler-of-the-year-air-2024': 2,
+      'celebrating-25-years': 2,
+      'remembrance-day-at-aviance': 2,
+    };
+    return counts[slug] || 1;
+  };
+
   // Top 3 Featured Headlines
   const featuredArticles = news.slice(0, 3);
   const [featuredIndex, setFeaturedIndex] = useState(0);
   const [isAutoPlaying, setIsAutoPlaying] = useState(true);
-  const [isShuffling, setIsShuffling] = useState(false);
   const [progress, setProgress] = useState(0);
 
-  // Auto-switch randomly every 6 seconds
+  // Auto-switch smoothly every 6 seconds
   useEffect(() => {
     if (!isAutoPlaying || featuredArticles.length <= 1) return;
 
@@ -57,11 +125,7 @@ export const NewsIndexPage: React.FC<NewsIndexPageProps> = ({ news, onNavigate }
     const timer = setInterval(() => {
       setProgress((prev) => {
         if (prev >= 100) {
-          setFeaturedIndex((currentIdx) => {
-            const remaining = [0, 1, 2].filter((i) => i !== currentIdx && i < featuredArticles.length);
-            const randomPick = remaining[Math.floor(Math.random() * remaining.length)];
-            return randomPick !== undefined ? randomPick : (currentIdx + 1) % featuredArticles.length;
-          });
+          setFeaturedIndex((currentIdx) => (currentIdx + 1) % featuredArticles.length);
           return 0;
         }
         return prev + progressStep;
@@ -70,19 +134,6 @@ export const NewsIndexPage: React.FC<NewsIndexPageProps> = ({ news, onNavigate }
 
     return () => clearInterval(timer);
   }, [isAutoPlaying, featuredArticles.length]);
-
-  const handleRandomSwitch = (e?: React.MouseEvent) => {
-    if (e) e.stopPropagation();
-    setIsShuffling(true);
-    setProgress(0);
-    setIsAutoPlaying(true);
-    setFeaturedIndex((currentIdx) => {
-      const remaining = [0, 1, 2].filter((i) => i !== currentIdx && i < featuredArticles.length);
-      const randomPick = remaining[Math.floor(Math.random() * remaining.length)];
-      return randomPick !== undefined ? randomPick : (currentIdx + 1) % featuredArticles.length;
-    });
-    setTimeout(() => setIsShuffling(false), 500);
-  };
 
   const handleNextFeatured = (e?: React.MouseEvent) => {
     if (e) e.stopPropagation();
@@ -97,6 +148,14 @@ export const NewsIndexPage: React.FC<NewsIndexPageProps> = ({ news, onNavigate }
     setIsAutoPlaying(true);
     setFeaturedIndex((prev) => (prev - 1 + featuredArticles.length) % featuredArticles.length);
   };
+
+  // Unified Gestures for Featured News Story (Touch Swipe & Desktop Mouse Drag)
+  const { handlers: featuredSwipeHandlers } = useSwipeGesture({
+    onSwipeLeft: () => handleNextFeatured(),
+    onSwipeRight: () => handlePrevFeatured(),
+    threshold: 40,
+    enableMouseDrag: true,
+  });
 
   const categories = [
     'All',
@@ -167,6 +226,17 @@ export const NewsIndexPage: React.FC<NewsIndexPageProps> = ({ news, onNavigate }
   });
 
   const visibleArticles = filtered.slice(0, visibleCount);
+
+  const maxNewsSlide = Math.max(0, filtered.length - visibleCardsCount);
+
+  // Auto-advance news rolling
+  useEffect(() => {
+    if (viewMode !== 'rolling' || isNewsPaused || filtered.length <= visibleCardsCount) return;
+    const interval = setInterval(() => {
+      setNewsSlide((prev) => (prev >= maxNewsSlide ? 0 : prev + 1));
+    }, 5000);
+    return () => clearInterval(interval);
+  }, [viewMode, isNewsPaused, maxNewsSlide, filtered.length, visibleCardsCount]);
 
   // Automatic Infinite Scroll: loads more releases seamlessly as user scrolls down
   useEffect(() => {
@@ -265,12 +335,7 @@ export const NewsIndexPage: React.FC<NewsIndexPageProps> = ({ news, onNavigate }
             <span className="text-[#204696] font-semibold">News</span>
           </div>
 
-          <div className="flex items-center gap-2">
-            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-blue-50 text-[#204696] border border-blue-200">
-              <span className="w-1.5 h-1.5 rounded-full bg-[#204696] animate-pulse" />
-              Official Aviance Media Desk
-            </span>
-          </div>
+
         </div>
       </div>
 
@@ -281,188 +346,104 @@ export const NewsIndexPage: React.FC<NewsIndexPageProps> = ({ news, onNavigate }
         </div>
         
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-4">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-xs sm:text-sm font-semibold text-blue-100">
-            <FileText className="w-4 h-4 text-[#009EE0]" />
-            <span>Corporate News, Press Releases & Bulletins</span>
-          </div>
-
-          <h1 className="text-3xl sm:text-5xl font-black tracking-tight text-white uppercase">
-            NEWS & MEDIA CENTER
+          <h1 className="text-3xl sm:text-4xl lg:text-[46px] font-bold tracking-[-0.028em] text-white leading-[1.14]">
+            News & Media Centre
           </h1>
 
-          <p className="text-base sm:text-xl text-blue-100/95 font-light leading-relaxed max-w-3xl">
+          <p className="text-base sm:text-lg text-blue-100/90 font-normal leading-relaxed max-w-3xl">
             Stay informed with official updates regarding station operations, community initiatives, executive appointments, and international aviation milestones.
           </p>
-
-          <div className="flex flex-wrap items-center gap-3 pt-2 text-xs text-blue-200">
-            <span className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/10 backdrop-blur-sm">
-              <Award className="w-3.5 h-3.5 text-amber-300" />
-              {news.length} Official Press Releases & Stories
-            </span>
-            <span className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/10 backdrop-blur-sm">
-              <Building2 className="w-3.5 h-3.5 text-[#009EE0]" />
-              Accra &bull; Kumasi &bull; Tamale Stations
-            </span>
-          </div>
         </div>
       </section>
 
       {/* Main Body */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14 sm:py-20 lg:py-24 pb-24 sm:pb-32 space-y-16 sm:space-y-24 lg:space-y-32">
         
-        {/* 3 FEATURED HEADLINES SHOWCASE WITH RANDOM SWITCHING & ANIMATION */}
+        {/* 3 FEATURED HEADLINES SHOWCASE WITH ANIMATION & GESTURES */}
         {featuredArticles.length > 0 && activeFeatured && (
           <section className="space-y-4">
-            {/* Top Bar with Controls */}
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-              <div className="flex items-center gap-3">
-                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-extrabold bg-blue-50 text-[#204696] border border-blue-200 shadow-2xs">
-                  <Sparkles className="w-3.5 h-3.5 text-[#009EE0]" />
-                  <span>3 FEATURED HEADLINES</span>
-                </span>
-                <span className="text-xs font-semibold text-slate-500 hidden sm:inline-flex items-center gap-1.5">
-                  <span className="w-2 h-2 rounded-full bg-[#72BF44] animate-pulse" />
-                  <span>Random Switch Active</span>
-                </span>
-              </div>
-
-              {/* Action Buttons: Shuffle, Play/Pause, Next/Prev */}
-              <div className="flex items-center gap-2">
-                <button
-                  onClick={handleRandomSwitch}
-                  className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border text-xs font-bold transition-all cursor-pointer shadow-2xs ${
-                    isShuffling
-                      ? 'bg-[#204696] text-white border-[#204696] scale-95 shadow-md'
-                      : 'bg-white text-slate-700 hover:text-[#204696] hover:bg-blue-50 border-slate-200'
-                  }`}
-                  title="Switch to a random featured headline"
-                >
-                  <Shuffle className={`w-3.5 h-3.5 text-[#009EE0] ${isShuffling ? 'animate-spin' : ''}`} />
-                  <span>Random Switch</span>
-                </button>
-
-                <button
-                  onClick={() => setIsAutoPlaying(!isAutoPlaying)}
-                  className="p-2 rounded-xl bg-white border border-slate-200 text-slate-600 hover:text-[#204696] hover:bg-slate-50 text-xs shadow-2xs cursor-pointer transition-colors"
-                  title={isAutoPlaying ? 'Pause auto-switching' : 'Resume auto-switching'}
-                >
-                  {isAutoPlaying ? <Pause className="w-3.5 h-3.5" /> : <Play className="w-3.5 h-3.5 text-[#72BF44]" />}
-                </button>
-
-                <div className="flex items-center gap-1">
-                  <button
-                    onClick={handlePrevFeatured}
-                    className="p-2 rounded-xl bg-white border border-slate-200 text-slate-600 hover:text-[#204696] hover:bg-slate-50 text-xs shadow-2xs cursor-pointer transition-colors"
-                    title="Previous story"
-                  >
-                    <ChevronLeft className="w-4 h-4" />
-                  </button>
-                  <button
-                    onClick={handleNextFeatured}
-                    className="p-2 rounded-xl bg-white border border-slate-200 text-slate-600 hover:text-[#204696] hover:bg-slate-50 text-xs shadow-2xs cursor-pointer transition-colors"
-                    title="Next story"
-                  >
-                    <ChevronRight className="w-4 h-4" />
-                  </button>
-                </div>
-              </div>
-            </div>
-
-            {/* Main Featured Card with Smooth Animation */}
+            {/* Main Featured Showcase with Unified Gestures */}
             <div
               key={activeFeatured.id}
               onClick={() => onNavigate(`/news/${activeFeatured.slug}`)}
-              className="animate-featured-switch group cursor-pointer rounded-3xl border border-slate-200/90 bg-white shadow-xl hover:shadow-2xl transition-all duration-300 overflow-hidden"
+              {...featuredSwipeHandlers}
+              className="animate-featured-switch group cursor-grab active:cursor-grabbing select-none grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center py-4"
             >
-              {/* Aviance Identity Tri-Color Top Accent Stripe */}
-              <div className="h-1.5 w-full bg-gradient-to-r from-[#204696] via-[#009EE0] to-[#72BF44]" />
+              {/* Image Side */}
+              <div className="lg:col-span-7 relative min-h-[300px] sm:min-h-[400px] rounded-2xl overflow-hidden bg-slate-900">
+                <img
+                  src={activeFeatured.featuredImage}
+                  alt={activeFeatured.title}
+                  className={`w-full h-full object-cover ${
+                    activeFeatured.featuredImage.includes('richard_backhouse') ? 'object-[center_12%]' : 'object-center'
+                  } group-hover:scale-105 transition-transform duration-700 ease-out`}
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-slate-950/70 via-transparent to-transparent lg:hidden" />
 
-              <div className="grid grid-cols-1 lg:grid-cols-12 items-stretch">
-                {/* Image Side */}
-                <div className="lg:col-span-7 relative min-h-[300px] sm:min-h-[400px] overflow-hidden bg-slate-900">
-                  <img
-                    src={activeFeatured.featuredImage}
-                    alt={activeFeatured.title}
-                    className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-700 ease-out"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-slate-950/70 via-transparent to-transparent lg:hidden" />
-                  
-                  {/* Category Pill with Green Dot */}
-                  <div className="absolute top-4 left-4 flex items-center gap-2">
-                    <span className="px-3 py-1 rounded-full text-xs font-extrabold bg-[#0F2E53]/90 backdrop-blur-md text-white shadow-md border border-white/20 flex items-center gap-1.5">
-                      <span className="w-2 h-2 rounded-full bg-[#72BF44]" />
-                      {activeFeatured.category}
+                {/* Expand badge */}
+                <div className="absolute bottom-4 right-4 px-3 py-1.5 rounded-full bg-slate-900/80 backdrop-blur-md text-white text-xs font-semibold flex items-center gap-1.5 opacity-90 group-hover:opacity-100 transition-opacity">
+                  <span>Read Release</span>
+                  <ArrowRight className="w-3.5 h-3.5 text-[#009EE0] group-hover:translate-x-1 transition-transform" />
+                </div>
+              </div>
+
+              {/* Text Side */}
+              <div className="lg:col-span-5 flex flex-col justify-between space-y-6">
+                <div className="space-y-4">
+                  <div className="flex items-center gap-3 text-xs text-slate-500">
+                    <span className="flex items-center gap-1 font-bold text-[#204696]">
+                      <Calendar className="w-3.5 h-3.5" />
+                      {new Date(activeFeatured.publishedAt).toLocaleDateString('en-GB', {
+                        day: '2-digit',
+                        month: 'short',
+                        year: 'numeric'
+                      })}
                     </span>
-                    <span className="px-2.5 py-1 rounded-full text-[11px] font-bold bg-white/90 backdrop-blur-md text-[#204696] shadow-md hidden sm:inline-flex">
-                      Headline {featuredIndex + 1} of 3
+                    <span>&bull;</span>
+                    <span className="flex items-center gap-1 font-medium text-slate-500">
+                      <Clock className="w-3.5 h-3.5 text-[#009EE0]" />
+                      {activeFeatured.readTimeMinutes} min read
                     </span>
                   </div>
 
-                  {/* Expand badge */}
-                  <div className="absolute bottom-4 right-4 px-3 py-1.5 rounded-full bg-slate-900/80 backdrop-blur-md text-white text-xs font-semibold flex items-center gap-1.5 opacity-90 group-hover:opacity-100 transition-opacity">
-                    <span>Read Release</span>
-                    <ArrowRight className="w-3.5 h-3.5 text-[#009EE0] group-hover:translate-x-1 transition-transform" />
-                  </div>
+                  <h2 className="text-xl sm:text-2xl lg:text-[27px] font-extrabold text-[#0F2E53] group-hover:text-[#204696] transition-colors leading-[1.25]">
+                    {activeFeatured.title}
+                  </h2>
+
+                  <p className="text-xs sm:text-sm text-slate-600 leading-relaxed line-clamp-4">
+                    {activeFeatured.excerpt}
+                  </p>
+
+                  {/* Key Stakeholders / Tag Pills */}
+                  {activeFeatured.tags && activeFeatured.tags.length > 0 && (
+                    <div className="flex flex-wrap gap-1.5 pt-1">
+                      {activeFeatured.tags.slice(0, 3).map((tag) => (
+                        <span
+                          key={tag}
+                          className="px-2.5 py-0.5 rounded-md text-[11px] font-semibold bg-slate-100 border border-slate-200 text-slate-600"
+                        >
+                          #{tag}
+                        </span>
+                      ))}
+                    </div>
+                  )}
                 </div>
 
-                {/* Text Side */}
-                <div className="lg:col-span-5 p-6 sm:p-9 flex flex-col justify-between space-y-6 bg-gradient-to-br from-white via-slate-50/50 to-blue-50/30">
-                  <div className="space-y-4">
-                    <div className="flex items-center gap-3 text-xs text-slate-500">
-                      <span className="flex items-center gap-1 font-bold text-[#204696]">
-                        <Calendar className="w-3.5 h-3.5" />
-                        {new Date(activeFeatured.publishedAt).toLocaleDateString('en-GB', {
-                          day: '2-digit',
-                          month: 'short',
-                          year: 'numeric'
-                        })}
-                      </span>
-                      <span>&bull;</span>
-                      <span className="flex items-center gap-1 font-medium text-slate-500">
-                        <Clock className="w-3.5 h-3.5 text-[#009EE0]" />
-                        {activeFeatured.readTimeMinutes} min read
-                      </span>
+                <div className="pt-4 border-t border-slate-200 flex items-center justify-between">
+                  <div className="flex items-center gap-2.5">
+                    <div className="w-9 h-9 rounded-full bg-gradient-to-br from-[#204696] to-[#0F2E53] text-white flex items-center justify-center font-bold text-xs shadow-xs">
+                      {activeFeatured.authorName.charAt(0)}
                     </div>
-
-                    <h2 className="text-xl sm:text-2xl lg:text-[27px] font-extrabold text-[#0F2E53] group-hover:text-[#204696] transition-colors leading-[1.25]">
-                      {activeFeatured.title}
-                    </h2>
-
-                    <p className="text-xs sm:text-sm text-slate-600 leading-relaxed line-clamp-4">
-                      {activeFeatured.excerpt}
-                    </p>
-
-                    {/* Key Stakeholders / Tag Pills */}
-                    {activeFeatured.tags && activeFeatured.tags.length > 0 && (
-                      <div className="flex flex-wrap gap-1.5 pt-1">
-                        {activeFeatured.tags.slice(0, 3).map((tag) => (
-                          <span
-                            key={tag}
-                            className="px-2.5 py-0.5 rounded-md text-[11px] font-semibold bg-white border border-slate-200 text-slate-600"
-                          >
-                            #{tag}
-                          </span>
-                        ))}
-                      </div>
-                    )}
+                    <div className="text-xs">
+                      <p className="font-bold text-[#0F2E53]">{activeFeatured.authorName}</p>
+                      <p className="text-[11px] text-slate-500 font-medium">{activeFeatured.authorRole}</p>
+                    </div>
                   </div>
 
-                  <div className="pt-4 border-t border-slate-200 flex items-center justify-between">
-                    <div className="flex items-center gap-2.5">
-                      <div className="w-9 h-9 rounded-full bg-gradient-to-br from-[#204696] to-[#0F2E53] text-white flex items-center justify-center font-bold text-xs shadow-xs">
-                        {activeFeatured.authorName.charAt(0)}
-                      </div>
-                      <div className="text-xs">
-                        <p className="font-bold text-[#0F2E53]">{activeFeatured.authorName}</p>
-                        <p className="text-[11px] text-slate-500 font-medium">{activeFeatured.authorRole}</p>
-                      </div>
-                    </div>
-
-                    <span className="inline-flex items-center gap-1.5 text-xs font-bold text-[#204696] group-hover:text-[#183570] transition-colors">
-                      <span>Full Story</span>
-                      <ArrowRight className="w-4 h-4 text-[#204696] group-hover:translate-x-1 transition-transform" />
-                    </span>
-                  </div>
+                  <span className="inline-flex items-center gap-1.5 text-xs font-bold text-[#204696] group-hover:text-[#183570] transition-colors">
+                    <span>Full Story</span>
+                    <ArrowRight className="w-4 h-4 text-[#204696] group-hover:translate-x-1 transition-transform" />
+                  </span>
                 </div>
               </div>
             </div>
@@ -589,13 +570,14 @@ export const NewsIndexPage: React.FC<NewsIndexPageProps> = ({ news, onNavigate }
               ))}
             </div>
 
+            {/* Position Counter */}
             <p className="text-slate-500 text-xs">
-              Showing <span className="font-bold text-slate-800 dark:text-slate-200">{visibleArticles.length}</span> of <span className="font-bold text-[#204696] dark:text-[#009EE0]">{filtered.length}</span> articles
+              Showing <span className="font-bold text-slate-800 dark:text-slate-200">{filtered.length}</span> articles
             </p>
           </div>
         </div>
 
-        {/* ARTICLES GRID */}
+        {/* ARTICLES SECTION (ROLLING SHOWCASE) */}
         {filtered.length === 0 ? (
           <div className="py-16 text-center rounded-2xl border border-dashed border-slate-300 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-900/40 p-8 space-y-3">
             <Search className="w-10 h-10 mx-auto text-slate-400" />
@@ -609,118 +591,145 @@ export const NewsIndexPage: React.FC<NewsIndexPageProps> = ({ news, onNavigate }
                 setSelectedYear('All');
                 setSearchQuery('');
                 setVisibleCount(12);
+                setNewsSlide(0);
               }}
-              className="px-4 py-2 rounded-xl bg-[#204696] text-white text-xs font-bold hover:bg-[#153170] cursor-pointer shadow-sm transition-all"
+              className="btn-primary !py-2.5 !px-6 text-xs"
             >
               Reset All Filters
             </button>
           </div>
         ) : (
-          <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {visibleArticles.map((article) => (
-            <article
-              key={article.id}
-              onClick={() => onNavigate(`/news/${article.slug}`)}
-              className={`group cursor-pointer rounded-2xl border overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between ${
-                isLight
-                  ? 'bg-white border-slate-200/90 hover:border-[#204696]/40'
-                  : 'bg-[#0C1933] border-[#204696]/30 hover:border-[#009EE0]/60'
-              }`}
-            >
-              <div>
-                {/* Article Image */}
-                <div className="relative h-48 sm:h-52 overflow-hidden bg-slate-900">
-                  <img
-                    src={article.featuredImage}
-                    alt={article.title}
-                    className="w-full h-full object-cover group-hover:scale-105 transition duration-500"
-                    loading="lazy"
-                  />
-                  <div className="absolute top-3 left-3">
-                    <span className="px-2.5 py-1 rounded-full text-[10px] font-extrabold bg-[#204696] text-white shadow-md">
-                      {article.category}
-                    </span>
-                  </div>
-                </div>
-
-                {/* Content */}
-                <div className="p-6 space-y-3">
-                  <div className="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400">
-                    <Calendar className="w-3.5 h-3.5 text-[#204696] dark:text-[#009EE0]" />
-                    <span>
-                      {new Date(article.publishedAt).toLocaleDateString('en-GB', {
-                        day: '2-digit',
-                        month: 'short',
-                        year: 'numeric'
-                      })}
-                    </span>
-                    <span>&bull;</span>
-                    <Clock className="w-3.5 h-3.5" />
-                    <span>{article.readTimeMinutes} min</span>
-                  </div>
-
-                  <h3 className="text-base sm:text-lg font-bold text-[#11244C] dark:text-white group-hover:text-[#204696] dark:group-hover:text-[#009EE0] transition-colors line-clamp-2 leading-snug">
-                    {article.title}
-                  </h3>
-
-                  <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed line-clamp-3">
-                    {article.excerpt}
-                  </p>
-                </div>
-              </div>
-
-              {/* Card Footer */}
-              <div className="px-6 pb-6 pt-3 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between text-xs">
-                <span className="flex items-center gap-1.5 text-slate-500 dark:text-slate-400">
-                  <User className="w-3.5 h-3.5" />
-                  <span className="truncate max-w-[120px] font-medium">{article.authorName}</span>
-                </span>
-                <span className="text-[#204696] dark:text-[#009EE0] group-hover:translate-x-1 transition-transform flex items-center gap-1 font-bold">
-                  Read Article <ArrowRight className="w-3 h-3" />
-                </span>
-              </div>
-            </article>
-          ))}
-        </section>
-        )}
-
-        {/* AUTOMATIC INFINITE SCROLL / LOAD MORE */}
-        {filtered.length > 0 && (
-          <div className="pt-2">
-            {visibleCount < filtered.length ? (
-              <div
-                ref={sentinelRef}
-                className="py-8 flex flex-col items-center justify-center space-y-3"
+          /* Rolling Showcase Mode with Dedicated Gutters */
+          <div
+            className="relative px-8 sm:px-12 lg:px-16 select-none cursor-grab active:cursor-grabbing"
+            onMouseEnter={() => setIsNewsPaused(true)}
+            onMouseLeave={() => setIsNewsPaused(false)}
+            {...newsSwipeHandlers}
+          >
+            {/* Left Side Arrow Button */}
+            {filtered.length > visibleCardsCount && (
+              <button
+                type="button"
+                onClick={() => setNewsSlide((prev) => (prev <= 0 ? maxNewsSlide : prev - 1))}
+                aria-label="Previous articles"
+                className="absolute left-0 sm:left-1 lg:left-2 top-1/2 -translate-y-1/2 z-30 w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-white dark:bg-slate-800 shadow-xl border border-slate-200/90 dark:border-slate-700 text-slate-700 dark:text-slate-200 hover:text-white hover:bg-[#204696] hover:border-[#204696] active:scale-90 transition-all duration-300 flex items-center justify-center cursor-pointer hover:scale-110"
               >
-                <div className="flex items-center gap-3 px-5 py-2.5 rounded-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-semibold text-slate-700 dark:text-slate-200 shadow-sm">
-                  <Loader2 className="w-4 h-4 text-[#204696] dark:text-[#009EE0] animate-spin" />
-                  <span>Loading more stories automatically...</span>
-                  <span className="px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-blue-50 dark:bg-blue-950/60 text-[#204696] dark:text-[#009EE0] border border-blue-200 dark:border-blue-800">
-                    {filtered.length - visibleCount} remaining
-                  </span>
-                </div>
-                <p className="text-[11px] text-slate-400 dark:text-slate-500">
-                  Showing {visibleArticles.length} of {filtered.length} total releases &bull; Scroll down to load more
-                </p>
+                <ChevronLeft className="w-5 h-5 sm:w-6 sm:h-6" />
+              </button>
+            )}
+
+            {/* Right Side Arrow Button */}
+            {filtered.length > visibleCardsCount && (
+              <button
+                type="button"
+                onClick={() => setNewsSlide((prev) => (prev >= maxNewsSlide ? 0 : prev + 1))}
+                aria-label="Next articles"
+                className="absolute right-0 sm:right-1 lg:right-2 top-1/2 -translate-y-1/2 z-30 w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-white dark:bg-slate-800 shadow-xl border border-slate-200/90 dark:border-slate-700 text-slate-700 dark:text-slate-200 hover:text-white hover:bg-[#204696] hover:border-[#204696] active:scale-90 transition-all duration-300 flex items-center justify-center cursor-pointer hover:scale-110"
+              >
+                <ChevronRight className="w-5 h-5 sm:w-6 sm:h-6" />
+              </button>
+            )}
+
+            <div className="overflow-hidden -mx-3 py-2">
+              <div
+                className="flex transition-transform duration-700 ease-out"
+                style={{
+                  transform: `translateX(-${newsSlide * (100 / visibleCardsCount)}%)`
+                }}
+              >
+                {filtered.map((article) => (
+                  <div
+                    key={article.id}
+                    className="w-full sm:w-1/2 lg:w-1/3 shrink-0 px-3"
+                  >
+                    <article
+                      onClick={() => onNavigate(`/news/${article.slug}`)}
+                      className="group cursor-pointer flex flex-col justify-between h-full space-y-4 bg-white dark:bg-slate-900 rounded-2xl sm:rounded-3xl border border-slate-200/90 dark:border-slate-800 p-5 shadow-xs hover:shadow-xl hover:border-slate-300 transition-all duration-300 text-left"
+                    >
+                      <div className="space-y-4">
+                        {/* Article Image */}
+                        <div className="relative aspect-[16/10] rounded-xl sm:rounded-2xl overflow-hidden bg-slate-900">
+                          <img
+                            src={article.featuredImage}
+                            alt={article.title}
+                            className={`w-full h-full object-cover group-hover:scale-105 transition duration-500 ${
+                              article.featuredImage.includes('richard_backhouse') ? 'object-top' : 'object-center'
+                            }`}
+                            loading="lazy"
+                          />
+                          {/* Media Count Tag Only (Swissport Style) */}
+                          <div className="absolute top-3 right-3 px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-full bg-slate-900/60 backdrop-blur-md text-white text-[11px] sm:text-xs font-semibold flex items-center gap-1.5 shadow-md border border-white/15 pointer-events-none">
+                            <Camera className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-white/90" />
+                            <span>{getMediaCount(article.slug)}</span>
+                          </div>
+                        </div>
+
+                        {/* Content */}
+                        <div className="space-y-2.5">
+                          <div className="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400">
+                            <span className="font-bold text-[#204696] dark:text-[#009EE0] uppercase text-[10px] tracking-wider">
+                              {article.category}
+                            </span>
+                            <span>&bull;</span>
+                            <Calendar className="w-3.5 h-3.5 text-[#204696] dark:text-[#009EE0]" />
+                            <span>
+                              {new Date(article.publishedAt).toLocaleDateString('en-GB', {
+                                day: '2-digit',
+                                month: 'short',
+                                year: 'numeric'
+                              })}
+                            </span>
+                            <span>&bull;</span>
+                            <Clock className="w-3.5 h-3.5" />
+                            <span>{article.readTimeMinutes} min</span>
+                          </div>
+
+                          <h3 className="text-base sm:text-lg font-bold text-[#11244C] dark:text-white group-hover:text-[#204696] dark:group-hover:text-[#009EE0] transition-colors line-clamp-2 leading-snug">
+                            {article.title}
+                          </h3>
+
+                          <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed line-clamp-3">
+                            {article.excerpt}
+                          </p>
+                        </div>
+                      </div>
+
+                      {/* Card Footer */}
+                      <div className="pt-3 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between text-xs">
+                        <span className="flex items-center gap-1.5 text-slate-500 dark:text-slate-400">
+                          <User className="w-3.5 h-3.5" />
+                          <span className="truncate max-w-[120px] font-medium">{article.authorName}</span>
+                        </span>
+                        <span className="inline-flex items-center gap-1.5 font-bold text-[#204696] dark:text-[#009EE0]">
+                          <span className="underline underline-offset-4 decoration-2 decoration-[#72BF44]">
+                            Read Article
+                          </span>
+                          <ArrowRight className="w-3.5 h-3.5 text-[#72BF44] group-hover:translate-x-1.5 transition-transform duration-300" />
+                        </span>
+                      </div>
+                    </article>
+                  </div>
+                ))}
               </div>
-            ) : (
-              <div className="py-8 flex flex-col items-center justify-center space-y-1.5 text-center">
-                <div className="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800/60 text-xs font-bold text-emerald-700 dark:text-emerald-400 shadow-xs">
-                  <CheckCircle2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
-                  <span>All {filtered.length} official press releases loaded</span>
-                </div>
-                <p className="text-[11px] text-slate-400 dark:text-slate-500">
-                  You have reached the end of the Aviance Ghana news archive
-                </p>
+            </div>
+
+            {/* Modern Numbered Slide Indicator Capsule */}
+            {maxNewsSlide > 0 && (
+              <div className="flex items-center justify-center pt-4">
+                <SlidePagination
+                  current={newsSlide}
+                  total={maxNewsSlide + 1}
+                  onChange={setNewsSlide}
+                />
               </div>
             )}
           </div>
         )}
 
 
-        {/* PHOTO HIGHLIGHTS & ARCHIVE GALLERY */}
+        {/* PHOTO HIGHLIGHTS & ARCHIVE GALLERY (ROLLING SHOWCASE) */}
         <section className="space-y-6 pt-8 border-t border-slate-200 dark:border-slate-800">
-          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-3">
+          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
             <div>
               <div className="inline-flex items-center gap-1.5 text-xs font-bold text-[#72BF44] uppercase tracking-wider mb-1">
                 <Camera className="w-4 h-4" /> Aviance in Action
@@ -728,52 +737,104 @@ export const NewsIndexPage: React.FC<NewsIndexPageProps> = ({ news, onNavigate }
               <h2 className="text-2xl sm:text-3xl font-extrabold text-[#11244C] dark:text-white">
                 Photo Highlights & Operational Moments
               </h2>
+              <p className="text-xs sm:text-sm text-slate-500 max-w-md mt-1">
+                A visual glimpse into our airline partner events, community outreach, sports tournaments, and airport airside team.
+              </p>
             </div>
-            <p className="text-xs sm:text-sm text-slate-500 max-w-md">
-              A visual glimpse into our airline partner events, community outreach, sports tournaments, and airport airside team.
-            </p>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {galleryMoments.map((item, idx) => (
-              <div
-                key={idx}
-                onClick={() => onNavigate(`/news/${item.slug}`)}
-                className={`group cursor-pointer rounded-2xl border overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between ${
-                  isLight
-                    ? 'bg-white border-slate-200/90'
-                    : 'bg-[#0C1933] border-[#204696]/30'
-                }`}
+          {/* Rolling Showcase Mode with Dedicated Gutters and Side Circular Navigation Buttons */}
+          <div
+            className="relative px-8 sm:px-12 lg:px-16 select-none cursor-grab active:cursor-grabbing"
+            onMouseEnter={() => setIsMomentsPaused(true)}
+            onMouseLeave={() => setIsMomentsPaused(false)}
+            {...momentsSwipeHandlers}
+          >
+            {/* Left Side Arrow Button */}
+            {galleryMoments.length > visibleCardsCount && (
+              <button
+                type="button"
+                onClick={() => setMomentsSlide((prev) => (prev <= 0 ? maxMomentsSlide : prev - 1))}
+                aria-label="Previous moment"
+                className="absolute left-0 sm:left-1 lg:left-2 top-1/2 -translate-y-1/2 z-30 w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-white dark:bg-slate-800 shadow-xl border border-slate-200/90 dark:border-slate-700 text-slate-700 dark:text-slate-200 hover:text-white hover:bg-[#204696] hover:border-[#204696] active:scale-90 transition-all duration-300 flex items-center justify-center cursor-pointer hover:scale-110"
               >
-                <div>
-                  <div className="relative h-48 overflow-hidden bg-slate-900">
-                    <img
-                      src={item.src}
-                      alt={item.title}
-                      className="w-full h-full object-cover group-hover:scale-105 transition duration-500"
-                      loading="lazy"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent opacity-80 group-hover:opacity-60 transition-opacity" />
-                    <span className="absolute top-3 left-3 px-2 py-0.5 rounded text-[10px] font-bold bg-[#11244C]/90 text-white backdrop-blur-sm border border-white/20">
-                      {item.tag}
-                    </span>
-                  </div>
-                  <div className="p-4 space-y-1">
-                    <h4 className="text-sm font-bold text-[#11244C] dark:text-white group-hover:text-[#204696] dark:group-hover:text-[#009EE0] transition-colors">
-                      {item.title}
-                    </h4>
-                    <p className="text-xs text-slate-500 dark:text-slate-400 line-clamp-2">
-                      {item.caption}
-                    </p>
-                  </div>
-                </div>
+                <ChevronLeft className="w-5 h-5 sm:w-6 sm:h-6" />
+              </button>
+            )}
 
-                <div className="px-4 pb-4 pt-1 flex items-center justify-between text-xs font-bold text-[#204696] dark:text-[#009EE0] border-t border-slate-100 dark:border-slate-800/80">
-                  <span>Read Full Story</span>
-                  <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
-                </div>
+            {/* Right Side Arrow Button */}
+            {galleryMoments.length > visibleCardsCount && (
+              <button
+                type="button"
+                onClick={() => setMomentsSlide((prev) => (prev >= maxMomentsSlide ? 0 : prev + 1))}
+                aria-label="Next moment"
+                className="absolute right-0 sm:right-1 lg:right-2 top-1/2 -translate-y-1/2 z-30 w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-white dark:bg-slate-800 shadow-xl border border-slate-200/90 dark:border-slate-700 text-slate-700 dark:text-slate-200 hover:text-white hover:bg-[#204696] hover:border-[#204696] active:scale-90 transition-all duration-300 flex items-center justify-center cursor-pointer hover:scale-110"
+              >
+                <ChevronRight className="w-5 h-5 sm:w-6 sm:h-6" />
+              </button>
+            )}
+
+            <div className="overflow-hidden -mx-3 py-2">
+              <div
+                className="flex transition-transform duration-700 ease-out"
+                style={{
+                  transform: `translateX(-${momentsSlide * (100 / visibleCardsCount)}%)`
+                }}
+              >
+                {galleryMoments.map((item, idx) => (
+                  <div
+                    key={idx}
+                    className="w-full sm:w-1/2 lg:w-1/3 shrink-0 px-3"
+                  >
+                    <div
+                      onClick={() => onNavigate(`/news/${item.slug}`)}
+                      className="group cursor-pointer flex flex-col justify-between h-full space-y-3 bg-white dark:bg-slate-900 rounded-2xl p-4 sm:p-5 border border-slate-200/90 dark:border-slate-800 shadow-xs hover:shadow-xl hover:border-slate-300 transition-all duration-300 text-left"
+                    >
+                      <div className="space-y-3">
+                        <div className="relative aspect-[16/10] rounded-xl overflow-hidden bg-slate-900">
+                          <img
+                            src={item.src}
+                            alt={item.title}
+                            className={`w-full h-full object-cover group-hover:scale-105 transition duration-500 ${
+                              item.src.includes('richard_backhouse') ? 'object-top' : 'object-center'
+                            }`}
+                            loading="lazy"
+                          />
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent opacity-80 group-hover:opacity-60 transition-opacity" />
+                        </div>
+                        <div className="space-y-1">
+                          <span className="text-[10px] font-bold text-[#204696] dark:text-[#009EE0] uppercase tracking-wider block">
+                            {item.tag}
+                          </span>
+                          <h4 className="text-sm font-bold text-[#11244C] dark:text-white group-hover:text-[#204696] dark:group-hover:text-[#009EE0] transition-colors line-clamp-1">
+                            {item.title}
+                          </h4>
+                          <p className="text-xs text-slate-500 dark:text-slate-400 line-clamp-2">
+                            {item.caption}
+                          </p>
+                        </div>
+                      </div>
+
+                      <div className="pt-2 flex items-center justify-between text-xs font-bold text-[#204696] dark:text-[#009EE0] border-t border-slate-100 dark:border-slate-800/80">
+                        <span>Read Full Story</span>
+                        <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
+                      </div>
+                    </div>
+                  </div>
+                ))}
               </div>
-            ))}
+            </div>
+
+            {/* Modern Numbered Slide Indicator Capsule */}
+            {maxMomentsSlide > 0 && (
+              <div className="flex items-center justify-center pt-4">
+                <SlidePagination
+                  current={momentsSlide}
+                  total={maxMomentsSlide + 1}
+                  onChange={setMomentsSlide}
+                />
+              </div>
+            )}
           </div>
         </section>
 
@@ -795,16 +856,17 @@ export const NewsIndexPage: React.FC<NewsIndexPageProps> = ({ news, onNavigate }
             <div className="flex flex-wrap items-center gap-3">
               <a
                 href="mailto:info@avianceghana.com?subject=Media%20Inquiry%20-%20Aviance%20Ghana"
-                className="px-5 py-3 rounded-xl bg-[#009EE0] hover:bg-[#0089c2] text-white text-xs sm:text-sm font-bold shadow-lg transition-all cursor-pointer flex items-center gap-2"
+                className="btn-accent group !py-3 !px-6"
               >
                 <Mail className="w-4 h-4" />
-                info@avianceghana.com
+                <span>info@avianceghana.com</span>
               </a>
               <button
                 onClick={() => onNavigate('/contact')}
-                className="px-5 py-3 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs sm:text-sm font-semibold border border-white/20 transition-all cursor-pointer"
+                className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full bg-white/10 hover:bg-white/20 text-white text-xs sm:text-sm font-bold uppercase tracking-wider border border-white/25 backdrop-blur-md transition-all duration-300 hover:-translate-y-0.5 active:scale-95 cursor-pointer shadow-sm"
               >
-                Contact Directory &rarr;
+                <span>Contact Directory</span>
+                <ArrowRight className="w-4 h-4 text-[#58C1EB] group-hover:translate-x-1.5 transition-transform" />
               </button>
             </div>
           </div>

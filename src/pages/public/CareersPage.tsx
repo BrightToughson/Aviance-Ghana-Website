@@ -20,8 +20,25 @@ export const CareersPage: React.FC<CareersPageProps> = ({ onNavigate }) => {
   };
 
   return (
-    <div className="min-h-screen py-12 sm:py-20 lg:py-24 pb-24 sm:pb-32 bg-white text-slate-900">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-16 sm:space-y-24 lg:space-y-32">
+    <div className="min-h-screen pb-24 sm:pb-32 bg-white text-slate-900">
+      {/* Hero Header in Signature Aviance Blue Grid */}
+      <section className="relative overflow-hidden bg-gradient-to-br from-[#11244C] via-[#1A3670] to-[#204696] text-white py-14 sm:py-20 lg:py-24">
+        <div className="absolute inset-0 opacity-10 pointer-events-none">
+          <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff_1px,transparent_1px),linear-gradient(to_bottom,#ffffff_1px,transparent_1px)] bg-[size:4rem_4rem]" />
+        </div>
+
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-4">
+          <h1 className="text-3xl sm:text-4xl lg:text-[46px] font-bold tracking-[-0.028em] text-white leading-[1.14]">
+            {t('pages.careers.title', 'Join Aviance Ghana')}
+          </h1>
+
+          <p className="text-base sm:text-lg text-blue-100/90 font-normal leading-relaxed max-w-3xl">
+            {t('pages.careers.desc', 'We are always interested in people who share our commitment to safety, service excellence and teamwork. Current vacancies will be published on this page.')}
+          </p>
+        </div>
+      </section>
+
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-12 sm:pt-16 space-y-16 sm:space-y-24 lg:space-y-32">
         
         {/* MAIN AUTHENTIC SECTION - Matching https://www.avianceghana.com/careers */}
         <section className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 items-center">
@@ -29,26 +46,17 @@ export const CareersPage: React.FC<CareersPageProps> = ({ onNavigate }) => {
           {/* Left Column: Official Company Content */}
           <div className="lg:col-span-5 space-y-6">
 
-            {/* Official Eyebrow */}
-            <div className="flex items-center gap-2.5">
-              <span className="w-1.5 h-6 rounded-full bg-gradient-to-b from-[#204696] via-[#009EE0] to-[#72BF44]" />
-              <h2 className="text-xs sm:text-sm font-extrabold uppercase tracking-widest text-[#204696]">
-                Careers at Aviance Ghana <span className="text-[#009EE0]">·</span> <span className="text-[#3B7A1C]">Talent & Opportunities</span>
-              </h2>
-            </div>
-
-            {/* Official Title */}
-            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight leading-tight text-slate-900">
-              {t('pages.careers.title', 'Join Aviance Ghana')}
-            </h1>
+            <h2 className="text-2xl sm:text-3xl font-bold tracking-[-0.028em] leading-snug text-slate-900">
+              Careers &amp; Opportunities
+            </h2>
 
             {/* Authentic Body Statement */}
-            <p className="text-base sm:text-lg leading-relaxed text-slate-600">
-              {t('pages.careers.desc', 'We are always interested in people who share our commitment to safety, service excellence and teamwork. Current vacancies will be published on this page. Applications should be submitted only through the stated official channel.')}
+            <p className="text-base sm:text-lg leading-relaxed text-slate-600 font-normal">
+              Applications should be submitted only through the stated official channel. We review incoming CVs against open operational and supervisory positions.
             </p>
 
             {/* Official Recruitment Email Block */}
-            <div className="p-5 rounded-2xl border transition-all space-y-2.5 bg-slate-50 border-slate-200">
+            <div className="pt-4 border-t border-slate-200 space-y-2.5">
               <span className="block text-xs font-semibold uppercase tracking-wider text-slate-500">
                 {t('pages.careers.enquiriesLabel', 'For any enquiries, please email:')}
               </span>
@@ -83,7 +91,7 @@ export const CareersPage: React.FC<CareersPageProps> = ({ onNavigate }) => {
             </div>
 
             {/* Fraud Protection Notice */}
-            <div className="p-4 sm:p-5 rounded-2xl border transition-all flex items-start gap-3.5 bg-emerald-50/50 border-[#72BF44]/35">
+            <div className="py-3 px-4 rounded-xl flex items-start gap-3 bg-emerald-50/60 border border-emerald-200/60">
               <ShieldCheck className="w-5 h-5 text-[#72BF44] shrink-0 mt-0.5" />
               <div className="text-xs sm:text-sm leading-relaxed text-slate-700">
                 <strong className="text-slate-900 font-bold">
@@ -97,44 +105,38 @@ export const CareersPage: React.FC<CareersPageProps> = ({ onNavigate }) => {
             <div className="pt-2 flex flex-wrap items-center gap-3">
               <a
                 href="mailto:employment@avianceghana.com?subject=Application%20/%20Expression%20of%20Interest%20-%20Aviance%20Ghana"
-                className="px-6 py-3 rounded-xl bg-[#204696] hover:bg-[#183878] text-white font-bold text-xs sm:text-sm shadow-md shadow-[#204696]/20 transition-all flex items-center gap-2 cursor-pointer"
+                className="btn-primary group"
               >
-                <Mail className="w-4 h-4" />
+                <Mail className="w-4 h-4 text-[#58C1EB]" />
                 <span>{t('pages.careers.emailEnquiries', 'Email Official Enquiries')}</span>
               </a>
               <button
                 onClick={() => onNavigate('/contact')}
-                className="px-5 py-3 rounded-xl border border-slate-300 hover:bg-slate-50 text-slate-700 font-semibold text-xs sm:text-sm transition-all cursor-pointer"
+                className="btn-link group sm:pl-3"
               >
-                {t('pages.careers.contactHr', 'Contact HR Office')}
+                <span className="link-label">{t('pages.careers.contactHr', 'Contact HR Office')}</span>
+                <ArrowRight className="w-4 h-4 text-[#72BF44] group-hover:translate-x-1.5 transition-transform duration-300" />
               </button>
             </div>
           </div>
 
           {/* Right Column: Authentic Team Photography */}
           <div className="lg:col-span-7">
-            <div className="relative group rounded-2xl sm:rounded-3xl overflow-hidden border border-slate-200 bg-slate-100 shadow-xl shadow-slate-200/50">
+            <div className="relative group rounded-2xl overflow-hidden bg-slate-100">
               <img
                 src="/assets/aviance_images/careers_team.jpg"
                 alt="Aviance Ghana Customer Services & Ramp Operations Team"
-                className="w-full h-[320px] sm:h-[420px] lg:h-[480px] object-cover object-center group-hover:scale-102 transition-transform duration-700 ease-out"
+                className="w-full h-[320px] sm:h-[420px] lg:h-[480px] object-cover object-top group-hover:scale-102 transition-transform duration-700 ease-out"
                 loading="eager"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-slate-950/70 via-transparent to-transparent pointer-events-none" />
-              <div className="absolute bottom-4 left-4 right-4 sm:bottom-6 sm:left-6 sm:right-6 text-white flex items-end justify-between gap-4">
-                <div>
-                  <span className="text-xs uppercase tracking-wider font-bold text-[#58C1EB] block">
-                    Our People · Our Pride
-                  </span>
-                  <p className="text-sm sm:text-base font-bold drop-shadow-sm">
-                    Passenger Handling, Ramp Turnaround & Safety Professionals
-                  </p>
-                </div>
-                <div className="hidden sm:block text-right">
-                  <span className="px-3 py-1 rounded-full text-xs font-bold bg-white/90 text-[#204696] backdrop-blur-xs">
-                    Kotoka Terminal 3 (ACC)
-                  </span>
-                </div>
+              <div className="absolute bottom-4 left-4 right-4 sm:bottom-6 sm:left-6 sm:right-6 text-white">
+                <span className="text-xs uppercase tracking-wider font-bold text-[#58C1EB] block">
+                  Our People · Our Pride
+                </span>
+                <p className="text-sm sm:text-base font-bold drop-shadow-sm">
+                  Passenger Handling, Ramp Turnaround & Safety Professionals
+                </p>
               </div>
             </div>
           </div>

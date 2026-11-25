@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import {
   Plane,
   ArrowRight,
@@ -14,7 +14,6 @@ import {
   Building2,
   ChevronRight,
   ChevronLeft,
-  Sparkles,
   PhoneCall,
   Mail,
   MapPin,
@@ -26,8 +25,6 @@ import {
   TrendingUp,
   Compass,
   FileText,
-  Play,
-  Pause,
   Camera,
   X,
   Maximize2
@@ -41,6 +38,11 @@ import accraAirportImg from '../../assets/aviance_images/airports/Accra-Internat
 import kumasiAirportImg from '../../assets/aviance_images/airports/Kumasi_international_airport.jpg';
 import tamaleAirportImg from '../../assets/aviance_images/airports/Temale_international_airport.png';
 
+// CSR highlights photography
+import csrVolunteerImg from '../../assets/aviance_images/csr/f52640_f8ef59f1440d4978b12d7af42b0b0782~mv2.jpg';
+import csrChildLiftImg from '../../assets/aviance_images/csr/f52640_831252991b76460598417e8e658fbafc~mv2.jpg';
+import csrClassroomArtImg from '../../assets/aviance_images/csr/f52640_1fecac509d4c4c9faed3422942694808~mv2.jpg';
+
 // All 10 authentic pictures from image_show folder
 import imgEngineer from '../../assets/aviance_images/image_show/ee4669f3-9945-4b97-a86e-d28b9860138a.png';
 import imgPushback from '../../assets/aviance_images/image_show/1791968160594.jpg';
@@ -53,10 +55,24 @@ import imgTrainingRoom from '../../assets/aviance_images/image_show/174056124068
 import imgLoungeGuest from '../../assets/aviance_images/image_show/1791796143012.jpg';
 import imgBrandGuest from '../../assets/aviance_images/image_show/1791796144202.jpg';
 
+// Authentic service photography for horizontal capabilities showcase
+import svcPassengerImg from '../../assets/aviance_images/services/passenger_services.jpg';
+import svcRampImg from '../../assets/aviance_images/services/ramp_handling.jpg';
+import svcCargoImg from '../../assets/aviance_images/services/cargo_services.jpg';
+import svcLoungeImg from '../../assets/aviance_images/services/lounge_services.jpg';
+import svcVipImg from '../../assets/aviance_images/services/vip_charter.jpg';
+import svcFlightOpsImg from '../../assets/aviance_images/services/flight_ops.jpg';
+import svcGseImg from '../../assets/aviance_images/services/gse_maintenance.jpg';
+import svcFindMyBagImg from '../../assets/aviance_images/services/find_my_bag.jpg';
+
 
 // Dynamic Logo Emblem Slideshow featuring authentic operations photography
 import { EmblemSlideshow } from '../../components/public/EmblemSlideshow';
+import { PartnerRadarWeb } from '../../components/public/PartnerRadarWeb';
 import { ScrollReveal } from '../../components/ui/ScrollReveal';
+import { AvianceLogo } from '../../components/ui/AvianceLogo';
+import { SlidePagination } from '../../components/ui/SlidePagination';
+import { useSwipeGesture } from '../../hooks/useSwipeGesture';
 
 
 interface HomePageProps {
@@ -217,81 +233,126 @@ export const HomePage: React.FC<HomePageProps> = ({
     setSlideProgress(0);
   };
 
-  // Curated 8 Core Services Summary (Summary cards pointing to full service pages)
+  // Unified Hero Gestures (Touch Swipe & Desktop Mouse Drag)
+  const { handlers: heroSwipeHandlers } = useSwipeGesture({
+    onSwipeLeft: handleNextSlide,
+    onSwipeRight: handlePrevSlide,
+    threshold: 45,
+    enableMouseDrag: true,
+  });
+
+  // Horizontal Core Services Slider State
+  const [activeServiceSlide, setActiveServiceSlide] = useState(0);
+  const [isServicePaused, setIsServicePaused] = useState(false);
+
+  // Curated 8 Core Services
   const serviceSummaries = [
     {
       id: 'passenger',
-      title: 'Passenger Services',
+      tabLabel: 'Passenger Services',
+      title: 'Passenger Handling',
+      category: 'Terminal Services',
       slug: '/passenger-services',
-      icon: Users,
-      summary: 'DCS check-in, boarding gates, travel document verification, and dedicated PRM mobility care across Kotoka Terminal 3.',
-      badge: 'Terminal Handling',
-      tagColor: 'text-[#204696] bg-blue-50 border-blue-200'
+      summary: 'DCS check-in, boarding gate management, travel document verification, and dedicated PRM mobility care across Kotoka Terminal 3 and regional stations.',
+      image: svcPassengerImg,
+      alt: 'Aviance Passenger Services Check-in Desk',
+      imagePosition: 'object-top'
     },
     {
       id: 'ramp',
+      tabLabel: 'Ramp Handling',
       title: 'Ramp Handling',
+      category: 'Airside Operations',
       slug: '/ramp-handling',
-      icon: Plane,
-      summary: 'ISAGO-certified apron turnaround, towbarless pushback, 400Hz GPU power, and rapid precision baggage loading.',
-      badge: 'ISAGO Accredited',
-      tagColor: 'text-sky-700 bg-sky-50 border-sky-200'
+      summary: 'ISAGO-certified apron turnaround, precision towbarless pushback, 400Hz ground power, and rapid baggage and cargo transfer.',
+      image: svcRampImg,
+      alt: 'Aviance Ramp Handling Apron Operations',
+      imagePosition: 'object-[center_35%]'
     },
     {
       id: 'cargo',
-      title: 'Cargo Logistics',
+      tabLabel: 'Cargo Logistics',
+      title: 'Cargo Handling',
+      category: 'Air Freight',
       slug: '/cargo',
-      icon: PackageCheck,
-      summary: 'Handling ~60% of Ghana airfreight with EU RA3 certified bonded warehousing, dual-view X-ray, and cold vaults.',
-      badge: '~60% Market Share',
-      tagColor: 'text-emerald-700 bg-emerald-50 border-emerald-200'
+      summary: 'EU RA3-certified bonded warehousing, automated dual-view X-ray screening, and temperature-controlled cold rooms handling ~60% of Ghana airfreight.',
+      image: svcCargoImg,
+      alt: 'Aviance Cargo Handling Bonded Facility',
+      imagePosition: 'object-[center_20%]'
     },
     {
       id: 'lounges',
-      title: 'Lounge Hospitality',
+      tabLabel: 'Executive Lounges',
+      title: 'Airport Lounges',
+      category: 'Hospitality',
       slug: '/lounge',
-      icon: Armchair,
-      summary: 'Operating 6 airport lounges including the premier Adinkra Executive Lounges and walk-in U Lounge ($25.00).',
-      badge: '6 Lounges in Ghana',
-      tagColor: 'text-amber-800 bg-amber-50 border-amber-200'
+      summary: 'Premier airport hospitality across 6 lounges in Ghana, including the flagship Adinkra Executive Lounges and walk-in U Lounge at Terminal 3.',
+      image: svcLoungeImg,
+      alt: 'Aviance Adinkra Executive Lounge',
+      imagePosition: 'object-center'
     },
     {
       id: 'vip',
-      title: 'VIP & Charter Services',
+      tabLabel: 'VIP & Charter',
+      title: 'VIP & Executive Aviation',
+      category: 'Executive Handling',
       slug: '/vip-charter',
-      icon: ShieldCheck,
-      summary: 'Apron meet-and-greet, fast-track diplomatic facilitation, and ground turnaround for private jets and executive flights.',
-      badge: 'Executive Handling',
-      tagColor: 'text-purple-700 bg-purple-50 border-purple-200'
+      summary: 'Dedicated apron meet-and-greet protocol, fast-track customs facilitation, and ground turnaround for private jets, diplomatic flights, and charters.',
+      image: svcVipImg,
+      alt: 'Aviance VIP and Charter Aircraft Handling',
+      imagePosition: 'object-top'
     },
     {
       id: 'occ',
+      tabLabel: 'Flight Operations',
       title: 'OCC Flight Operations',
+      category: 'Flight Operations',
       slug: '/operations',
-      icon: Cpu,
-      summary: '24/7 centralized nerve centre coordinating real-time flight staging, load control, Weight & Balance, and slot liaison.',
-      badge: '24/7 Coordination',
-      tagColor: 'text-blue-700 bg-blue-50 border-blue-200'
+      summary: '24/7 centralized flight watch, real-time VHF airside coordination, and computerized weight and balance load control.',
+      image: svcFlightOpsImg,
+      alt: 'Aviance Operations Control Centre OCC',
+      imagePosition: 'object-[center_30%]'
     },
     {
       id: 'gse',
+      tabLabel: 'GSE Maintenance',
       title: 'GSE Fleet Maintenance',
+      category: 'Airside Engineering',
       slug: '/gse-fleet-maintenance',
-      icon: Wrench,
-      summary: 'Airside engineering workshops maintaining motorized and non-motorized fleets with $1M+ eco-friendly investment.',
-      badge: '$1M+ Eco Fleet',
-      tagColor: 'text-slate-700 bg-slate-100 border-slate-200'
+      summary: 'Airside engineering workshops maintaining motorized and non-motorized ground support equipment with ongoing $1M+ eco-fleet modernization.',
+      image: svcGseImg,
+      alt: 'Aviance GSE Fleet Engineering Workshop',
+      imagePosition: 'object-[center_35%]'
     },
     {
       id: 'baggage',
-      title: 'Find My Bag & Tracing',
+      tabLabel: 'Baggage Services',
+      title: 'Baggage Services & Tracing',
+      category: 'Passenger Care',
       slug: '/find-my-bag',
-      icon: Luggage,
-      summary: 'Dedicated passenger baggage tracing, WorldTracer system lookups, and 24/7 arrivals baggage claim desk at Terminal 3.',
-      badge: 'WorldTracer Tracing',
-      tagColor: 'text-teal-700 bg-teal-50 border-teal-200'
+      summary: '24/7 arrivals baggage claim desk at Kotoka Terminal 3 integrated with the global SITA WorldTracer network for fast luggage tracing.',
+      image: svcFindMyBagImg,
+      alt: 'Aviance Baggage Services Helpdesk',
+      imagePosition: 'object-center'
     }
   ];
+
+  // Auto-advance service slider when not paused/hovered (4.8s cycle)
+  useEffect(() => {
+    if (isServicePaused) return;
+    const timer = setInterval(() => {
+      setActiveServiceSlide((prev) => (prev + 1) % serviceSummaries.length);
+    }, 4800);
+    return () => clearInterval(timer);
+  }, [isServicePaused, serviceSummaries.length]);
+
+  // Unified Service Showcase Gestures (Touch Swipe & Desktop Mouse Drag)
+  const { handlers: serviceSwipeHandlers } = useSwipeGesture({
+    onSwipeLeft: () => setActiveServiceSlide((prev) => (prev + 1) % serviceSummaries.length),
+    onSwipeRight: () => setActiveServiceSlide((prev) => (prev === 0 ? serviceSummaries.length - 1 : prev - 1)),
+    threshold: 45,
+    enableMouseDrag: true,
+  });
 
   // Curated 3 Airport Station Summaries (Summary for /operations)
   const stationSummaries = [
@@ -302,7 +363,8 @@ export const HomePage: React.FC<HomePageProps> = ({
       name: 'Kotoka International Airport',
       role: 'Corporate Headquarters & Primary Hub',
       highlight: 'Terminal 3 & 2 passenger handling, 24/7 OCC nerve centre, EU RA3 bonded cargo terminal, and Adinkra lounges.',
-      image: accraAirportImg
+      image: accraAirportImg,
+      imagePosition: 'object-[center_35%]'
     },
     {
       code: 'KMS',
@@ -311,7 +373,8 @@ export const HomePage: React.FC<HomePageProps> = ({
       name: 'Prempeh I International Airport',
       role: 'Ashanti Commercial & VIP Gateway',
       highlight: 'Full ramp turnaround, scheduled domestic flight facilitation, VIP delegations, and Adinkra CIP lounge services.',
-      image: kumasiAirportImg
+      image: kumasiAirportImg,
+      imagePosition: 'object-[center_65%]'
     },
     {
       code: 'TML',
@@ -320,12 +383,130 @@ export const HomePage: React.FC<HomePageProps> = ({
       name: 'Tamale International Airport',
       role: 'Northern Strategic Gateway',
       highlight: 'Commercial passenger turnarounds, agro-cargo freighters, and annual wide-body Hajj pilgrimage flight staging.',
-      image: tamaleAirportImg
+      image: tamaleAirportImg,
+      imagePosition: 'object-[center_45%]'
     }
   ];
 
-  // Premier airline logos for summary showcase (12 prominent partners)
-  const featuredAirlinePartners = PARTNERS_DATA.slice(0, 12);
+  // Curated 3 CSR Community Highlights (Full-bleed showcase matching Airport cards)
+  const csrHighlights = [
+    {
+      id: 'autism',
+      title: 'Autism Flight Travel Rehearsal',
+      image: csrVolunteerImg,
+      path: '/csr',
+      imagePosition: 'object-[center_25%]'
+    },
+    {
+      id: 'orbis',
+      title: 'Orbis Flying Eye Hospital',
+      image: csrChildLiftImg,
+      path: '/csr',
+      imagePosition: 'object-[center_35%]'
+    },
+    {
+      id: 'education',
+      title: 'Education & Future Stars',
+      image: csrClassroomArtImg,
+      path: '/csr',
+      imagePosition: 'object-center'
+    }
+  ];
+
+  // Rolling News Carousel State & Logic (Swissport-Inspired Rolling Showcase)
+  const [newsSlide, setNewsSlide] = useState(0);
+  const [isNewsPaused, setIsNewsPaused] = useState(false);
+  const [itemsPerView, setItemsPerView] = useState(3);
+  const newsContainerRef = useRef<HTMLDivElement | null>(null);
+  const [newsTrackOffset, setNewsTrackOffset] = useState(0);
+
+  // Curated up to 9 fresh articles for continuous rolling
+  const rollingNews = (news && news.length > 0 ? news : []).slice(0, 9);
+
+  // Media count per article for Swissport-style tag
+  const getMediaCount = (slug: string): number => {
+    const counts: Record<string, number> = {
+      'aviance-ghana-emerges-as-overall-champions-at-tf-group-games': 4,
+      'aviance-ghana-walks-for-breast-cancer-awareness-in-asante-mampong': 3,
+      'aviance-ghana-supports-the-orbis-flying-eye-hospital-programme': 3,
+      'aviance-ghana-commences-domestic-operations': 3,
+      'aviance-ghana-hosts-uk-parliamentary-delegation': 2,
+      'aviance-ghana-at-2024-asogli-yam-festival': 2,
+      'we-are-expanding-our-horizons': 2,
+      'aviance-ghana-wins-best-growing-company-cargo-ground-handler-of-the-year-air-2024': 2,
+      'celebrating-25-years': 2,
+      'remembrance-day-at-aviance': 2,
+    };
+    return counts[slug] || 1;
+  };
+
+  const updateNewsOffset = useCallback((index: number, perView: number) => {
+    if (!newsContainerRef.current) return;
+    const containerWidth = newsContainerRef.current.offsetWidth;
+    const gap = 24; // 1.5rem (gap-6)
+    const cardWidth = (containerWidth - (perView - 1) * gap) / perView;
+    const step = cardWidth + gap;
+    setNewsTrackOffset(index * step);
+  }, []);
+
+  // Update visible cards on screen resize
+  useEffect(() => {
+    const handleResize = () => {
+      let perView = 3;
+      if (window.innerWidth < 768) {
+        perView = 1;
+      } else if (window.innerWidth < 1024) {
+        perView = 2;
+      }
+      setItemsPerView(perView);
+      setNewsSlide((prev) => {
+        const maxIdx = Math.max(0, rollingNews.length - perView);
+        const clamped = Math.min(prev, maxIdx);
+        updateNewsOffset(clamped, perView);
+        return clamped;
+      });
+    };
+
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, [rollingNews.length, updateNewsOffset]);
+
+  // Recalculate track position whenever newsSlide or itemsPerView updates
+  useEffect(() => {
+    updateNewsOffset(newsSlide, itemsPerView);
+  }, [newsSlide, itemsPerView, updateNewsOffset]);
+
+  // Continuous auto-advance every 4.8s when not hovered
+  useEffect(() => {
+    if (isNewsPaused || rollingNews.length <= itemsPerView) return;
+    const timer = setInterval(() => {
+      setNewsSlide((prev) => {
+        const maxIdx = Math.max(0, rollingNews.length - itemsPerView);
+        return prev >= maxIdx ? 0 : prev + 1;
+      });
+    }, 4800);
+    return () => clearInterval(timer);
+  }, [isNewsPaused, rollingNews.length, itemsPerView]);
+
+  const maxNewsIndex = Math.max(0, rollingNews.length - itemsPerView);
+
+  const handlePrevNews = () => {
+    setNewsSlide((prev) => (prev <= 0 ? maxNewsIndex : prev - 1));
+  };
+
+  const handleNextNews = () => {
+    setNewsSlide((prev) => (prev >= maxNewsIndex ? 0 : prev + 1));
+  };
+
+  // Unified News Carousel Gestures (Touch Swipe & Desktop Mouse Drag)
+  const { handlers: newsSwipeHandlers } = useSwipeGesture({
+    onSwipeLeft: handleNextNews,
+    onSwipeRight: handlePrevNews,
+    threshold: 45,
+    enableMouseDrag: true,
+  });
+
 
   // Filtered gallery items
   const filteredGallery = galleryFilter === 'all'
@@ -333,10 +514,13 @@ export const HomePage: React.FC<HomePageProps> = ({
     : heroSlides.filter((item) => item.filterGroup === galleryFilter);
 
   return (
-    <div className="space-y-20 sm:space-y-28 lg:space-y-36 pb-20 sm:pb-28 lg:pb-36 bg-white">
+    <div className="space-y-12 sm:space-y-16 lg:space-y-20 pb-20 sm:pb-28 lg:pb-36 bg-white">
       
-      {/* 1. USER'S SIGNATURE HERO SECTION: BALANCED 50/50 BLUE & WHITE SPLIT WITH EXPANSIVE EMBLEM */}
-      <section className="relative w-full overflow-hidden select-none bg-white">
+      {/* 1. USER'S SIGNATURE HERO SECTION: BALANCED 50/50 BLUE & WHITE SPLIT (DESKTOP) / CINEMATIC FULL-SCREEN SLIDESHOW (MOBILE) */}
+      <section
+        className="relative w-full overflow-hidden select-none bg-white cursor-grab active:cursor-grabbing"
+        {...heroSwipeHandlers}
+      >
         
         {/* Background Layer: Frosted Curved Glass Pane Split (~50% Glassy Blue / ~50% White) */}
         <div className="absolute inset-0 pointer-events-none overflow-hidden">
@@ -489,17 +673,36 @@ export const HomePage: React.FC<HomePageProps> = ({
             />
           </svg>
 
-          {/* Mobile / Tablet Responsive Fallback with Glass Sheen (< lg) */}
+          {/* Mobile & Tablet Full-Bleed Dynamic Operations Slideshow (< lg) */}
           <div className="lg:hidden absolute inset-0 overflow-hidden pointer-events-none">
-            {/* Deep Royal Glass Base Gradient */}
-            <div className="absolute inset-0 bg-gradient-to-b from-[#001D62] via-[#003AA8] via-65% to-white" />
+            {/* Dynamic Authentic Photo Slides */}
+            {heroSlides.map((slide, idx) => {
+              const isActive = idx === currentSlide;
+              return (
+                <div
+                  key={`mobile-bg-${slide.id}`}
+                  className={`absolute inset-0 w-full h-full transition-all duration-1000 ease-in-out ${
+                    isActive ? 'opacity-100 scale-100 z-0' : 'opacity-0 scale-105 z-0'
+                  }`}
+                >
+                  <img
+                    src={slide.image}
+                    alt={slide.alt}
+                    className="w-full h-full object-cover object-center"
+                  />
+                </div>
+              );
+            })}
 
-            {/* Specular Ambient Glow Orbs with Floating Breathing Glow */}
-            <div className="absolute -top-20 -left-20 w-80 h-80 rounded-full bg-sky-400/25 blur-3xl pointer-events-none animate-halo-pulse" />
-            <div className="absolute top-1/3 -right-20 w-72 h-72 rounded-full bg-[#009EE0]/20 blur-3xl pointer-events-none animate-ai-breathe" />
+            {/* Rich Aviance Royal Blue Gradient Scrim & Glass Filter */}
+            <div className="absolute inset-0 bg-gradient-to-b from-[#001447]/70 via-[#001855]/40 via-50% to-[#001447]/80" />
+
+            {/* Ambient Lighting Orbs */}
+            <div className="absolute -top-16 -left-16 w-72 h-72 rounded-full bg-sky-400/20 blur-3xl pointer-events-none" />
+            <div className="absolute bottom-10 -right-16 w-80 h-80 rounded-full bg-[#009EE0]/20 blur-3xl pointer-events-none" />
 
             {/* Subtle Aeronautical Radar Canvas with Smooth Rotating Sweep Line */}
-            <svg className="absolute top-6 left-1/2 -translate-x-1/2 w-[580px] h-[360px] opacity-30 pointer-events-none" viewBox="0 0 580 360">
+            <svg className="absolute top-6 left-1/2 -translate-x-1/2 w-[580px] h-[360px] opacity-25 pointer-events-none" viewBox="0 0 580 360">
               <circle cx="290" cy="180" r="80" stroke="rgba(255,255,255,0.22)" strokeWidth="1" strokeDasharray="3 5" fill="none" />
               <circle cx="290" cy="180" r="140" stroke="rgba(56,189,248,0.3)" strokeWidth="1.2" fill="none" />
               <circle cx="290" cy="180" r="220" stroke="rgba(255,255,255,0.18)" strokeWidth="1" strokeDasharray="6 8" fill="none" />
@@ -508,10 +711,10 @@ export const HomePage: React.FC<HomePageProps> = ({
               
               {/* Animated Radar Sweep Beam */}
               <g className="animate-radar-sweep">
-                <line x1="290" y1="180" x2="290" y2="40" stroke="url(#radarGradient)" strokeWidth="2.5" strokeLinecap="round" />
+                <line x1="290" y1="180" x2="290" y2="40" stroke="url(#radarGradientMobile)" strokeWidth="2.5" strokeLinecap="round" />
               </g>
               <defs>
-                <linearGradient id="radarGradient" x1="0%" y1="100%" x2="0%" y2="0%">
+                <linearGradient id="radarGradientMobile" x1="0%" y1="100%" x2="0%" y2="0%">
                   <stop offset="0%" stopColor="#72BF44" stopOpacity="0.8" />
                   <stop offset="100%" stopColor="#009EE0" stopOpacity="0.1" />
                 </linearGradient>
@@ -522,136 +725,146 @@ export const HomePage: React.FC<HomePageProps> = ({
 
 
         {/* Hero Content Container */}
-        <div className="max-w-[1700px] mx-auto px-4 sm:px-6 lg:px-10 xl:px-14 relative z-10 pt-36 sm:pt-48 lg:py-16 pb-8 sm:pb-12">
+        <div className="max-w-[1700px] mx-auto px-4 sm:px-6 lg:px-10 xl:px-14 relative z-10 pt-28 sm:pt-36 lg:py-16 pb-10 sm:pb-14">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-8 xl:gap-10 items-center">
             
-            {/* Left Column: Exactly on Solid Royal Blue Canvas */}
+            {/* Left Column: Responsive Text, Live Status & Mobile Slide Controller */}
             <div className="lg:col-span-5 xl:col-span-5 space-y-4 sm:space-y-6 text-center lg:text-left flex flex-col items-center lg:items-start relative z-20">
 
               {/* Main Display Headline: Confident, Big & Impactful on Mobile */}
-              <h1 className="animate-blur-reveal animation-delay-100 text-[28px] xs:text-[32px] sm:text-4xl md:text-5xl lg:text-4xl xl:text-5xl font-black tracking-tight text-white leading-[1.18] sm:leading-[1.12]">
+              <h1 className="animate-blur-reveal animation-delay-100 text-[28px] xs:text-[32px] sm:text-4xl md:text-5xl lg:text-[46px] xl:text-[54px] font-bold tracking-[-0.028em] text-white leading-[1.14] drop-shadow-[0_2px_12px_rgba(0,0,0,0.7)]">
                 Ground Handling & Cargo Operations <br className="hidden sm:inline" />
-                <span className="text-[#72BF44] drop-shadow-sm block sm:inline mt-1 sm:mt-0">Across Ghana's Premier Airports.</span>
+                <span className="text-[#72BF44] drop-shadow-[0_2px_12px_rgba(0,0,0,0.7)] block sm:inline mt-1 sm:mt-0">Across Ghana's Premier Airports.</span>
               </h1>
 
               {/* Executive Subtitle: Crisp & Highly Legible on Mobile Devices */}
-              <p className="animate-blur-reveal animation-delay-250 text-sm xs:text-[15px] sm:text-base md:text-lg text-blue-100/95 leading-relaxed font-normal max-w-lg mx-auto lg:mx-0">
+              <p className="animate-blur-reveal animation-delay-250 text-sm sm:text-base md:text-lg text-white/95 leading-relaxed font-normal max-w-lg mx-auto lg:mx-0 drop-shadow-[0_1px_6px_rgba(0,0,0,0.65)]">
                 Connecting Ghana to the world with ISAGO-certified ground operations, cold-chain cargo logistics, and executive airport hospitality across Accra, Kumasi, and Tamale.
               </p>
 
-              {/* Action Buttons: Thumb-Friendly & Shimmering on Mobile */}
-              <div className="animate-blur-reveal animation-delay-400 pt-2 flex flex-row items-center justify-center lg:justify-start gap-3 sm:gap-3.5 flex-wrap">
+              {/* Action Buttons */}
+              <div className="animate-blur-reveal animation-delay-400 pt-1 sm:pt-2 flex flex-row items-center justify-center lg:justify-start gap-3 sm:gap-3.5 flex-wrap">
                 <button
                   onClick={() => onNavigate('/services')}
-                  className="relative overflow-hidden px-6 sm:px-8 py-3.5 sm:py-4 rounded-full bg-[#009EE0] hover:bg-[#0089C4] text-white font-extrabold text-xs sm:text-sm uppercase tracking-wider shadow-lg shadow-[#009EE0]/40 transition-all duration-300 hover:scale-105 hover:-translate-y-0.5 active:scale-95 flex items-center justify-center gap-2 cursor-pointer group"
+                  className="px-6 sm:px-8 py-3.5 sm:py-4 rounded-full bg-[#009EE0] hover:bg-[#0089C4] text-white font-bold text-xs sm:text-sm uppercase tracking-wider shadow-md shadow-[#009EE0]/30 transition-all duration-300 hover:-translate-y-0.5 active:scale-95 flex items-center justify-center gap-2 cursor-pointer group"
                 >
-                  {/* Subtle animated gleam on the primary button */}
-                  <div className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/30 to-transparent pointer-events-none animate-button-shimmer" />
-                  <span className="relative z-10">Explore Services</span>
-                  <ArrowRight className="relative z-10 w-4 h-4 group-hover:translate-x-1.5 transition-transform duration-300" />
+                  <span>Explore Services</span>
+                  <ArrowRight className="w-4 h-4 group-hover:translate-x-1.5 transition-transform duration-300" />
                 </button>
                 <button
                   onClick={() => onNavigate('/about')}
-                  className="px-5 sm:px-7 py-3.5 sm:py-4 rounded-full bg-white/12 hover:bg-white/20 text-white font-extrabold text-xs sm:text-sm uppercase tracking-wider border border-white/25 transition-all duration-300 backdrop-blur-md hover:scale-105 hover:-translate-y-0.5 active:scale-95 flex items-center justify-center cursor-pointer text-center"
+                  className="px-5 sm:px-7 py-3.5 sm:py-4 rounded-full bg-white/12 hover:bg-white/20 text-white font-bold text-xs sm:text-sm uppercase tracking-wider border border-white/25 transition-all duration-300 backdrop-blur-md hover:-translate-y-0.5 active:scale-95 flex items-center justify-center cursor-pointer text-center"
                 >
                   About Aviance
                 </button>
               </div>
             </div>
 
-            {/* Right Column: Expansive Dynamic Logo Slideshow Showcase */}
-            <div className="animate-fade-in-right animation-delay-200 lg:col-span-7 xl:col-span-7 flex flex-col items-center lg:items-end xl:items-center justify-center relative py-2 lg:py-4 pl-0 lg:pl-8 xl:pl-12 w-full mt-6 sm:mt-8 lg:mt-0">
-              
-              {/* Mobile Floating Micro-Badges with Gentle Levitation */}
-              <div className="lg:hidden w-full flex items-center justify-between px-2 max-w-[440px] xs:max-w-[480px] mb-3 pointer-events-none">
-                <div className="animate-float-slow px-2.5 py-1 rounded-full bg-white/90 backdrop-blur-md border border-slate-200/90 shadow-md flex items-center gap-1.5 text-[10px] font-bold text-slate-800">
-                  <span className="w-1.5 h-1.5 rounded-full bg-[#72BF44] animate-pulse" />
-                  <span>100% Safety Standard</span>
-                </div>
-                <div className="animate-float-slow animation-delay-300 px-2.5 py-1 rounded-full bg-white/90 backdrop-blur-md border border-slate-200/90 shadow-md flex items-center gap-1.5 text-[10px] font-bold text-[#204696]">
-                  <span>✈ 42+ Airlines Handled</span>
-                </div>
-              </div>
-
+            {/* Right Column: Expansive Dynamic Logo Slideshow Showcase (Desktop Only, lg:flex) */}
+            <div className="hidden lg:flex animate-fade-in-right animation-delay-200 lg:col-span-7 xl:col-span-7 flex-col items-center lg:items-end xl:items-center justify-center relative py-2 lg:py-4 pl-0 lg:pl-8 xl:pl-12 w-full mt-6 sm:mt-8 lg:mt-0">
               <EmblemSlideshow />
             </div>
           </div>
         </div>
       </section>
 
-      {/* 2. SERVICES SECTION — EXECUTIVE SUMMARY & DIRECT ACCESS */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <ScrollReveal animation="fade-up">
-          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10 sm:mb-14 pb-6 border-b border-slate-100">
-            <div className="space-y-3 max-w-2xl text-left">
-              <div className="flex items-center gap-2.5">
-                <span className="w-1.5 h-5 rounded-full bg-gradient-to-b from-[#204696] via-[#009EE0] to-[#72BF44]" />
-                <h2 className="text-xs sm:text-sm font-extrabold uppercase tracking-widest text-[#204696]">
-                  Comprehensive Ground Operations <span className="text-[#009EE0]">·</span> <span className="text-[#3B7A1C]">ISAGO Certified</span>
+      {/* 2. SERVICES SECTION — SPLIT SHOWCASE WITH AIRPORT-STYLE CARDS */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-24 lg:py-28">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 xl:gap-16 items-center">
+          
+          {/* Left Side: Section Intro, Button & Slider Controls */}
+          <div className="lg:col-span-5 flex flex-col justify-center space-y-6 text-left">
+            <ScrollReveal animation="fade-up">
+              <div className="space-y-3.5">
+                <h2 className="text-3xl sm:text-4xl lg:text-[42px] font-bold tracking-tight text-slate-900 leading-[1.14]">
+                  Core Aviation Services
                 </h2>
+                <p className="text-base sm:text-lg text-slate-600 leading-relaxed font-normal">
+                  Aviance Ghana delivers safe, certified ground handling across terminal, apron, cargo, and hospitality operations. Slide through each service below to view authentic operations, key capabilities, and direct access.
+                </p>
               </div>
-              <h3 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-slate-900">
-                Our Core Services at a Glance
-              </h3>
-              <p className="text-sm sm:text-base text-slate-600 leading-relaxed">
-                Aviance Ghana delivers safe, certified ground handling across terminal, apron, cargo, and hospitality operations. Click any service below to view full operational details, SLAs, and rate specifications on our dedicated pages.
-              </p>
-            </div>
 
-            <div className="shrink-0">
-              <button
-                onClick={() => onNavigate('/services')}
-                className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-[#204696] hover:bg-[#153170] text-white font-bold text-xs shadow-md shadow-[#204696]/20 transition-all duration-300 hover:scale-105 hover:-translate-y-0.5 cursor-pointer group"
-              >
-                <span>Explore All Services & Rates</span>
-                <ArrowRight className="w-4 h-4 group-hover:translate-x-1.5 transition-transform duration-300" />
-              </button>
-            </div>
-          </div>
-        </ScrollReveal>
-
-        {/* 8 Concise Service Summary Cards with Staggered ScrollReveal */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {serviceSummaries.map((svc, idx) => {
-            const Icon = svc.icon;
-            return (
-              <ScrollReveal key={svc.id} animation="fade-up" delay={idx * 60}>
-                <div
-                  onClick={() => onNavigate(svc.slug)}
-                  className="group p-6 rounded-2xl border border-slate-200 bg-white hover:border-[#204696]/50 hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 cursor-pointer flex flex-col justify-between text-left h-full"
+              {/* Action Button */}
+              <div className="pt-3">
+                <button
+                  onClick={() => onNavigate('/services')}
+                  className="btn-primary group"
                 >
-                  <div>
-                    <div className="flex items-center justify-between mb-4">
-                      <div className="p-3 rounded-xl bg-blue-50 text-[#204696] group-hover:bg-[#204696] group-hover:text-white group-hover:scale-110 group-hover:-rotate-3 transition-all duration-300 shadow-2xs">
-                        <Icon className="w-6 h-6" />
+                  <span>View All Services</span>
+                  <ArrowRight className="w-4 h-4 text-[#58C1EB] group-hover:translate-x-1.5 transition-transform duration-300" />
+                </button>
+              </div>
+
+              {/* Modern Numbered Slide Indicator Capsule (Controls removed per user request) */}
+              <div className="pt-6 flex items-center">
+                <SlidePagination
+                  current={activeServiceSlide}
+                  total={serviceSummaries.length}
+                  onChange={setActiveServiceSlide}
+                  labels={serviceSummaries.map((s) => s.title)}
+                />
+              </div>
+            </ScrollReveal>
+          </div>
+
+          {/* Right Side: Airport-Style Full-Bleed Dynamic Image Showcase Card */}
+          <div className="lg:col-span-7">
+            <ScrollReveal animation="fade-up" delay={150}>
+              <div
+                className="group relative h-[420px] sm:h-[480px] lg:h-[520px] rounded-2xl sm:rounded-3xl overflow-hidden cursor-grab active:cursor-grabbing shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-1.5 select-none"
+                onMouseEnter={() => setIsServicePaused(true)}
+                onMouseLeave={() => setIsServicePaused(false)}
+                {...serviceSwipeHandlers}
+              >
+                {serviceSummaries.map((svc, idx) => {
+                  const isActive = idx === activeServiceSlide;
+                  return (
+                    <div
+                      key={svc.id}
+                      onClick={() => onNavigate(svc.slug)}
+                      className={`absolute inset-0 w-full h-full transition-all duration-700 ease-in-out ${
+                        isActive
+                          ? 'opacity-100 scale-100 z-10 pointer-events-auto'
+                          : 'opacity-0 scale-105 z-0 pointer-events-none'
+                      }`}
+                    >
+                      {/* Full-Bleed Operation Image */}
+                      <img
+                        src={svc.image}
+                        alt={svc.alt}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
+                      />
+
+                      {/* Airport-Style Dark Gradient Overlay */}
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 via-40% to-transparent group-hover:from-black/95 transition-colors duration-500" />
+
+                      {/* Airport-Style Text on Image: Category + Title + "View Details" Hover Reveal */}
+                      <div className={`absolute bottom-7 left-7 right-7 sm:bottom-8 sm:left-8 sm:right-8 z-20 space-y-2 text-left transition-all duration-700 ease-out ${
+                        isActive ? 'opacity-100 translate-y-0 delay-100' : 'opacity-0 translate-y-3'
+                      }`}>
+                        <span className="text-xs sm:text-sm font-bold uppercase tracking-wider text-[#72BF44] drop-shadow-xs block">
+                          {svc.category}
+                        </span>
+
+                        <h3 className="text-2xl sm:text-3xl lg:text-[34px] font-bold text-white tracking-tight leading-snug drop-shadow-xs">
+                          {svc.title}
+                        </h3>
+
+                        {/* "View Details →" revealed on hover (Airport Style) */}
+                        <div className="pt-2 flex items-center gap-2 text-sm sm:text-base font-semibold text-white transition-all duration-300 opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0">
+                          <span className="underline underline-offset-4 decoration-2 decoration-[#72BF44]">
+                            View Details
+                          </span>
+                          <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 text-[#72BF44] group-hover:translate-x-1.5 transition-transform" />
+                        </div>
                       </div>
-                      <span className={`text-[10px] font-mono font-bold px-2 py-0.5 rounded-full border ${svc.tagColor}`}>
-                        {svc.badge}
-                      </span>
                     </div>
+                  );
+                })}
+              </div>
+            </ScrollReveal>
+          </div>
 
-                    <h3 className="text-lg sm:text-base lg:text-lg font-bold text-slate-900 group-hover:text-[#204696] transition-colors mb-2">
-                      {svc.title}
-                    </h3>
-
-                    <p className="text-sm sm:text-xs lg:text-[13px] text-slate-600 leading-relaxed line-clamp-3">
-                      {svc.summary}
-                    </p>
-                  </div>
-
-                  <div className="pt-4 mt-4 border-t border-slate-100 flex items-center justify-between">
-                    <span className="text-xs font-bold text-[#204696] group-hover:text-[#0C1E4A] inline-flex items-center gap-1">
-                      <span>View Full Details</span>
-                      <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1.5 transition-transform duration-300" />
-                    </span>
-                    <span className="text-[10px] text-slate-400 font-mono">
-                      Page Details →
-                    </span>
-                  </div>
-                </div>
-              </ScrollReveal>
-            );
-          })}
         </div>
       </section>
 
@@ -659,350 +872,316 @@ export const HomePage: React.FC<HomePageProps> = ({
 
 
       {/* 5. OPERATIONAL FOOTPRINT & AIRPORT NETWORK SUMMARY (Points to /operations) */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-24 lg:py-28 border-t border-slate-100">
         <ScrollReveal animation="fade-up">
-          <div className="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden text-left hover:shadow-xl transition-shadow duration-300">
-            {/* Header */}
-            <div className="p-6 sm:p-8 lg:p-10 border-b border-slate-100 flex flex-col md:flex-row md:items-center justify-between gap-6">
-              <div className="space-y-2.5 max-w-3xl">
-                <div className="flex items-center gap-2.5">
-                  <span className="w-1.5 h-5 rounded-full bg-gradient-to-b from-[#204696] via-[#009EE0] to-[#72BF44]" />
-                  <h2 className="text-xs sm:text-sm font-extrabold uppercase tracking-widest text-[#204696]">
-                    Nationwide Airport Network <span className="text-[#009EE0]">·</span> <span className="text-[#3B7A1C]">Accra · Kumasi · Tamale</span>
-                  </h2>
-                </div>
-                <h3 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-slate-900 tracking-tight leading-tight">
-                  Operating Across Ghana's Key Commercial Air Gateways
-                </h3>
-                <p className="text-sm sm:text-base text-slate-600 leading-relaxed">
-                  Aviance Ghana maintains certified ground handling stations, ramp equipment fleets, and passenger operations across 3 premier airports.
-                </p>
-              </div>
+          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-6 mb-10 sm:mb-14 text-left">
+            <div className="space-y-2.5 max-w-3xl">
+              <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight text-slate-900">
+                Operating Across Ghana's Key Commercial Air Gateways
+              </h2>
+              <p className="text-base sm:text-lg text-slate-600 leading-relaxed font-normal">
+                Aviance Ghana maintains certified ground handling stations, ramp equipment fleets, and passenger operations across 3 premier airports.
+              </p>
+            </div>
 
+            <div className="shrink-0 self-start sm:self-auto">
               <button
                 onClick={() => onNavigate('/operations')}
-                className="inline-flex items-center gap-2 px-6 py-3.5 rounded-xl bg-[#204696] hover:bg-[#153170] text-white font-bold text-xs sm:text-sm shadow-md shadow-[#204696]/20 transition-all duration-300 hover:scale-105 hover:-translate-y-0.5 shrink-0 cursor-pointer self-start md:self-auto group"
+                className="btn-link group"
               >
-                <span>View Full Operations & Map</span>
-                <ArrowRight className="w-4 h-4 group-hover:translate-x-1.5 transition-transform duration-300" />
+                <span className="link-label">View Full Operations & Map</span>
+                <ArrowRight className="w-4 h-4 text-[#72BF44] group-hover:translate-x-1.5 transition-transform duration-300" />
               </button>
             </div>
-
-            {/* 3 Station Summary Cards with Staggered ScrollReveal */}
-            <div className="grid grid-cols-1 md:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-slate-100">
-              {stationSummaries.map((station, idx) => (
-                <ScrollReveal key={station.code} animation="fade-up" delay={idx * 100}>
-                  <div
-                    onClick={() => onNavigate('/operations')}
-                    className="p-6 sm:p-8 flex flex-col justify-between space-y-4 hover:bg-slate-50/80 transition-all duration-300 cursor-pointer group h-full"
-                  >
-                    <div className="space-y-4">
-                      {/* Photo Thumbnail */}
-                      <div className="relative h-44 rounded-xl overflow-hidden border border-slate-200">
-                        <img
-                          src={station.image}
-                          alt={station.name}
-                          className="w-full h-full object-cover group-hover:scale-108 transition-transform duration-700 ease-out"
-                        />
-                        <div className="absolute top-3 left-3 px-2.5 py-1 rounded-full text-xs font-mono font-bold bg-slate-950/80 text-white backdrop-blur-md group-hover:bg-[#204696] transition-colors duration-300">
-                          {station.code} · {station.icao}
-                        </div>
-                      </div>
-
-                      <div>
-                        <span className="text-[11px] font-mono font-bold text-[#204696] uppercase tracking-wider block">
-                          {station.role}
-                        </span>
-                        <h3 className="text-xl sm:text-lg lg:text-xl font-bold text-slate-900 group-hover:text-[#204696] transition-colors mt-0.5">
-                          {station.name}
-                        </h3>
-                        <p className="text-xs sm:text-xs text-slate-500 mt-0.5">{station.city}</p>
-                      </div>
-
-                      <p className="text-sm sm:text-xs lg:text-[13px] text-slate-600 leading-relaxed">
-                        {station.highlight}
-                      </p>
-                    </div>
-
-                    <div className="pt-3 border-t border-slate-100 flex items-center justify-between text-xs font-bold text-[#204696]">
-                      <span>Operational Details</span>
-                      <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1.5 transition-transform duration-300" />
-                    </div>
-                  </div>
-                </ScrollReveal>
-              ))}
-            </div>
-          </div>
-        </ScrollReveal>
-      </section>
-
-
-      {/* 6. AIRLINE PARTNERS SUMMARY (Points to /customers) */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-8">
-        <ScrollReveal animation="fade-up">
-          <div className="max-w-3xl mx-auto space-y-3">
-            <div className="flex items-center justify-center gap-2.5">
-              <span className="w-1.5 h-5 rounded-full bg-gradient-to-b from-[#204696] via-[#009EE0] to-[#72BF44]" />
-              <h2 className="text-xs sm:text-sm font-extrabold uppercase tracking-widest text-[#204696]">
-                Trusted Aviation Partnerships <span className="text-[#009EE0]">·</span> <span className="text-[#3B7A1C]">Global Airlines & Freighters</span>
-              </h2>
-            </div>
-            <h3 className="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight">
-              Trusted by Over 40 Global Airlines & Cargo Freighters
-            </h3>
-            <p className="text-sm text-slate-600 leading-relaxed">
-              From scheduled flag carriers to intercontinental cargo giants and diplomatic airlift missions, international operators count on Aviance Ghana for on-time turnaround excellence.
-            </p>
           </div>
         </ScrollReveal>
 
-        {/* Clean Logo Summary Grid with Staggered ScrollReveal */}
-        <div className="grid mt-20 grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
-          {featuredAirlinePartners.map((partner, idx) => (
-            <ScrollReveal key={partner.id} animation="zoom-in" delay={idx * 35}>
+        {/* 3 Station Cards — Swissport-Inspired Full-Bleed Showcase */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8 text-left">
+          {stationSummaries.map((station, idx) => (
+            <ScrollReveal key={station.code} animation="fade-up" delay={idx * 100}>
               <div
-                onClick={() => onNavigate('/customers')}
-                className="p-4 rounded-xl border border-slate-200 bg-white hover:border-[#204696] hover:shadow-xl hover:-translate-y-1.5 transition-all duration-300 cursor-pointer flex flex-col items-center justify-center h-24 group"
+                onClick={() => onNavigate('/operations')}
+                className="group relative h-[420px] sm:h-[460px] lg:h-[500px] rounded-2xl sm:rounded-3xl overflow-hidden cursor-pointer shadow-md hover:shadow-2xl transition-all duration-500 hover:-translate-y-1.5"
               >
+                {/* Full-Bleed Background Image */}
                 <img
-                  src={partner.logo}
-                  alt={`${partner.name} logo`}
-                  className="max-h-12 max-w-full object-contain filter grayscale group-hover:grayscale-0 group-hover:scale-110 transition-all duration-300"
-                  loading="lazy"
+                  src={station.image}
+                  alt={station.name}
+                  className={`absolute inset-0 w-full h-full object-cover ${station.imagePosition || 'object-center'} group-hover:scale-105 transition-transform duration-700 ease-out`}
                 />
-                <span className="text-[10px] text-slate-500 font-semibold mt-1 group-hover:text-[#204696] transition-colors truncate max-w-full">
-                  {partner.name}
-                </span>
+
+                {/* Swissport Subtle Bottom Dark Gradient */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/25 via-35% to-transparent group-hover:from-black/90 transition-colors duration-500" />
+
+                {/* Bottom Overlay Content — Swissport Style: Airport Name + Hover "Learn more" */}
+                <div className="absolute bottom-7 left-7 right-7 sm:bottom-8 sm:left-8 sm:right-8 z-10 space-y-2">
+                  <h3 className="text-2xl sm:text-[26px] lg:text-[28px] xl:text-[30px] font-bold text-white tracking-tight leading-snug drop-shadow-xs">
+                    {station.name}
+                  </h3>
+
+                  {/* "Learn more" revealed on hover (Swissport style) */}
+                  <div className="pt-1.5 flex items-center gap-2 text-sm sm:text-base font-semibold text-white transition-all duration-300 opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0">
+                    <span className="underline underline-offset-4 decoration-2 decoration-[#72BF44]">Learn more</span>
+                    <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 text-[#72BF44] group-hover:translate-x-1.5 transition-transform" />
+                  </div>
+                </div>
               </div>
             </ScrollReveal>
           ))}
         </div>
-
-        {/* CTA to Full Customers Page */}
-        <div>
-          <button
-            onClick={() => onNavigate('/customers')}
-            className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-slate-50 hover:bg-[#204696] border border-slate-200 hover:border-[#204696] text-slate-700 hover:text-white font-bold text-xs shadow-xs transition-all duration-300 hover:scale-105 cursor-pointer group"
-          >
-            <span>View All 42 Airline Partners, Aircraft Fleets & Handling Scope</span>
-            <ChevronRight className="w-4 h-4 group-hover:translate-x-1.5 transition-transform duration-300" />
-          </button>
-        </div>
       </section>
 
+      {/* 6. AIRLINE PARTNERS — SWISSPORT-STYLE CORPORATE SHOWCASE */}
+      <PartnerRadarWeb onNavigate={onNavigate} />
 
       {/* 7. VERIFIED CERTIFICATIONS & ACCREDITATION BANNER (Points to /certifications) */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 lg:py-14 border-t border-slate-100">
         <ScrollReveal animation="fade-up">
-          <div className="rounded-2xl border border-slate-200 bg-white shadow-sm overflow-hidden relative group hover:shadow-xl transition-all duration-300">
-            <div className="h-1.5 w-full bg-gradient-to-r from-[#204696] via-[#009EE0] to-[#72BF44] relative overflow-hidden">
-              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/50 to-transparent animate-shimmer" />
-            </div>
-            <div className="p-8 sm:p-10 bg-gradient-to-r from-blue-50/50 via-white to-emerald-50/30">
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-center">
-                
-                <div className="space-y-2 md:col-span-2 text-left">
-                  <div className="flex items-center gap-2.5">
-                    <span className="w-1.5 h-5 rounded-full bg-gradient-to-b from-[#204696] via-[#009EE0] to-[#72BF44]" />
-                    <h2 className="text-xs sm:text-sm font-extrabold uppercase tracking-widest text-[#3B7A1C]">
-                      Audited & Certified Safety Leadership <span className="text-[#204696]">·</span> <span className="text-[#009EE0]">IATA ISAGO & GCAA</span>
-                    </h2>
-                  </div>
-                  <h3 className="text-2xl font-extrabold text-slate-900">
-                    IATA ISAGO Accredited · Certificate ISAGO-ACC-24-2419
-                  </h3>
-                  <p className="text-xs leading-relaxed text-slate-700">
-                    Accredited under the IATA Safety Audit for Ground Operations (ISAGO) at Kotoka International Airport (ACC) through <strong>January 21, 2027</strong>. Supported by European Union Cargo RA3 security accreditation and Ghana Civil Aviation Authority licenses.
-                  </p>
-                </div>
-
-                <div className="flex flex-col sm:flex-row md:flex-col gap-3 justify-center">
-                  <button
-                    onClick={() => onNavigate('/certifications')}
-                    className="px-5 py-2.5 rounded-lg bg-[#204696] hover:bg-[#153170] text-white font-bold text-xs shadow-xs transition-all duration-300 hover:scale-105 hover:-translate-y-0.5 text-center cursor-pointer"
-                  >
-                    Inspect Official Certifications
-                  </button>
-                  <button
-                    onClick={() => onNavigate('/code-of-conduct')}
-                    className="px-5 py-2.5 rounded-lg border border-slate-300 bg-white text-slate-800 hover:bg-slate-50 text-xs font-bold text-center transition-all duration-300 hover:scale-105 shadow-xs cursor-pointer"
-                  >
-                    Code of Conduct & Compliance
-                  </button>
-                </div>
-
+          <div className="border-t border-b border-slate-200 py-10 sm:py-14">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-center text-left">
+              
+              <div className="space-y-2.5 md:col-span-2">
+                <span className="text-xs font-bold uppercase tracking-wider text-[#204696]">
+                  Quality, Safety & Regulatory Accreditation
+                </span>
+                <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-900 tracking-tight">
+                  IATA ISAGO Accredited · Certificate ISAGO-ACC-24-2419
+                </h2>
+                <p className="text-base sm:text-lg text-slate-600 leading-relaxed font-normal">
+                  Accredited under the IATA Safety Audit for Ground Operations (ISAGO) at Kotoka International Airport (ACC) through <strong>January 21, 2027</strong>. Supported by European Union Cargo RA3 security validation and Ghana Civil Aviation Authority operating licenses.
+                </p>
               </div>
+
+              <div className="flex flex-col sm:flex-row md:flex-col gap-3 justify-center md:items-end">
+                <button
+                  onClick={() => onNavigate('/certifications')}
+                  className="btn-primary group"
+                >
+                  <span>View Certifications & Audits</span>
+                  <ArrowRight className="w-4 h-4 text-[#58C1EB] group-hover:translate-x-1.5 transition-transform duration-300" />
+                </button>
+                <button
+                  onClick={() => onNavigate('/code-of-conduct')}
+                  className="btn-secondary group"
+                >
+                  <span>Code of Conduct & Governance</span>
+                </button>
+              </div>
+
             </div>
           </div>
         </ScrollReveal>
       </section>
 
-
       {/* 8. CSR & COMMUNITY IMPACT SUMMARY (Points to /csr) */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-24 lg:py-28 border-t border-slate-100">
         <ScrollReveal animation="fade-up">
-          <div className="text-center max-w-2xl mx-auto mb-10 space-y-2">
-            <div className="flex items-center justify-center gap-2.5">
-              <span className="w-1.5 h-5 rounded-full bg-gradient-to-b from-[#204696] via-[#009EE0] to-[#72BF44]" />
-              <h2 className="text-xs sm:text-sm font-extrabold uppercase tracking-widest text-[#204696]">
-                Corporate Social Responsibility <span className="text-[#009EE0]">·</span> <span className="text-[#3B7A1C]">Giving Back to Ghana</span>
-              </h2>
-            </div>
-            <h3 className="text-3xl font-extrabold text-slate-900">
-              Community Impact & Sustainable Aviation
-            </h3>
-            <p className="text-xs text-slate-600">
+          <div className="text-center max-w-2xl mx-auto mb-10 sm:mb-14 space-y-2">
+            <p className="eyebrow text-[#204696]">
+              Sustainability & Community Engagement
+            </p>
+            <h2 className="text-3xl sm:text-4xl lg:text-[40px] font-bold text-slate-900 tracking-[-0.025em] leading-[1.18]">
+              Community Impact & Sustainability
+            </h2>
+            <p className="text-base text-slate-600 leading-relaxed font-normal">
               Winner of the <strong>Excellence in CSR Award</strong> at the 2025 Ghana Shippers’ Authority Awards.
             </p>
           </div>
         </ScrollReveal>
 
-        <div className="mt-20 grid grid-cols-1 md:grid-cols-3 gap-6 text-left">
-          <ScrollReveal animation="fade-up" delay={0}>
-            <div
-              onClick={() => onNavigate('/csr')}
-              className="p-6 rounded-xl border border-slate-200 bg-white shadow-xs space-y-3 hover:border-[#204696]/60 hover:shadow-xl hover:-translate-y-2 transition-all duration-300 cursor-pointer group h-full"
-            >
-              <div className="p-2.5 rounded-lg bg-blue-50 text-[#204696] group-hover:scale-110 group-hover:rotate-6 transition-transform duration-300 w-fit">
-                <Heart className="w-5 h-5" />
-              </div>
-              <h4 className="font-bold text-base sm:text-sm lg:text-base text-slate-900 group-hover:text-[#204696] transition-colors">
-                Autism Flight Travel Rehearsal
-              </h4>
-              <p className="text-sm sm:text-xs lg:text-[13px] text-slate-600 leading-relaxed">
-                Partnering with Emirates Airlines to support autistic children through a guided airport and cabin travel simulation.
-              </p>
-              <span className="text-xs font-bold text-[#204696] inline-flex items-center gap-1 pt-1">
-                <span>Read Story</span>
-                <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1.5 transition-transform duration-300" />
-              </span>
-            </div>
-          </ScrollReveal>
+        {/* 3 CSR Cards — Full-Bleed Showcase matching Airport Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8 text-left">
+          {csrHighlights.map((item, idx) => (
+            <ScrollReveal key={item.id} animation="fade-up" delay={idx * 100}>
+              <div
+                onClick={() => onNavigate(item.path)}
+                className="group relative h-[420px] sm:h-[460px] lg:h-[500px] rounded-2xl sm:rounded-3xl overflow-hidden cursor-pointer shadow-md hover:shadow-2xl transition-all duration-500 hover:-translate-y-1.5"
+              >
+                {/* Full-Bleed Background Image */}
+                <img
+                  src={item.image}
+                  alt={item.title}
+                  className={`absolute inset-0 w-full h-full object-cover ${item.imagePosition || 'object-center'} group-hover:scale-105 transition-transform duration-700 ease-out`}
+                />
 
-          <ScrollReveal animation="fade-up" delay={100}>
-            <div
-              onClick={() => onNavigate('/csr')}
-              className="p-6 rounded-xl border border-slate-200 bg-white shadow-xs space-y-3 hover:border-[#204696]/60 hover:shadow-xl hover:-translate-y-2 transition-all duration-300 cursor-pointer group h-full"
-            >
-              <div className="p-2.5 rounded-lg bg-[#72BF44]/10 text-[#55942B] group-hover:scale-110 group-hover:rotate-6 transition-transform duration-300 w-fit">
-                <Plane className="w-5 h-5" />
-              </div>
-              <h4 className="font-bold text-base sm:text-sm lg:text-base text-slate-900 group-hover:text-[#204696] transition-colors">
-                Orbis Flying Eye Hospital
-              </h4>
-              <p className="text-sm sm:text-xs lg:text-[13px] text-slate-600 leading-relaxed">
-                Full ground handling partner for the flying ophthalmic teaching hospital during its sight-restoring medical missions in Ghana.
-              </p>
-              <span className="text-xs font-bold text-[#204696] inline-flex items-center gap-1 pt-1">
-                <span>Read Story</span>
-                <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1.5 transition-transform duration-300" />
-              </span>
-            </div>
-          </ScrollReveal>
+                {/* Subtle Bottom Dark Gradient */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/25 via-35% to-transparent group-hover:from-black/90 transition-colors duration-500" />
 
-          <ScrollReveal animation="fade-up" delay={200}>
-            <div
-              onClick={() => onNavigate('/csr')}
-              className="p-6 rounded-xl border border-slate-200 bg-white shadow-xs space-y-3 hover:border-[#204696]/60 hover:shadow-xl hover:-translate-y-2 transition-all duration-300 cursor-pointer group h-full"
-            >
-              <div className="p-2.5 rounded-lg bg-sky-50 text-[#009EE0] group-hover:scale-110 group-hover:rotate-6 transition-transform duration-300 w-fit">
-                <TrendingUp className="w-5 h-5" />
+                {/* Bottom Overlay Content — Title + Hover Reveal */}
+                <div className="absolute bottom-7 left-7 right-7 sm:bottom-8 sm:left-8 sm:right-8 z-10 space-y-2">
+                  <h3 className="text-2xl sm:text-[26px] lg:text-[28px] xl:text-[30px] font-bold text-white tracking-tight leading-snug drop-shadow-xs">
+                    {item.title}
+                  </h3>
+
+                  {/* "Read Story" revealed on hover (matching Airport card style) */}
+                  <div className="pt-1.5 flex items-center gap-2 text-sm sm:text-base font-semibold text-white transition-all duration-300 opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0">
+                    <span className="underline underline-offset-4 decoration-2 decoration-[#72BF44]">Read Story</span>
+                    <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 text-[#72BF44] group-hover:translate-x-1.5 transition-transform" />
+                  </div>
+                </div>
               </div>
-              <h4 className="font-bold text-base sm:text-sm lg:text-base text-slate-900 group-hover:text-[#204696] transition-colors">
-                Education & Future Stars
-              </h4>
-              <p className="text-sm sm:text-xs lg:text-[13px] text-slate-600 leading-relaxed">
-                Built a 6-unit school block in Kalande (Savannah Region) with McDan Foundation and partnered with Future Stars charity.
-              </p>
-              <span className="text-xs font-bold text-[#204696] inline-flex items-center gap-1 pt-1">
-                <span>Read Story</span>
-                <ArrowRight className="w-3 h-3 group-hover:translate-x-1.5 transition-transform duration-300" />
-              </span>
-            </div>
-          </ScrollReveal>
+            </ScrollReveal>
+          ))}
         </div>
 
-        <div className="text-center pt-4">
+        <div className="text-center pt-8 sm:pt-10">
           <button
             onClick={() => onNavigate('/csr')}
-            className="inline-flex items-center gap-2 px-6 py-3.5 rounded-xl border border-slate-200 hover:border-[#204696] bg-white hover:bg-slate-50 text-slate-800 hover:text-[#204696] font-bold text-xs shadow-xs transition-all duration-300 hover:scale-105 group cursor-pointer"
+            className="btn-link group text-xs sm:text-sm"
           >
-            <span>Explore All CSR Programs & Impact Reports</span>
-            <ArrowRight className="w-4 h-4 group-hover:translate-x-1.5 transition-transform duration-300" />
+            <span className="link-label">Explore All CSR Programs & Impact Reports</span>
+            <ArrowRight className="w-4 h-4 text-[#72BF44] group-hover:translate-x-2 transition-transform duration-300" />
           </button>
         </div>
       </section>
 
 
-      {/* 9. LATEST NEWS & PRESS RELEASES SUMMARY (Points to /news) */}
-      <section className="mb-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      {/* 9. LATEST NEWS & PRESS RELEASES ROLLING SHOWCASE (Points to /news) */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-24 lg:py-28 mb-16 sm:mb-24 border-t border-slate-100">
         <ScrollReveal animation="fade-up">
-          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-8">
-            <div className="space-y-1.5 text-left">
-              <div className="flex items-center gap-2">
-                <span className="w-1.5 h-4 rounded-full bg-gradient-to-b from-[#204696] via-[#009EE0] to-[#72BF44]" />
-                <span className="text-xs font-mono font-bold uppercase tracking-wider text-[#204696]">News & Media</span>
-              </div>
-              <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
+          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-8 sm:mb-10 text-left">
+            <div className="space-y-1.5">
+              <p className="eyebrow text-[#204696]">Corporate News & Announcements</p>
+              <h2 className="text-2xl sm:text-3xl lg:text-[36px] font-bold text-slate-900 tracking-[-0.025em] leading-[1.2]">
                 Latest Updates from Aviance Ghana
               </h2>
             </div>
             <button
               onClick={() => onNavigate('/news')}
-              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-slate-50 hover:bg-[#204696] border border-slate-200 hover:border-[#204696] text-xs font-bold text-slate-700 hover:text-white transition-all duration-300 hover:scale-105 cursor-pointer group shrink-0 self-start sm:self-auto"
+              className="btn-link group"
             >
-              <span>All Articles & Press Releases</span>
-              <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-300" />
+              <span className="link-label">All Articles & Press Releases</span>
+              <ArrowRight className="w-4 h-4 text-[#72BF44] group-hover:translate-x-1.5 transition-transform duration-300" />
             </button>
           </div>
         </ScrollReveal>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {(news && news.length > 0 ? news.slice(0, 3) : []).map((item, idx) => (
-            <ScrollReveal key={item.id} animation="fade-up" delay={idx * 100}>
-              <article
-                onClick={() => onNavigate(`/news/${item.slug}`)}
-                className="rounded-2xl border border-slate-200 bg-white shadow-xs overflow-hidden cursor-pointer group transition-all duration-300 hover:-translate-y-2 hover:shadow-xl hover:border-[#204696]/40 text-left flex flex-col justify-between h-full"
-              >
-                <div>
-                  <div className="relative h-48 overflow-hidden bg-slate-900">
-                    <img
-                      src={item.featuredImage}
-                      alt={item.title}
-                      className="w-full h-full object-cover group-hover:scale-108 transition-transform duration-700 ease-out"
-                      loading="lazy"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-slate-950/60 via-transparent to-transparent opacity-60 group-hover:opacity-40 transition-opacity" />
-                    <span className="absolute top-3 left-3 px-2.5 py-1 rounded-full text-[10px] font-bold bg-[#0F2E53]/90 backdrop-blur-md text-white shadow-sm border border-white/10">
-                      {item.category}
-                    </span>
-                  </div>
-                  <div className="p-5 sm:p-6 space-y-2.5">
-                    <span className="text-[11px] font-mono font-medium text-slate-400">
-                      {new Date(item.publishedAt).toLocaleDateString('en-GB', {
-                        day: '2-digit',
-                        month: 'short',
-                        year: 'numeric'
-                      })}
-                    </span>
-                    <h4 className="font-bold text-lg sm:text-base leading-snug text-slate-900 group-hover:text-[#204696] transition-colors line-clamp-2">
-                      {item.title}
-                    </h4>
-                    <p className="text-sm sm:text-xs lg:text-[13px] text-slate-600 line-clamp-2 leading-relaxed">{item.excerpt}</p>
-                  </div>
+        {/* Rolling Carousel Wrapper with Dedicated Gutters (Buttons NEVER touch cards) */}
+        <div className="relative group/carousel px-10 sm:px-14 lg:px-16">
+          {/* Left Arrow Button */}
+          {rollingNews.length > itemsPerView && (
+            <button
+              onClick={handlePrevNews}
+              aria-label="Previous news"
+              className="absolute left-0 sm:left-1 lg:left-2 top-1/2 -translate-y-1/2 z-30 w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-white shadow-lg border border-slate-200/90 text-slate-700 hover:text-white hover:bg-[#204696] hover:border-[#204696] active:scale-90 transition-all duration-300 flex items-center justify-center cursor-pointer hover:scale-110"
+            >
+              <ChevronLeft className="w-5 h-5" />
+            </button>
+          )}
+
+          {/* Right Arrow Button */}
+          {rollingNews.length > itemsPerView && (
+            <button
+              onClick={handleNextNews}
+              aria-label="Next news"
+              className="absolute right-0 sm:right-1 lg:right-2 top-1/2 -translate-y-1/2 z-30 w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-white shadow-lg border border-slate-200/90 text-slate-700 hover:text-white hover:bg-[#204696] hover:border-[#204696] active:scale-90 transition-all duration-300 flex items-center justify-center cursor-pointer hover:scale-110"
+            >
+              <ChevronRight className="w-5 h-5" />
+            </button>
+          )}
+
+          {/* Carousel Viewport with Unified Gestures */}
+          <div
+            ref={newsContainerRef}
+            className="overflow-hidden w-full py-4 -my-4 select-none cursor-grab active:cursor-grabbing"
+            onMouseEnter={() => setIsNewsPaused(true)}
+            onMouseLeave={() => setIsNewsPaused(false)}
+            {...newsSwipeHandlers}
+          >
+            {/* Sliding Track */}
+            <div
+              className="flex gap-6 transition-transform duration-700 ease-[cubic-bezier(0.25,1,0.5,1)] will-change-transform"
+              style={{
+                transform: `translate3d(-${newsTrackOffset}px, 0, 0)`
+              }}
+            >
+              {rollingNews.map((item) => (
+                <div
+                  key={item.id}
+                  style={{
+                    width: `calc((100% - ${(itemsPerView - 1) * 24}px) / ${itemsPerView})`,
+                    flexShrink: 0
+                  }}
+                  className="h-full"
+                >
+                  <article
+                    onClick={() => onNavigate(`/news/${item.slug}`)}
+                    className="group cursor-pointer flex flex-col justify-between h-full bg-white rounded-2xl sm:rounded-3xl border border-slate-200/80 shadow-xs hover:shadow-2xl hover:border-slate-300 transition-all duration-500 hover:-translate-y-2 overflow-hidden text-left"
+                  >
+                    {/* Top Image Container — Only Media Count Tag (Swissport Style) */}
+                    <div className="relative aspect-[4/3] sm:aspect-[16/11] overflow-hidden bg-slate-100">
+                      <img
+                        src={item.featuredImage}
+                        alt={item.title}
+                        className={`w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out ${
+                          item.featuredImage.includes('richard_backhouse')
+                            ? 'object-[center_12%]'
+                            : 'object-center'
+                        }`}
+                        loading="lazy"
+                      />
+                      {/* Media Count Tag Only */}
+                      <div className="absolute top-3 right-3 px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-full bg-slate-900/60 backdrop-blur-md text-white text-[11px] sm:text-xs font-semibold flex items-center gap-1.5 shadow-md border border-white/15 pointer-events-none">
+                        <Camera className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-white/90" />
+                        <span>{getMediaCount(item.slug)}</span>
+                      </div>
+                    </div>
+
+                    {/* Card Body — Clean Title & Metadata without Description */}
+                    <div className="p-6 sm:p-7 flex flex-col justify-between flex-1 space-y-5">
+                      <div className="space-y-3">
+                        {/* Meta row: Date on left, Media Release on right (Swissport Style) */}
+                        <div className="flex items-center justify-between text-xs">
+                          <span className="flex items-center gap-1.5 font-medium text-slate-500">
+                            <Calendar className="w-3.5 h-3.5 text-slate-400" />
+                            {new Date(item.publishedAt).toLocaleDateString('en-GB', {
+                              day: '2-digit',
+                              month: 'short',
+                              year: 'numeric'
+                            })}
+                          </span>
+                          <span className="font-bold text-[#204696] tracking-wide text-[11px] uppercase">
+                            Media Release
+                          </span>
+                        </div>
+
+                        {/* Title — Prominent & Clean */}
+                        <h4 className="font-bold text-lg sm:text-[20px] leading-snug text-slate-900 group-hover:text-[#204696] transition-colors line-clamp-3 min-h-[56px] sm:min-h-[64px]">
+                          {item.title}
+                        </h4>
+                      </div>
+
+                      {/* Card Footer */}
+                      <div className="pt-4 border-t border-slate-100 flex items-center justify-between text-xs font-bold text-[#204696]">
+                        <span className="inline-flex items-center gap-1.5 group-hover:text-[#0C1E4A] transition-colors">
+                          <span className="underline underline-offset-4 decoration-2 decoration-[#72BF44]">
+                            Read Full Article
+                          </span>
+                          <ArrowRight className="w-4 h-4 text-[#72BF44] group-hover:translate-x-1.5 transition-transform duration-300" />
+                        </span>
+                        <span className="text-[11px] font-medium text-slate-400 flex items-center gap-1">
+                          <Clock className="w-3.5 h-3.5 text-slate-400" />
+                          <span>{item.readTimeMinutes || 2} min read</span>
+                        </span>
+                      </div>
+                    </div>
+                  </article>
                 </div>
-                <div className="px-5 sm:px-6 pb-5 pt-2 border-t border-slate-100 flex items-center justify-between text-xs font-bold text-[#204696]">
-                  <span className="inline-flex items-center gap-1 group-hover:text-[#0C1E4A]">
-                    <span>Read Full Article</span>
-                    <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1.5 transition-transform duration-300" />
-                  </span>
-                  <span className="text-[10px] font-mono text-slate-400">
-                    Official Release →
-                  </span>
-                </div>
-              </article>
-            </ScrollReveal>
-          ))}
+              ))}
+            </div>
+          </div>
+
+          {/* Modern Numbered Slide Indicator Capsule */}
+          {maxNewsIndex > 0 && (
+            <div className="flex items-center justify-center pt-8 sm:pt-10">
+              <SlidePagination
+                current={newsSlide}
+                total={maxNewsIndex + 1}
+                onChange={setNewsSlide}
+              />
+            </div>
+          )}
         </div>
       </section>
     </div>

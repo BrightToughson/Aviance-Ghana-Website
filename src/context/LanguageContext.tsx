@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 
-export type LanguageCode = 'en' | 'tw' | 'fr';
+export type LanguageCode = 'en' | 'fr';
 
 export interface LanguageOption {
   code: LanguageCode;
@@ -11,11 +11,10 @@ export interface LanguageOption {
 
 export const SUPPORTED_LANGUAGES: LanguageOption[] = [
   { code: 'en', label: 'English', nativeLabel: 'English', flag: '🇬🇧' },
-  { code: 'tw', label: 'Twi', nativeLabel: 'Twi (Akan)', flag: '🇬🇭' },
   { code: 'fr', label: 'French', nativeLabel: 'Français', flag: '🇫🇷' },
 ];
 
-const TRANSLATIONS: Record<LanguageCode, Record<string, string>> = {
+const TRANSLATIONS: Record<string, Record<string, string>> = {
   en: {
     // Top Telemetry Bar
     'telemetry.station': "ACC · Kotoka Int'l",
@@ -1352,10 +1351,18 @@ const LanguageContext = createContext<LanguageContextType | undefined>(undefined
 
 export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [language, setLanguageState] = useState<LanguageCode>(() => {
+    // 1. Check URL prefix first (highest priority)
+    const path = window.location.pathname;
+    for (const code of ['en', 'fr'] as LanguageCode[]) {
+      if (path === `/${code}` || path.startsWith(`/${code}/`)) {
+        return code;
+      }
+    }
+    // 2. Fall back to localStorage
     try {
       const saved = localStorage.getItem('aviance_language');
-      if (saved === 'en' || saved === 'tw' || saved === 'fr') {
-        return saved;
+      if (saved === 'en' || saved === 'fr') {
+        return saved as LanguageCode;
       }
     } catch {
       // fallback
@@ -1369,6 +1376,14 @@ export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       localStorage.setItem('aviance_language', lang);
     } catch {
       // fallback
+    }
+    // Update URL to reflect new language prefix
+    const currentPath = window.location.pathname;
+    const cleanPath = currentPath.replace(/^\/(en|fr)(?=\/|$)/, '') || '/';
+    const newPath = `/${lang}${cleanPath === '/' ? '' : cleanPath}`;
+    const fullNew = newPath + window.location.hash;
+    if (window.location.pathname + window.location.hash !== fullNew) {
+      window.history.replaceState(null, '', fullNew);
     }
   };
 

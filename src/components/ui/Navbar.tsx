@@ -26,9 +26,11 @@ import {
   BarChart3,
   ShieldCheck,
   GraduationCap,
-  X
+  X,
+  Globe
 } from 'lucide-react';
 import { AvianceLogo } from './AvianceLogo';
+import { useLanguage, SUPPORTED_LANGUAGES, LanguageCode } from '../../context/LanguageContext';
 
 // Authentic Aviance Operations Photography for Directory Showcase
 import turnaroundImg from '../../assets/aviance_images/1791968160594.jpg';
@@ -36,12 +38,39 @@ import loungeImg from '../../assets/aviance_images/1791796145150.jpg';
 import supportImg from '../../assets/aviance_images/1776164623557.jpg';
 import cargoImg from '../../assets/aviance_images/1780574568846.jpg';
 
+// Cross-platform vector flag components (ensures vivid, crisp flags on all OS including Windows)
+export const FlagIcon: React.FC<{ code: LanguageCode | string; className?: string }> = ({ code, className = "w-5 h-3.5" }) => {
+  if (code === 'fr') {
+    return (
+      <svg viewBox="0 0 640 480" className={`${className} rounded-[2px] shadow-2xs border border-slate-200/90 inline-block shrink-0`} aria-hidden="true">
+        <path fill="#002654" d="M0 0h213.3v480H0z"/>
+        <path fill="#FFF" d="M213.3 0h213.4v480H213.3z"/>
+        <path fill="#CE1126" d="M426.7 0H640v480H426.7z"/>
+      </svg>
+    );
+  }
+  // Default UK Flag for English
+  return (
+    <svg viewBox="0 0 640 480" className={`${className} rounded-[2px] shadow-2xs border border-slate-200/90 inline-block shrink-0`} aria-hidden="true">
+      <path fill="#012169" d="M0 0h640v480H0z"/>
+      <path fill="#FFF" d="m75 0 244 181L562 0h78v62L400 240l240 178v62h-80L320 301 81 480H0v-60l239-180L0 64V0h75z"/>
+      <path fill="#C8102E" d="m424 288 216 153v39h-40L368 308l56-20zM640 0v10L446 155l-33-27L598 0h42zM0 480v-10l194-145 33 27L42 480H0zm0-441L194 184l-42 20L0 78V39z"/>
+      <path fill="#FFF" d="M241 0v480h160V0H241zM0 160v160h640V160H0z"/>
+      <path fill="#C8102E" d="M267 0v480h106V0H267zM0 187v106h640V187H0z"/>
+    </svg>
+  );
+};
+
 interface NavbarProps {
   currentPath: string;
   onNavigate: (path: string) => void;
 }
 
 export const Navbar: React.FC<NavbarProps> = ({ currentPath, onNavigate }) => {
+  const { language, setLanguage, currentLanguageOption } = useLanguage();
+  const [langDropdownOpen, setLangDropdownOpen] = useState(false);
+  const langDropdownRef = useRef<HTMLDivElement>(null);
+
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [menuToggledOnce, setMenuToggledOnce] = useState(false);
@@ -120,11 +149,24 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPath, onNavigate }) => {
         setMenuToggledOnce(true);
         setAboutDropdownOpen(false);
         setServicesDropdownOpen(false);
+        setLangDropdownOpen(false);
       }
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, []);
+
+  // Close lang dropdown when clicking outside
+  useEffect(() => {
+    if (!langDropdownOpen) return;
+    const handleClickOutside = (e: MouseEvent) => {
+      if (langDropdownRef.current && !langDropdownRef.current.contains(e.target as Node)) {
+        setLangDropdownOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [langDropdownOpen]);
 
   useEffect(() => {
     if (mobileMenuOpen) {
@@ -255,6 +297,71 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPath, onNavigate }) => {
     return () => clearInterval(interval);
   }, [mobileMenuOpen, showcaseSlides.length]);
 
+  // Desktop Mega-Menu Auto-Rotating Highlights
+  const aboutHighlights = [
+    {
+      id: 'heritage',
+      image: loungeImg,
+      title: '30+ Years of Ground Handling Excellence at Kotoka Terminal 3',
+      path: '/about'
+    },
+    {
+      id: 'partners',
+      image: supportImg,
+      title: 'Trusted Ground Handling Partner for 40+ Global Airline Carriers',
+      path: '/customers'
+    },
+    {
+      id: 'standards',
+      image: turnaroundImg,
+      title: 'IATA ISAGO Registered & Regulated by GCAA Across Ghana',
+      path: '/certifications'
+    }
+  ];
+
+  const serviceHighlights = [
+    {
+      id: 'ramp',
+      image: turnaroundImg,
+      title: 'ISAGO-Accredited Apron Turnaround & Pushback Operations',
+      path: '/ramp-handling'
+    },
+    {
+      id: 'cargo',
+      image: cargoImg,
+      title: 'EU RA3-Validated Cold-Chain & Bonded Air Cargo Logistics',
+      path: '/cargo'
+    },
+    {
+      id: 'hospitality',
+      image: loungeImg,
+      title: 'Executive Adinkra Lounges & VIP Passenger Hospitality',
+      path: '/lounge'
+    }
+  ];
+
+  const [aboutHighlightIndex, setAboutHighlightIndex] = useState(0);
+  const [serviceHighlightIndex, setServiceHighlightIndex] = useState(0);
+  const [isHighlightPaused, setIsHighlightPaused] = useState(false);
+
+  // Auto-advance About dropdown highlight every 4 seconds
+  useEffect(() => {
+    if (!aboutDropdownOpen || isHighlightPaused) return;
+    const timer = setInterval(() => {
+      setAboutHighlightIndex((prev) => (prev + 1) % aboutHighlights.length);
+    }, 4000);
+    return () => clearInterval(timer);
+  }, [aboutDropdownOpen, isHighlightPaused, aboutHighlights.length]);
+
+  // Auto-advance Services dropdown highlight every 4 seconds
+  useEffect(() => {
+    if (!servicesDropdownOpen || isHighlightPaused) return;
+    const timer = setInterval(() => {
+      setServiceHighlightIndex((prev) => (prev + 1) % serviceHighlights.length);
+    }, 4000);
+    return () => clearInterval(timer);
+  }, [servicesDropdownOpen, isHighlightPaused, serviceHighlights.length]);
+
   return (
     <>
       {/* Main Corporate Navigation Header */}
@@ -279,10 +386,10 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPath, onNavigate }) => {
             </button>
 
             {/* Desktop Navigation Links */}
-            <nav className="hidden lg:flex items-center gap-1 font-medium text-sm text-slate-700 h-full">
+            <nav className="hidden lg:flex items-center gap-1.5 xl:gap-2.5 font-semibold text-[15px] xl:text-base text-slate-800 h-full">
               <button
                 onClick={() => handleNav('/')}
-                className={`px-3.5 py-2 rounded-lg transition-all duration-300 font-medium active:scale-95 ${
+                className={`px-4 xl:px-5 py-2.5 rounded-xl transition-all duration-300 font-semibold active:scale-95 ${
                   currentPath === '/'
                     ? 'text-[#204696] font-bold bg-blue-50/90 shadow-2xs'
                     : 'text-slate-700 hover:text-[#204696] hover:bg-slate-50 hover:scale-[1.02]'
@@ -299,7 +406,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPath, onNavigate }) => {
               >
                 <button
                   onClick={() => handleNav('/about')}
-                  className={`flex items-center gap-1.5 px-3.5 py-2 rounded-lg transition-all duration-300 font-medium active:scale-95 ${
+                  className={`flex items-center gap-1.5 px-4 xl:px-5 py-2.5 rounded-xl transition-all duration-300 font-semibold active:scale-95 ${
                     currentPath.startsWith('/about') ||
                     currentPath === '/management' ||
                     currentPath === '/management-team' ||
@@ -314,7 +421,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPath, onNavigate }) => {
                   }`}
                 >
                   <span>About Us</span>
-                  <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-300 ease-out ${aboutDropdownOpen ? 'rotate-180 text-[#204696]' : 'text-slate-400'}`} />
+                  <ChevronDown className={`w-4 h-4 transition-transform duration-300 ease-out ${aboutDropdownOpen ? 'rotate-180 text-[#204696]' : 'text-slate-400'}`} />
                 </button>
 
                 {aboutDropdownOpen && (
@@ -339,94 +446,121 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPath, onNavigate }) => {
                       <div className="h-[2px] w-full bg-gradient-to-r from-[#204696] via-[#009EE0] to-[#72BF44]" />
 
                       <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-10 py-7 lg:py-8">
-                        {/* Main Content Grid */}
-                        <div className="grid grid-cols-12 gap-8 text-slate-800 text-left items-stretch">
-                          {/* Left: 2 Balanced Pillars (3 links each) */}
-                          <div className="col-span-12 lg:col-span-8 xl:col-span-9 flex flex-col justify-between">
-                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-6">
+                        {/* Main Content Grid — Swissport-Inspired Layout */}
+                        <div className="grid grid-cols-12 gap-8 lg:gap-10 text-slate-800 text-left items-start">
+                          {/* Left Column: Section Title, Lead Description & Bigger Links */}
+                          <div className="col-span-12 lg:col-span-7 flex flex-col justify-between">
+                            {/* Section Header & Descriptive Intro (Swissport Style) */}
+                            <div className="space-y-2 mb-6">
+                              <h3 className="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900">
+                                About Aviance
+                              </h3>
+                              <p className="text-sm sm:text-[15px] text-slate-600 leading-relaxed font-normal max-w-xl">
+                                Explore our 30+ year aviation heritage, executive leadership, certified ground handling standards, and customer airline partnerships across Ghana.{' '}
+                                <button
+                                  onClick={() => handleNav('/about')}
+                                  className="font-bold text-[#204696] hover:text-[#153170] hover:underline cursor-pointer inline-flex items-center gap-1 ml-0.5"
+                                >
+                                  <span>Learn more</span>
+                                  <ArrowRight className="w-3.5 h-3.5" />
+                                </button>
+                              </p>
+                            </div>
+
+                            {/* 2 Columns of Prominent, Bigger Page Links */}
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-2">
                               {aboutPillars.map((pillar) => (
-                                <div key={pillar.title} className="space-y-3">
-                                  <div className="flex items-center gap-2 pb-2 border-b border-slate-100">
-                                    <span className={`w-1.5 h-1.5 rounded-full ${pillar.dotClass}`} />
-                                    <span className="text-xs font-bold uppercase tracking-wider text-slate-400 font-mono">
-                                      {pillar.title}
-                                    </span>
-                                  </div>
-                                  <div className="space-y-1">
-                                    {pillar.items.map((item) => {
-                                      const Icon = item.icon;
-                                      return (
-                                        <button
-                                          key={item.name}
-                                          onClick={() => handleNav(item.path)}
-                                          className="w-full text-left p-2.5 rounded-xl transition-all duration-150 group flex items-start gap-3 hover:bg-slate-50 cursor-pointer"
-                                        >
-                                          <div className="p-2 rounded-lg bg-slate-100 group-hover:bg-[#204696] text-slate-600 group-hover:text-white transition-colors shrink-0 mt-0.5">
-                                            <Icon className="w-4 h-4" />
-                                          </div>
-                                          <div className="min-w-0 flex-1">
-                                            <div className="font-bold text-xs sm:text-[13px] text-slate-900 group-hover:text-[#204696] transition-colors flex items-center justify-between">
-                                              <span>{item.name}</span>
-                                              <ArrowRight className="w-3.5 h-3.5 text-[#204696] opacity-0 -translate-x-1 group-hover:opacity-100 group-hover:translate-x-0 transition-all shrink-0 ml-1" />
-                                            </div>
-                                            <p className="text-[11.5px] text-slate-500 font-normal leading-relaxed mt-0.5">
-                                              {item.desc}
-                                            </p>
-                                          </div>
-                                        </button>
-                                      );
-                                    })}
-                                  </div>
+                                <div key={pillar.title} className="space-y-1">
+                                  {pillar.items.map((item) => {
+                                    const Icon = item.icon;
+                                    return (
+                                      <button
+                                        key={item.name}
+                                        onClick={() => handleNav(item.path)}
+                                        className="w-full text-left py-2.5 px-3 rounded-xl transition-all duration-150 group flex items-center gap-3.5 hover:bg-slate-50 cursor-pointer"
+                                      >
+                                        <div className="p-2.5 rounded-xl bg-slate-100 group-hover:bg-[#204696] text-slate-700 group-hover:text-white transition-colors shrink-0">
+                                          <Icon className="w-4.5 h-4.5" />
+                                        </div>
+                                        <span className="font-bold text-[15px] sm:text-base text-slate-900 group-hover:text-[#204696] transition-colors flex-1">
+                                          {item.name}
+                                        </span>
+                                        <ArrowRight className="w-4 h-4 text-[#204696] opacity-0 -translate-x-1 group-hover:opacity-100 group-hover:translate-x-0 transition-all shrink-0 ml-1" />
+                                      </button>
+                                    );
+                                  })}
                                 </div>
                               ))}
                             </div>
                           </div>
 
-                          {/* Right: Editorial Image Showcase Card */}
-                          <div className="col-span-12 lg:col-span-4 xl:col-span-3">
+                          {/* Right Column: Single Auto-Rotating Highlight Showcase (Swissport Style) */}
+                          <div
+                            className="col-span-12 lg:col-span-5 border-t lg:border-t-0 lg:border-l border-slate-200/90 pt-6 lg:pt-0 lg:pl-10"
+                            onMouseEnter={() => setIsHighlightPaused(true)}
+                            onMouseLeave={() => setIsHighlightPaused(false)}
+                          >
+                            <div className="flex items-center justify-between mb-3.5">
+                              <h4 className="text-base sm:text-lg font-bold text-slate-900">
+                                Highlights
+                              </h4>
+                              {/* Slide Progress Dots */}
+                              <div className="flex items-center gap-1.5">
+                                {aboutHighlights.map((_, dotIdx) => (
+                                  <button
+                                    key={dotIdx}
+                                    onClick={() => setAboutHighlightIndex(dotIdx)}
+                                    className={`transition-all duration-300 rounded-full cursor-pointer ${
+                                      dotIdx === aboutHighlightIndex
+                                        ? 'w-6 h-1.5 bg-[#204696]'
+                                        : 'w-1.5 h-1.5 bg-slate-300 hover:bg-slate-400'
+                                    }`}
+                                    aria-label={`Highlight slide ${dotIdx + 1}`}
+                                  />
+                                ))}
+                              </div>
+                            </div>
+
+                            {/* Single Showcase Image Card with Crossfade */}
                             <div
-                              onClick={() => handleNav('/about')}
-                              className="relative h-full min-h-[260px] rounded-2xl overflow-hidden shadow-sm group/card cursor-pointer border border-slate-200/80 bg-slate-900 flex flex-col justify-end p-5"
+                              onClick={() => handleNav(aboutHighlights[aboutHighlightIndex].path)}
+                              className="group/hcard cursor-pointer"
                             >
-                              <img
-                                src={LOUNGE_IMG}
-                                alt="Aviance Ghana VIP Lounge"
-                                className="absolute inset-0 w-full h-full object-cover group-hover/card:scale-105 transition-transform duration-500"
-                              />
-                              <div className="absolute inset-0 bg-gradient-to-t from-slate-950/95 via-slate-950/50 to-transparent" />
-                              
-                              <div className="relative text-white space-y-1.5">
-                                <span className="text-[10px] font-bold uppercase tracking-wider text-blue-300 block font-mono">
-                                  COMPANY HERITAGE
-                                </span>
-                                <h5 className="font-bold text-sm text-white group-hover/card:text-blue-200 transition-colors leading-snug">
-                                  30+ Years of Ground Handling Excellence
+                              <div className="relative w-full rounded-2xl overflow-hidden aspect-[16/10] bg-slate-100 mb-3 shadow-xs border border-slate-100">
+                                {aboutHighlights.map((hl, idx) => {
+                                  const isActive = idx === aboutHighlightIndex;
+                                  return (
+                                    <div
+                                      key={hl.id}
+                                      className={`absolute inset-0 w-full h-full transition-all duration-700 ease-in-out ${
+                                        isActive
+                                          ? 'opacity-100 scale-100 z-10 pointer-events-auto'
+                                          : 'opacity-0 scale-105 z-0 pointer-events-none'
+                                      }`}
+                                    >
+                                      <img
+                                        src={hl.image}
+                                        alt={hl.title}
+                                        className="w-full h-full object-cover group-hover/hcard:scale-105 transition-transform duration-700 ease-out"
+                                      />
+                                      <div className="absolute inset-0 bg-gradient-to-t from-slate-950/35 via-transparent to-transparent pointer-events-none" />
+                                    </div>
+                                  );
+                                })}
+                              </div>
+
+                              {/* Dynamic Headline underneath */}
+                              <div className="flex items-start justify-between gap-3">
+                                <h5
+                                  key={aboutHighlightIndex}
+                                  className="animate-fade-in font-bold text-xs sm:text-[14px] text-slate-900 group-hover/hcard:text-[#204696] transition-colors leading-snug flex-1"
+                                >
+                                  {aboutHighlights[aboutHighlightIndex].title}
                                 </h5>
-                                <p className="text-[11px] text-slate-300 leading-relaxed font-normal">
-                                  Pioneering safety, apron turnaround, and executive VIP hospitality at Kotoka International Airport since 1994.
-                                </p>
-                                <div className="pt-2 flex items-center gap-1.5 text-xs font-semibold text-blue-300 group-hover/card:text-white transition-colors">
-                                  <span>Explore company profile</span>
-                                  <ArrowRight className="w-3.5 h-3.5 group-hover/card:translate-x-1 transition-transform" />
-                                </div>
+                                <ArrowRight className="w-4 h-4 text-[#204696] group-hover/hcard:translate-x-1 transition-transform shrink-0 mt-0.5" />
                               </div>
                             </div>
                           </div>
-                        </div>
-
-                        {/* Bottom Utility Bar */}
-                        <div className="pt-4 mt-6 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-500">
-                          <div className="flex items-center gap-2">
-                            <span className="w-1.5 h-1.5 rounded-full bg-[#72BF44]" />
-                            <span>Regulated by GCAA · IATA ISAGO Registered Ground Service Provider · EU RA3 Validated</span>
-                          </div>
-                          <button
-                            onClick={() => handleNav('/about')}
-                            className="font-bold text-[#204696] hover:text-[#183878] hover:underline flex items-center gap-1.5 cursor-pointer"
-                          >
-                            <span>Discover Aviance History & Governance</span>
-                            <ArrowRight className="w-3.5 h-3.5" />
-                          </button>
                         </div>
                       </div>
                     </div>
@@ -442,14 +576,31 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPath, onNavigate }) => {
               >
                 <button
                   onClick={() => handleNav('/services')}
-                  className={`flex items-center gap-1.5 px-3.5 py-2 rounded-lg transition-all duration-300 font-medium active:scale-95 ${
-                    currentPath.startsWith('/passenger') || currentPath.startsWith('/ramp') || currentPath === '/cargo' || currentPath === '/services' || currentPath === '/lounge' || currentPath === '/vip-charter' || currentPath === '/training'
+                  className={`flex items-center gap-1.5 px-4 xl:px-5 py-2.5 rounded-xl transition-all duration-300 font-semibold active:scale-95 ${
+                    currentPath === '/services' ||
+                    currentPath.startsWith('/services') ||
+                    currentPath === '/passenger-services' ||
+                    currentPath === '/ramp-handling' ||
+                    currentPath === '/cargo' ||
+                    currentPath === '/cargo-services' ||
+                    currentPath === '/lounge' ||
+                    currentPath === '/lounge-services' ||
+                    currentPath === '/vip-charter' ||
+                    currentPath === '/vip-and-charter-services' ||
+                    currentPath === '/operations' ||
+                    currentPath === '/occ' ||
+                    currentPath === '/occ-flight-operations' ||
+                    currentPath === '/find-my-bag' ||
+                    currentPath === '/baggage' ||
+                    currentPath === '/training' ||
+                    currentPath === '/gse-fleet-maintenance' ||
+                    currentPath === '/gse-and-fleet-maintenance'
                       ? 'text-[#204696] font-bold bg-blue-50/90 shadow-2xs'
                       : 'text-slate-700 hover:text-[#204696] hover:bg-slate-50 hover:scale-[1.02]'
                   }`}
                 >
                   <span>Services</span>
-                  <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-300 ease-out ${servicesDropdownOpen ? 'rotate-180 text-[#204696]' : 'text-slate-400'}`} />
+                  <ChevronDown className={`w-4 h-4 transition-transform duration-300 ease-out ${servicesDropdownOpen ? 'rotate-180 text-[#204696]' : 'text-slate-400'}`} />
                 </button>
 
                 {servicesDropdownOpen && (
@@ -474,94 +625,144 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPath, onNavigate }) => {
                       <div className="h-[2px] w-full bg-gradient-to-r from-[#204696] via-[#009EE0] to-[#72BF44]" />
 
                       <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-10 py-7 lg:py-8">
-                        {/* Main Content Grid: 3 Balanced Pillars + Right Editorial Showcase Card */}
-                        <div className="grid grid-cols-12 gap-8 text-slate-800 text-left items-stretch">
-                          {/* Left: 3 Balanced Pillars (3 items each = 9 total) */}
-                          <div className="col-span-12 lg:col-span-8 xl:col-span-9 flex flex-col justify-between">
-                            <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+                        {/* Main Content Grid — Swissport-Inspired Layout */}
+                        <div className="grid grid-cols-12 gap-8 lg:gap-10 text-slate-800 text-left items-start">
+                          {/* Left Column: Section Title, Lead Description & Bigger Links */}
+                          <div className="col-span-12 lg:col-span-7 flex flex-col justify-between">
+                            {/* Section Header & Descriptive Intro (Swissport Style) */}
+                            <div className="space-y-2 mb-6">
+                              <h3 className="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900">
+                                Core Services
+                              </h3>
+                              <p className="text-sm sm:text-[15px] text-slate-600 leading-relaxed font-normal max-w-xl">
+                                Delivering ISAGO-certified ground turnaround, EU RA3 cold-chain cargo logistics, executive lounge hospitality, and GSE fleet maintenance across Ghana.{' '}
+                                <button
+                                  onClick={() => handleNav('/services')}
+                                  className="font-bold text-[#204696] hover:text-[#153170] hover:underline cursor-pointer inline-flex items-center gap-1 ml-0.5"
+                                >
+                                  <span>Learn more</span>
+                                  <ArrowRight className="w-3.5 h-3.5" />
+                                </button>
+                              </p>
+                            </div>
+
+                            {/* 3 Columns of Prominent, Bigger Page Links */}
+                            <div className="grid grid-cols-1 sm:grid-cols-3 gap-x-4 gap-y-2">
                               {servicePillars.map((pillar) => (
-                                <div key={pillar.title} className="space-y-3">
-                                  <div className="flex items-center gap-2 pb-2 border-b border-slate-100">
-                                    <span className={`w-1.5 h-1.5 rounded-full ${pillar.dotClass}`} />
-                                    <span className="text-xs font-bold uppercase tracking-wider text-slate-400 font-mono">
-                                      {pillar.title}
-                                    </span>
-                                  </div>
-                                  <div className="space-y-1">
-                                    {pillar.items.map((item) => {
-                                      const Icon = item.icon;
-                                      return (
-                                        <button
-                                          key={item.name}
-                                          onClick={() => handleNav(item.path)}
-                                          className="w-full text-left p-2.5 rounded-xl transition-all duration-150 group flex items-start gap-3 hover:bg-slate-50 cursor-pointer"
-                                        >
-                                          <div className="p-2 rounded-lg bg-slate-100 group-hover:bg-[#204696] text-slate-600 group-hover:text-white transition-colors shrink-0 mt-0.5">
-                                            <Icon className="w-4 h-4" />
-                                          </div>
-                                          <div className="min-w-0 flex-1">
-                                            <div className="font-bold text-xs sm:text-[13px] text-slate-900 group-hover:text-[#204696] transition-colors flex items-center justify-between">
-                                              <span>{item.name}</span>
-                                              <ArrowRight className="w-3.5 h-3.5 text-[#204696] opacity-0 -translate-x-1 group-hover:opacity-100 group-hover:translate-x-0 transition-all shrink-0 ml-1" />
-                                            </div>
-                                            <p className="text-[11.5px] text-slate-500 font-normal leading-relaxed mt-0.5">
-                                              {item.desc}
-                                            </p>
-                                          </div>
-                                        </button>
-                                      );
-                                    })}
-                                  </div>
+                                <div key={pillar.title} className="space-y-1">
+                                  {pillar.items.map((item) => {
+                                    const Icon = item.icon;
+                                    const isActive = currentPath === item.path ||
+                                      (item.path === '/lounge' && currentPath === '/lounge-services') ||
+                                      (item.path === '/cargo' && currentPath === '/cargo-services') ||
+                                      (item.path === '/vip-charter' && currentPath === '/vip-and-charter-services') ||
+                                      (item.path === '/operations' && (currentPath === '/occ' || currentPath === '/occ-flight-operations')) ||
+                                      (item.path === '/find-my-bag' && currentPath === '/baggage') ||
+                                      (item.path === '/gse-fleet-maintenance' && currentPath === '/gse-and-fleet-maintenance');
+                                    return (
+                                      <button
+                                        key={item.name}
+                                        onClick={() => handleNav(item.path)}
+                                        className={`w-full text-left py-2 px-2.5 rounded-xl transition-all duration-150 group flex items-center gap-2.5 cursor-pointer ${
+                                          isActive
+                                            ? 'bg-blue-50 text-[#204696] font-bold shadow-2xs'
+                                            : 'hover:bg-slate-50 text-slate-900'
+                                        }`}
+                                      >
+                                        <div className={`p-2 rounded-lg transition-colors shrink-0 ${
+                                          isActive
+                                            ? 'bg-[#204696] text-white'
+                                            : 'bg-slate-100 group-hover:bg-[#204696] text-slate-700 group-hover:text-white'
+                                        }`}>
+                                          <Icon className="w-4 h-4" />
+                                        </div>
+                                        <span className={`text-xs sm:text-[13.5px] transition-colors flex-1 ${
+                                          isActive
+                                            ? 'font-bold text-[#204696]'
+                                            : 'font-semibold text-slate-900 group-hover:text-[#204696]'
+                                        }`}>
+                                          {item.name}
+                                        </span>
+                                        <ArrowRight className={`w-3.5 h-3.5 text-[#204696] transition-all shrink-0 ${
+                                          isActive
+                                            ? 'opacity-100 translate-x-0'
+                                            : 'opacity-0 -translate-x-1 group-hover:opacity-100 group-hover:translate-x-0'
+                                        }`} />
+                                      </button>
+                                    );
+                                  })}
                                 </div>
                               ))}
                             </div>
                           </div>
 
-                          {/* Right: Featured Editorial Showcase Card */}
-                          <div className="col-span-12 lg:col-span-4 xl:col-span-3">
+                          {/* Right Column: Single Auto-Rotating Highlight Showcase (Swissport Style) */}
+                          <div
+                            className="col-span-12 lg:col-span-5 border-t lg:border-t-0 lg:border-l border-slate-200/90 pt-6 lg:pt-0 lg:pl-10"
+                            onMouseEnter={() => setIsHighlightPaused(true)}
+                            onMouseLeave={() => setIsHighlightPaused(false)}
+                          >
+                            <div className="flex items-center justify-between mb-3.5">
+                              <h4 className="text-base sm:text-lg font-bold text-slate-900">
+                                Highlights
+                              </h4>
+                              {/* Slide Progress Dots */}
+                              <div className="flex items-center gap-1.5">
+                                {serviceHighlights.map((_, dotIdx) => (
+                                  <button
+                                    key={dotIdx}
+                                    onClick={() => setServiceHighlightIndex(dotIdx)}
+                                    className={`transition-all duration-300 rounded-full cursor-pointer ${
+                                      dotIdx === serviceHighlightIndex
+                                        ? 'w-6 h-1.5 bg-[#204696]'
+                                        : 'w-1.5 h-1.5 bg-slate-300 hover:bg-slate-400'
+                                    }`}
+                                    aria-label={`Highlight slide ${dotIdx + 1}`}
+                                  />
+                                ))}
+                              </div>
+                            </div>
+
+                            {/* Single Showcase Image Card with Crossfade */}
                             <div
-                              onClick={() => handleNav('/ramp-handling')}
-                              className="relative h-full min-h-[260px] rounded-2xl overflow-hidden shadow-sm group/card cursor-pointer border border-slate-200/80 bg-slate-900 flex flex-col justify-end p-5"
+                              onClick={() => handleNav(serviceHighlights[serviceHighlightIndex].path)}
+                              className="group/hcard cursor-pointer"
                             >
-                              <img
-                                src={TURNAROUND_IMG}
-                                alt="Aviance Aircraft Turnaround"
-                                className="absolute inset-0 w-full h-full object-cover group-hover/card:scale-105 transition-transform duration-500"
-                              />
-                              <div className="absolute inset-0 bg-gradient-to-t from-slate-950/95 via-slate-950/50 to-transparent" />
-                              
-                              <div className="relative text-white space-y-1.5">
-                                <span className="text-[10px] font-bold uppercase tracking-wider text-blue-300 block font-mono">
-                                  AIRSIDE SPOTLIGHT
-                                </span>
-                                <h5 className="font-bold text-sm text-white group-hover/card:text-blue-200 transition-colors leading-snug">
-                                  ISAGO-Accredited Apron & Pushback Turnaround
+                              <div className="relative w-full rounded-2xl overflow-hidden aspect-[16/10] bg-slate-100 mb-3 shadow-xs border border-slate-100">
+                                {serviceHighlights.map((hl, idx) => {
+                                  const isActive = idx === serviceHighlightIndex;
+                                  return (
+                                    <div
+                                      key={hl.id}
+                                      className={`absolute inset-0 w-full h-full transition-all duration-700 ease-in-out ${
+                                        isActive
+                                          ? 'opacity-100 scale-100 z-10 pointer-events-auto'
+                                          : 'opacity-0 scale-105 z-0 pointer-events-none'
+                                      }`}
+                                    >
+                                      <img
+                                        src={hl.image}
+                                        alt={hl.title}
+                                        className="w-full h-full object-cover group-hover/hcard:scale-105 transition-transform duration-700 ease-out"
+                                      />
+                                      <div className="absolute inset-0 bg-gradient-to-t from-slate-950/35 via-transparent to-transparent pointer-events-none" />
+                                    </div>
+                                  );
+                                })}
+                              </div>
+
+                              {/* Dynamic Headline underneath */}
+                              <div className="flex items-start justify-between gap-3">
+                                <h5
+                                  key={serviceHighlightIndex}
+                                  className="animate-fade-in font-bold text-xs sm:text-[14px] text-slate-900 group-hover/hcard:text-[#204696] transition-colors leading-snug flex-1"
+                                >
+                                  {serviceHighlights[serviceHighlightIndex].title}
                                 </h5>
-                                <p className="text-[11px] text-slate-300 leading-relaxed font-normal">
-                                  Precision towbarless pushback, certified GPU ground power servicing, and full ramp safety across ACC, KMS & TML.
-                                </p>
-                                <div className="pt-2 flex items-center gap-1.5 text-xs font-semibold text-blue-300 group-hover/card:text-white transition-colors">
-                                  <span>Explore Ramp Operations</span>
-                                  <ArrowRight className="w-3.5 h-3.5 group-hover/card:translate-x-1 transition-transform" />
-                                </div>
+                                <ArrowRight className="w-4 h-4 text-[#204696] group-hover/hcard:translate-x-1 transition-transform shrink-0 mt-0.5" />
                               </div>
                             </div>
                           </div>
-                        </div>
-
-                        {/* Bottom Utility Bar */}
-                        <div className="pt-4 mt-6 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-500">
-                          <div className="flex items-center gap-2">
-                            <span className="w-1.5 h-1.5 rounded-full bg-[#72BF44]" />
-                            <span>Certified ground handling operations across Kotoka (ACC), Kumasi (KMS) & Tamale (TML)</span>
-                          </div>
-                          <button
-                            onClick={() => handleNav('/services')}
-                            className="font-bold text-[#204696] hover:text-[#183878] hover:underline flex items-center gap-1.5 cursor-pointer"
-                          >
-                            <span>Explore All 9 Capabilities Hub</span>
-                            <ArrowRight className="w-3.5 h-3.5" />
-                          </button>
                         </div>
                       </div>
                     </div>
@@ -571,7 +772,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPath, onNavigate }) => {
 
               <button
                 onClick={() => handleNav('/csr')}
-                className={`px-3.5 py-2 rounded-lg transition-all duration-300 font-medium active:scale-95 ${
+                className={`px-4 xl:px-5 py-2.5 rounded-xl transition-all duration-300 font-semibold active:scale-95 ${
                   currentPath === '/csr' || currentPath.includes('csr')
                     ? 'text-[#204696] font-bold bg-blue-50/90 shadow-2xs'
                     : 'text-slate-700 hover:text-[#204696] hover:bg-slate-50 hover:scale-[1.02]'
@@ -582,7 +783,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPath, onNavigate }) => {
 
               <button
                 onClick={() => handleNav('/news')}
-                className={`px-3.5 py-2 rounded-lg transition-all duration-300 font-medium active:scale-95 ${
+                className={`px-4 xl:px-5 py-2.5 rounded-xl transition-all duration-300 font-semibold active:scale-95 ${
                   currentPath.startsWith('/news')
                     ? 'text-[#204696] font-bold bg-blue-50/90 shadow-2xs'
                     : 'text-slate-700 hover:text-[#204696] hover:bg-slate-50 hover:scale-[1.02]'
@@ -593,7 +794,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPath, onNavigate }) => {
 
               <button
                 onClick={() => handleNav('/careers')}
-                className={`px-3.5 py-2 rounded-lg transition-all duration-300 font-medium active:scale-95 ${
+                className={`px-4 xl:px-5 py-2.5 rounded-xl transition-all duration-300 font-semibold active:scale-95 ${
                   currentPath === '/careers'
                     ? 'text-[#204696] font-bold bg-blue-50/90 shadow-2xs'
                     : 'text-slate-700 hover:text-[#204696] hover:bg-slate-50 hover:scale-[1.02]'
@@ -605,7 +806,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPath, onNavigate }) => {
               {/* Contact Direct Link */}
               <button
                 onClick={() => handleNav('/contact')}
-                className={`px-3.5 py-2 rounded-lg transition-all duration-300 font-medium cursor-pointer active:scale-95 ${
+                className={`px-4 xl:px-5 py-2.5 rounded-xl transition-all duration-300 font-semibold cursor-pointer active:scale-95 ${
                   currentPath === '/contact' || currentPath.startsWith('/contact')
                     ? 'text-[#204696] font-bold bg-blue-50/90 shadow-2xs'
                     : 'text-slate-700 hover:text-[#204696] hover:bg-slate-50 hover:scale-[1.02]'
@@ -616,7 +817,60 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPath, onNavigate }) => {
             </nav>
 
             {/* Action Buttons Right */}
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2">
+
+              {/* Language Switcher */}
+              <div className="relative" ref={langDropdownRef}>
+                <button
+                  onClick={() => setLangDropdownOpen((prev) => !prev)}
+                  className="flex items-center gap-2 px-2.5 py-1.5 rounded-xl border border-slate-200/90 hover:border-slate-300 hover:bg-slate-50 transition-all duration-200 text-sm font-semibold cursor-pointer active:scale-95 shadow-2xs bg-white"
+                  aria-label="Change language"
+                  title="Change language"
+                >
+                  <FlagIcon code={language} className="w-5 h-3.5" />
+                  <span className="text-xs font-bold tracking-wide uppercase text-slate-700">{language}</span>
+                  <ChevronDown className={`w-3.5 h-3.5 text-slate-400 transition-transform duration-200 ${langDropdownOpen ? 'rotate-180 text-[#204696]' : ''}`} />
+                </button>
+
+                {langDropdownOpen && (
+                  <div className="absolute right-0 top-full mt-2 w-48 bg-white rounded-2xl shadow-xl border border-slate-200/80 overflow-hidden z-50 animate-fade-in p-1.5">
+                    <div className="px-3 pt-2.5 pb-1.5 border-b border-slate-100 mb-1">
+                      <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Select Language</p>
+                    </div>
+                    <div className="space-y-0.5">
+                      {SUPPORTED_LANGUAGES.map((lang) => {
+                        const isSelected = language === lang.code;
+                        return (
+                          <button
+                            key={lang.code}
+                            onClick={() => {
+                              setLanguage(lang.code as LanguageCode);
+                              setLangDropdownOpen(false);
+                            }}
+                            className={`w-full flex items-center gap-3 px-3 py-2 rounded-xl text-left transition-all cursor-pointer ${
+                              isSelected
+                                ? 'bg-blue-50 text-[#204696]'
+                                : 'text-slate-700 hover:bg-slate-50'
+                            }`}
+                          >
+                            <FlagIcon code={lang.code} className="w-5 h-3.5" />
+                            <div className="flex-1 min-w-0">
+                              <p className={`text-[13px] font-bold leading-tight ${isSelected ? 'text-[#204696]' : 'text-slate-800'}`}>
+                                {lang.label}
+                              </p>
+                              <p className="text-[11px] text-slate-400 font-medium">{lang.nativeLabel}</p>
+                            </div>
+                            {isSelected && (
+                              <div className="w-1.5 h-1.5 rounded-full bg-[#204696] shrink-0" />
+                            )}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
+              </div>
+
               {/* Executive Mobile Menu Toggle Button */}
               <button
                 onClick={toggleDirectoryMenu}
@@ -720,39 +974,28 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPath, onNavigate }) => {
                     >
                       <div className="overflow-hidden">
                         <div className="pb-6 pt-1 px-1 space-y-6">
-                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
                           {servicePillars.map((pillar) => (
-                            <div key={pillar.title} className="space-y-2.5">
-                              <div className="flex items-center gap-1.5 pb-1 border-b border-slate-100">
-                                <span className={`w-1.5 h-1.5 rounded-full ${pillar.dotClass}`} />
-                                <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 font-mono">
-                                  {pillar.title}
-                                </span>
-                              </div>
-                              <div className="space-y-1">
-                                {pillar.items.map((item) => {
-                                  const isActive = currentPath === item.path;
-                                  return (
-                                    <button
-                                      key={item.name}
-                                      onClick={() => handleNav(item.path)}
-                                      className={`w-full text-left py-2 px-2.5 rounded-lg transition-all group flex flex-col cursor-pointer ${
-                                        isActive
-                                          ? 'bg-blue-50/80 text-[#204696]'
-                                          : 'hover:bg-slate-50 text-slate-700'
-                                      }`}
-                                    >
-                                      <div className="flex items-center justify-between text-xs sm:text-[13px] font-semibold text-slate-900 group-hover:text-[#204696]">
-                                        <span>{item.name}</span>
-                                        <ArrowRight className="w-3 h-3 text-[#204696] opacity-0 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all shrink-0 ml-1" />
-                                      </div>
-                                      <span className="text-[10.5px] text-slate-500 line-clamp-1 mt-0.5 font-normal">
-                                        {item.desc}
-                                      </span>
-                                    </button>
-                                  );
-                                })}
-                              </div>
+                            <div key={pillar.title} className="space-y-1">
+                              {pillar.items.map((item) => {
+                                const isActive = currentPath === item.path;
+                                return (
+                                  <button
+                                    key={item.name}
+                                    onClick={() => handleNav(item.path)}
+                                    className={`w-full text-left py-2 px-2.5 rounded-lg transition-all group flex items-center justify-between cursor-pointer ${
+                                      isActive
+                                        ? 'bg-blue-50/80 text-[#204696]'
+                                        : 'hover:bg-slate-50 text-slate-700'
+                                    }`}
+                                  >
+                                    <span className="text-xs sm:text-[13px] font-semibold text-slate-900 group-hover:text-[#204696]">
+                                      {item.name}
+                                    </span>
+                                    <ArrowRight className="w-3 h-3 text-[#204696] opacity-0 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all shrink-0 ml-1" />
+                                  </button>
+                                );
+                              })}
                             </div>
                           ))}
                         </div>
@@ -810,19 +1053,16 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPath, onNavigate }) => {
                               <button
                                 key={item.name}
                                 onClick={() => handleNav(item.path)}
-                                className={`w-full text-left py-2 px-2.5 rounded-lg transition-all group flex flex-col cursor-pointer ${
+                                className={`w-full text-left py-2 px-2.5 rounded-lg transition-all group flex items-center justify-between cursor-pointer ${
                                   isActive
                                     ? 'bg-blue-50/80 text-[#204696]'
                                     : 'hover:bg-slate-50 text-slate-700'
                                 }`}
                               >
-                                <div className="flex items-center justify-between text-xs sm:text-[13px] font-semibold text-slate-900 group-hover:text-[#204696]">
-                                  <span>{item.name}</span>
-                                  <ArrowRight className="w-3 h-3 text-[#204696] opacity-0 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all shrink-0 ml-1" />
-                                </div>
-                                <span className="text-[10.5px] text-slate-500 line-clamp-1 mt-0.5 font-normal">
-                                  {item.desc}
+                                <span className="text-xs sm:text-[13px] font-semibold text-slate-900 group-hover:text-[#204696]">
+                                  {item.name}
                                 </span>
+                                <ArrowRight className="w-3 h-3 text-[#204696] opacity-0 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all shrink-0 ml-1" />
                               </button>
                             );
                           })}
@@ -906,6 +1146,33 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPath, onNavigate }) => {
 
                 {/* Ground Operations & Utilities Bar */}
                 <div className="mt-8 pt-6 border-t border-slate-200/80 space-y-4">
+                  {/* Mobile Language Selector */}
+                  <div className="flex items-center justify-between p-3 rounded-2xl bg-slate-50 border border-slate-200/70">
+                    <span className="text-xs font-bold text-slate-700">Language:</span>
+                    <div className="flex items-center gap-1.5 bg-white p-1 rounded-xl border border-slate-200/80 shadow-2xs">
+                      {SUPPORTED_LANGUAGES.map((lang) => {
+                        const isSelected = language === lang.code;
+                        return (
+                          <button
+                            key={lang.code}
+                            onClick={() => {
+                              setLanguage(lang.code as LanguageCode);
+                              setMobileMenuOpen(false);
+                            }}
+                            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                              isSelected
+                                ? 'bg-[#204696] text-white shadow-2xs'
+                                : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
+                            }`}
+                          >
+                            <FlagIcon code={lang.code} className="w-4 h-3" />
+                            <span>{lang.label}</span>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 text-xs">
                     {/* Live OCC Contact */}
                     <div className="flex items-center gap-2.5">

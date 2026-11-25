@@ -14,7 +14,7 @@ interface FindMyBagPageProps {
   onNavigate: (path: string) => void;
 }
 
-export const FindMyBagPage: React.FC<FindMyBagPageProps> = ({ onNavigate: _onNavigate }) => {
+export const FindMyBagPage: React.FC<FindMyBagPageProps> = ({ onNavigate }) => {
   const { isLight } = useTheme();
   const { t } = useLanguage();
 
@@ -58,125 +58,100 @@ ${enquiryForm.description}
   };
 
   return (
-    <div className="pb-24 sm:pb-32 space-y-16 sm:space-y-24 lg:space-y-32">
-      {/* Hero Header in Official Aviance Blue */}
-      <div className={`py-14 sm:py-20 lg:py-24 border-b text-center relative overflow-hidden transition-colors ${
-        isLight
-          ? 'bg-gradient-to-b from-blue-50 via-slate-50 to-white border-slate-200'
-          : 'bg-gradient-to-b from-[#11244C] via-[#0C1933] to-[#08101E] border-[#204696]/30'
-      }`}>
-        <div className={`absolute top-0 left-1/2 -translate-x-1/2 w-3/4 h-36 blur-3xl pointer-events-none rounded-full ${
-          isLight ? 'bg-[#204696]/5' : 'bg-[#204696]/20'
-        }`} />
-        <div className="absolute inset-0 opacity-15 pointer-events-none">
-          <img
-            src={BAGGAGE_IMG}
-            alt="Aviance Baggage Hall sortation"
-            className="w-full h-full object-cover object-center"
-          />
-        </div>
-
-        <div className="relative z-10 max-w-4xl mx-auto px-4 space-y-3">
-          <div className="flex items-center justify-center gap-2.5">
-            <span className="w-1.5 h-6 rounded-full bg-gradient-to-b from-[#204696] via-[#009EE0] to-[#72BF44]" />
-            <h2 className={`text-xs sm:text-sm font-extrabold uppercase tracking-widest ${
-              isLight ? 'text-[#204696]' : 'text-[#58C1EB]'
-            }`}>
-              Kotoka International Airport Terminal 3 <span className="text-[#009EE0]">·</span> <span className={isLight ? 'text-[#3B7A1C]' : 'text-[#72BF44]'}>Baggage Services</span>
-            </h2>
+    <div className={`min-h-screen pb-24 sm:pb-32 transition-colors ${isLight ? 'bg-white text-slate-800' : 'bg-[#0B1528] text-slate-100'}`}>
+      {/* Breadcrumb Bar */}
+      <div className={`border-b transition-colors ${isLight ? 'bg-white border-slate-200/80' : 'bg-[#08101E] border-slate-800'}`}>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex items-center justify-between text-xs sm:text-sm">
+          <div className="flex items-center gap-2 text-slate-500">
+            <button
+              onClick={() => onNavigate('/')}
+              className="hover:text-[#204696] font-medium transition-colors cursor-pointer"
+            >
+              Home
+            </button>
+            <span>/</span>
+            <button
+              onClick={() => onNavigate('/services')}
+              className="hover:text-[#204696] font-medium transition-colors cursor-pointer"
+            >
+              Services
+            </button>
+            <span>/</span>
+            <span className="text-[#204696] font-semibold">Find My Bag</span>
           </div>
-          <div className="flex items-center justify-center gap-2">
-            <span className="px-2.5 py-0.5 rounded text-[10px] font-mono font-bold bg-[#72BF44]/15 text-[#72BF44] border border-[#72BF44]/35">
-              LIVE TELEMETRY
-            </span>
-            <span className={`px-2.5 py-0.5 rounded text-[10px] font-mono font-bold border ${
-              isLight ? 'bg-blue-50 text-[#204696] border-blue-200' : 'bg-[#204696]/30 text-[#58C1EB] border-[#58C1EB]/30'
-            }`}>
-              IATA WORLDTRACER CONNECTED
-            </span>
-          </div>
-          <h1 className={`text-3xl sm:text-5xl font-extrabold tracking-tight ${
-            isLight ? 'text-slate-900' : 'text-white'
-          }`}>
-            {t('pages.baggage.title', 'Find My Bag · Real-Time Baggage Tracing')}
-          </h1>
-          <p className={`text-sm max-w-2xl mx-auto leading-relaxed ${
-            isLight ? 'text-slate-600' : 'text-slate-300'
-          }`}>
-            {t('pages.baggage.desc', 'Direct passenger status query for checked luggage, carousel offload stages, and delayed baggage reconciliation at Kotoka International Airport (ACC) Terminal 3.')}
-          </p>
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-16 sm:space-y-24 lg:space-y-32">
+      {/* Hero Header — Aviance Blue Grid Banner */}
+      <section className="relative overflow-hidden bg-gradient-to-br from-[#11244C] via-[#1A3670] to-[#204696] text-white py-14 sm:py-20 lg:py-24 text-center">
+        {/* Subtle aeronautical blueprint grid */}
+        <div className="absolute inset-0 opacity-10 pointer-events-none">
+          <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff_1px,transparent_1px),linear-gradient(to_bottom,#ffffff_1px,transparent_1px)] bg-[size:4rem_4rem]" />
+        </div>
+
+        <div className="relative z-10 max-w-4xl mx-auto px-4 space-y-4">
+          <h1 className="text-3xl sm:text-4xl lg:text-[46px] font-bold tracking-[-0.028em] text-white leading-[1.14]">
+            {t('pages.baggage.title', 'Find My Bag · Real-Time Baggage Tracing')}
+          </h1>
+          <p className="text-base sm:text-lg text-blue-100/90 max-w-2xl mx-auto leading-relaxed font-normal">
+            {t('pages.baggage.desc', 'Direct passenger status query for checked luggage, carousel offload stages, and delayed baggage reconciliation at Kotoka International Airport (ACC) Terminal 3.')}
+          </p>
+        </div>
+      </section>
+
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-12 sm:pt-16 space-y-16 sm:space-y-24 lg:space-y-32">
         {/* The Live Baggage Tracker Component */}
         <BaggageTracker onOpenEnquiry={() => _setEnquiryOpen(true)} />
 
         {/* Baggage Operations Field Showcase */}
-        <div className={`border rounded-2xl p-6 sm:p-8 space-y-6 shadow-xl transition-all ${
-          isLight ? 'bg-white border-slate-200/90 shadow-slate-200/50' : 'bg-[#0C1933]/90 border-[#204696]/35 shadow-[#204696]/10'
-        }`}>
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
-            {/* Visual Photo Card */}
-            <div className="lg:col-span-7 overflow-hidden rounded-xl border border-slate-200 dark:border-[#204696]/40 shadow-lg relative group">
-              <div className="relative aspect-[16/10] overflow-hidden bg-slate-950">
-                <img
-                  src={BAGGAGE_IMG}
-                  alt="Aviance Baggage Makeup Hall at Kotoka Terminal 3"
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-transparent pointer-events-none" />
-                <div className="absolute top-3 left-3 bg-[#204696]/90 backdrop-blur-md text-white text-[10px] font-bold uppercase tracking-wider px-3 py-1 rounded-full border border-[#58C1EB]/40 flex items-center gap-1.5 shadow">
-                  <span className="w-1.5 h-1.5 rounded-full bg-[#72BF44] animate-pulse" />
-                  Terminal 3 Baggage Makeup Hall
-                </div>
-                <div className="absolute bottom-3 left-4 right-4">
-                  <p className="text-white text-xs sm:text-sm font-bold drop-shadow">
-                    Aviance Baggage Handlers Sorting & Barcode Tag Scanning (Kotoka T3)
-                  </p>
-                </div>
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center py-4">
+          {/* Visual Photo Card */}
+          <div className="lg:col-span-7 relative aspect-[16/10] overflow-hidden rounded-2xl bg-slate-950 group border border-slate-200/80 dark:border-slate-800 shadow-md">
+            <img
+              src={BAGGAGE_IMG}
+              alt="Aviance Baggage Makeup Hall at Kotoka Terminal 3"
+              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+            />
+          </div>
+
+          {/* Operational Text & Specifications */}
+          <div className="lg:col-span-5 space-y-4">
+            <div className="space-y-1.5">
+              <div className="flex items-center gap-2">
+                <span className="w-1.5 h-4 rounded-full bg-gradient-to-b from-[#204696] via-[#009EE0] to-[#72BF44]" />
+                <span className={`text-xs font-extrabold uppercase tracking-wider ${
+                  isLight ? 'text-[#204696]' : 'text-[#58C1EB]'
+                }`}>
+                  WorldTracer Reconciliation
+                </span>
               </div>
+              <h3 className={`text-xl font-bold ${isLight ? 'text-slate-900' : 'text-white'}`}>
+                Precision Bag Reconciliation & Rapid Delivery
+              </h3>
             </div>
 
-            {/* Operational Text & Specifications */}
-            <div className="lg:col-span-5 space-y-4">
-              <div className="space-y-1.5">
-                <div className="flex items-center gap-2">
-                  <span className="w-1.5 h-4 rounded-full bg-gradient-to-b from-[#204696] via-[#009EE0] to-[#72BF44]" />
-                  <span className={`text-xs font-extrabold uppercase tracking-wider ${
-                    isLight ? 'text-[#204696]' : 'text-[#58C1EB]'
-                  }`}>
-                    WorldTracer Reconciliation
-                  </span>
-                </div>
-                <h3 className={`text-xl font-bold ${isLight ? 'text-slate-900' : 'text-white'}`}>
-                  Precision Bag Reconciliation & Rapid Delivery
-                </h3>
+            <p className={`text-xs leading-relaxed ${isLight ? 'text-slate-600' : 'text-slate-300'}`}>
+              From the moment aircraft wheels touch down at Kotoka, Aviance ramp teams offload belly holds onto container dollies, transporting checked luggage directly to the Terminal 3 automated makeup hall.
+            </p>
+
+            <div className="space-y-2.5 pt-1 text-xs">
+              <div className="flex items-start gap-2.5">
+                <CheckCircle2 className="w-4 h-4 shrink-0 text-[#72BF44] mt-0.5" />
+                <span className={isLight ? 'text-slate-700' : 'text-slate-300'}>
+                  <strong>Barcoded Handheld Scanners:</strong> Every baggage tag stub is scanned to confirm receipt before conveyor induction.
+                </span>
               </div>
-
-              <p className={`text-xs leading-relaxed ${isLight ? 'text-slate-600' : 'text-slate-300'}`}>
-                From the moment aircraft wheels touch down at Kotoka, Aviance ramp teams offload belly holds onto container dollies, transporting checked luggage directly to the Terminal 3 automated makeup hall.
-              </p>
-
-              <div className="space-y-2.5 pt-1 text-xs">
-                <div className="flex items-start gap-2.5">
-                  <CheckCircle2 className="w-4 h-4 shrink-0 text-[#72BF44] mt-0.5" />
-                  <span className={isLight ? 'text-slate-700' : 'text-slate-300'}>
-                    <strong>Barcoded Handheld Scanners:</strong> Every baggage tag stub is scanned to confirm receipt before conveyor induction.
-                  </span>
-                </div>
-                <div className="flex items-start gap-2.5">
-                  <CheckCircle2 className="w-4 h-4 shrink-0 text-[#72BF44] mt-0.5" />
-                  <span className={isLight ? 'text-slate-700' : 'text-slate-300'}>
-                    <strong>Rush & Delayed Bag Expediting:</strong> Direct liaison with partner airlines to reconnect separated luggage within hours.
-                  </span>
-                </div>
-                <div className="flex items-start gap-2.5">
-                  <CheckCircle2 className="w-4 h-4 shrink-0 text-[#72BF44] mt-0.5" />
-                  <span className={isLight ? 'text-slate-700' : 'text-slate-300'}>
-                    <strong>24/7 Arrivals Helpdesk:</strong> Immediate PIR (Property Irregularity Report) creation directly at Carousel 2.
-                  </span>
-                </div>
+              <div className="flex items-start gap-2.5">
+                <CheckCircle2 className="w-4 h-4 shrink-0 text-[#72BF44] mt-0.5" />
+                <span className={isLight ? 'text-slate-700' : 'text-slate-300'}>
+                  <strong>Rush & Delayed Bag Expediting:</strong> Direct liaison with partner airlines to reconnect separated luggage within hours.
+                </span>
+              </div>
+              <div className="flex items-start gap-2.5">
+                <CheckCircle2 className="w-4 h-4 shrink-0 text-[#72BF44] mt-0.5" />
+                <span className={isLight ? 'text-slate-700' : 'text-slate-300'}>
+                  <strong>24/7 Arrivals Helpdesk:</strong> Immediate PIR (Property Irregularity Report) creation directly at Carousel 2.
+                </span>
               </div>
             </div>
           </div>
@@ -184,11 +159,7 @@ ${enquiryForm.description}
 
         {/* Operational Baggage Desks & Info */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className={`border rounded-2xl p-6 space-y-3 shadow-lg transition-all ${
-            isLight
-              ? 'bg-white border-slate-200/90 shadow-slate-200/60'
-              : 'bg-[#0C1933]/90 border-[#204696]/30 shadow-[#204696]/5'
-          }`}>
+          <div className="pt-6 border-t border-slate-200 dark:border-slate-800 space-y-3">
             <div className={`w-9 h-9 rounded-lg border flex items-center justify-center ${
               isLight ? 'bg-blue-50 text-[#204696] border-blue-200' : 'bg-[#58C1EB]/10 text-[#58C1EB] border-[#58C1EB]/25'
             }`}>
@@ -203,11 +174,7 @@ ${enquiryForm.description}
             </div>
           </div>
 
-          <div className={`border rounded-2xl p-6 space-y-3 shadow-lg transition-all ${
-            isLight
-              ? 'bg-white border-slate-200/90 shadow-slate-200/60'
-              : 'bg-[#0C1933]/90 border-[#204696]/30 shadow-[#204696]/5'
-          }`}>
+          <div className="pt-6 border-t border-slate-200 dark:border-slate-800 space-y-3">
             <div className={`w-9 h-9 rounded-lg border flex items-center justify-center ${
               isLight ? 'bg-blue-50 text-[#204696] border-blue-200' : 'bg-[#58C1EB]/10 text-[#58C1EB] border-[#58C1EB]/25'
             }`}>
@@ -222,11 +189,7 @@ ${enquiryForm.description}
             </div>
           </div>
 
-          <div className={`border rounded-2xl p-6 space-y-3 shadow-lg transition-all ${
-            isLight
-              ? 'bg-white border-slate-200/90 shadow-slate-200/60'
-              : 'bg-[#0C1933]/90 border-[#204696]/30 shadow-[#204696]/5'
-          }`}>
+          <div className="pt-6 border-t border-slate-200 dark:border-slate-800 space-y-3">
             <div className={`w-9 h-9 rounded-lg border flex items-center justify-center ${
               isLight ? 'bg-blue-50 text-[#204696] border-blue-200' : 'bg-[#58C1EB]/10 text-[#58C1EB] border-[#58C1EB]/25'
             }`}>
@@ -242,12 +205,51 @@ ${enquiryForm.description}
           </div>
         </div>
 
+        {/* Official Before Contacting Us Guidance from avianceghana.com */}
+        <div className="max-w-3xl mx-auto">
+          <div className={`p-6 sm:p-8 rounded-2xl border ${
+            isLight ? 'bg-blue-50/70 border-blue-200' : 'bg-[#11244C]/60 border-[#204696]/40'
+          }`}>
+            <div className="flex items-center gap-2 mb-2">
+              <span className="w-1.5 h-4 rounded-full bg-gradient-to-b from-[#204696] via-[#009EE0] to-[#72BF44]" />
+              <span className={`text-xs font-extrabold uppercase tracking-widest ${isLight ? 'text-[#204696]' : 'text-[#58C1EB]'}`}>
+                Official Tracing Guidance · avianceghana.com
+              </span>
+            </div>
+            <h3 className={`text-base sm:text-lg font-bold mb-2 ${isLight ? 'text-slate-900' : 'text-white'}`}>
+              Before contacting us
+            </h3>
+            <p className={`text-xs sm:text-sm leading-relaxed mb-4 ${isLight ? 'text-slate-700' : 'text-slate-300'}`}>
+              We understand how stressful it can be when baggage does not arrive with your flight. If your baggage report is being handled by Aviance Ghana, our Lost and Found team can assist you with an update.
+            </p>
+            <ul className="space-y-2.5 text-xs sm:text-sm">
+              <li className="flex items-start gap-2.5">
+                <CheckCircle2 className="w-4 h-4 text-[#72BF44] shrink-0 mt-0.5" />
+                <span className={isLight ? 'text-slate-700 font-medium' : 'text-slate-200'}>
+                  Report the missing baggage at the airport and obtain a <strong>Property Irregularity Report (PIR)</strong> or reference number.
+                </span>
+              </li>
+              <li className="flex items-start gap-2.5">
+                <CheckCircle2 className="w-4 h-4 text-[#72BF44] shrink-0 mt-0.5" />
+                <span className={isLight ? 'text-slate-700 font-medium' : 'text-slate-200'}>
+                  Keep your baggage tag and travel documents available.
+                </span>
+              </li>
+              <li className="flex items-start gap-2.5">
+                <CheckCircle2 className="w-4 h-4 text-[#72BF44] shrink-0 mt-0.5" />
+                <span className={isLight ? 'text-slate-700 font-medium' : 'text-slate-200'}>
+                  Email <a href="mailto:findmybag@avianceghana.com" className="text-[#204696] dark:text-[#58C1EB] underline font-semibold">findmybag@avianceghana.com</a> with your full name, flight details, baggage reference number and contact details.
+                </span>
+              </li>
+            </ul>
+            <p className={`text-xs mt-3.5 pt-3 border-t italic ${isLight ? 'border-blue-200/60 text-slate-600' : 'border-slate-800 text-slate-400'}`}>
+              We will acknowledge your enquiry and provide an update based on the information available in the baggage tracing system.
+            </p>
+          </div>
+        </div>
+
         {/* Claim / Enquiry Drawer Form */}
-        <div className={`border rounded-2xl p-8 max-w-3xl mx-auto space-y-6 shadow-2xl transition-all ${
-          isLight
-            ? 'bg-white border-slate-200/90 shadow-slate-200/60'
-            : 'bg-[#0C1933]/95 border-[#204696]/35 shadow-[#204696]/10'
-        }`}>
+        <div className="max-w-3xl mx-auto space-y-6 pt-10 sm:pt-14 border-t border-slate-200 dark:border-slate-800">
           <div className={`border-b pb-4 ${isLight ? 'border-slate-200' : 'border-slate-800'}`}>
             <h3 className={`text-xl font-bold ${isLight ? 'text-slate-900' : 'text-white'}`}>
               {t('pages.baggage.claimHeading', 'Submit a Baggage Claim or Enquiry')}
@@ -276,7 +278,7 @@ ${enquiryForm.description}
               </p>
               <button
                 onClick={() => setEnquirySuccessRef(null)}
-                className="px-4 py-2 bg-[#204696] text-xs font-semibold text-white rounded-lg hover:bg-[#18397a] transition-colors"
+                className="btn-primary !py-2.5 !px-5 text-xs"
               >
                 Submit Another Request
               </button>
@@ -392,7 +394,7 @@ ${enquiryForm.description}
               <div className="pt-2 flex justify-end">
                 <button
                   type="submit"
-                  className="px-6 py-2.5 bg-[#204696] hover:bg-[#183878] text-white border border-[#58C1EB]/40 shadow-sm font-bold text-xs rounded-xl transition-colors"
+                  className="btn-primary !py-3 !px-7 text-xs"
                 >
                   {t('pages.baggage.fileClaim', 'Submit Baggage File')}
                 </button>

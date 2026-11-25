@@ -2,7 +2,163 @@
 
 @custom-variant dark (&:where(.dark, .dark *));
 
+/* ==========================================================================
+   Swissport Typography System (Mark Pro, Mark Pro Narrow, Mona Sans, Mynerve)
+   ========================================================================== */
+
+@font-face {
+  font-family: 'Mark Pro';
+  font-style: normal;
+  font-weight: 200;
+  src: url('/fonts/MarkW05-Extlight.woff2') format('woff2');
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Mark Pro';
+  font-style: normal;
+  font-weight: 300;
+  src: url('/fonts/MarkW05-Regular.woff2') format('woff2');
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Mark Pro';
+  font-style: normal;
+  font-weight: 400;
+  src: url('/fonts/MarkW05-Regular.woff2') format('woff2');
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Mark Pro';
+  font-style: normal;
+  font-weight: 500;
+  src: url('/fonts/MarkW05-Regular.woff2') format('woff2');
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Mark Pro';
+  font-style: normal;
+  font-weight: 600;
+  src: url('/fonts/MarkW07-Bold.woff2') format('woff2');
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Mark Pro';
+  font-style: normal;
+  font-weight: 700;
+  src: url('/fonts/MarkW07-Bold.woff2') format('woff2');
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Mark Pro';
+  font-style: normal;
+  font-weight: 800;
+  src: url('/fonts/MarkW07-Bold.woff2') format('woff2');
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Mark Pro';
+  font-style: normal;
+  font-weight: 900;
+  src: url('/fonts/MarkW07-Bold.woff2') format('woff2');
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Mark Pro Narrow';
+  font-style: normal;
+  font-weight: 300;
+  src: url('/fonts/MarkW05-Narrow.woff2') format('woff2');
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Mark Pro Narrow';
+  font-style: normal;
+  font-weight: 400;
+  src: url('/fonts/MarkW05-Narrow.woff2') format('woff2');
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Mark Pro Narrow';
+  font-style: normal;
+  font-weight: 700;
+  src: url('/fonts/MarkW05-NarrowBold.woff2') format('woff2');
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Mona Sans';
+  font-style: normal;
+  font-weight: 300;
+  src: url('/fonts/MonaSans-Light.woff2') format('woff2');
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Mona Sans';
+  font-style: normal;
+  font-weight: 400;
+  src: url('/fonts/MonaSans-Light.woff2') format('woff2');
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Mona Sans';
+  font-style: normal;
+  font-weight: 500;
+  src: url('/fonts/MonaSans-Medium.woff2') format('woff2');
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Mona Sans';
+  font-style: normal;
+  font-weight: 600;
+  src: url('/fonts/MonaSans-Medium.woff2') format('woff2');
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Mona Sans';
+  font-style: normal;
+  font-weight: 700;
+  src: url('/fonts/MonaSans-Bold.woff2') format('woff2');
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Mona Sans';
+  font-style: normal;
+  font-weight: 800;
+  src: url('/fonts/MonaSans-Bold.woff2') format('woff2');
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Mynerve';
+  font-style: normal;
+  font-weight: 400;
+  src: url('/fonts/Mynerve-Regular.woff2') format('woff2');
+  font-display: swap;
+}
+
 @theme {
+  --font-sans: 'Mark Pro', 'Mona Sans', Helvetica, Arial, system-ui, -apple-system, sans-serif;
+  --font-heading: 'Mark Pro', 'Mona Sans', Helvetica, Arial, system-ui, -apple-system, sans-serif;
+  --font-mark: 'Mark Pro', Helvetica, Arial, sans-serif;
+  --font-mark-narrow: 'Mark Pro Narrow', 'Mark Pro', Helvetica, Arial, sans-serif;
+  --font-mona: 'Mona Sans', Helvetica, Arial, sans-serif;
+  --font-script: 'Mynerve', cursive;
+  --font-numbers: 'Outfit', 'Plus Jakarta Sans', 'Mark Pro', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+
   --color-aviance-navy: #0F2E53;
   --color-aviance-cobalt: #204696;
   --color-aviance-blue-dark: #153170;
@@ -15,7 +171,13 @@
 
 @layer base {
   :root {
-    --font-sans: 'Inter', 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    --font-sans: 'Mark Pro', 'Mona Sans', Helvetica, Arial, system-ui, -apple-system, sans-serif;
+    --font-heading: 'Mark Pro', 'Mona Sans', Helvetica, Arial, system-ui, -apple-system, sans-serif;
+    --font-mark: 'Mark Pro', Helvetica, Arial, sans-serif;
+    --font-mark-narrow: 'Mark Pro Narrow', 'Mark Pro', Helvetica, Arial, sans-serif;
+    --font-mona: 'Mona Sans', Helvetica, Arial, sans-serif;
+    --font-script: 'Mynerve', cursive;
+    --font-numbers: 'Outfit', 'Plus Jakarta Sans', 'Mark Pro', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     --font-mono: 'JetBrains Mono', monospace;
     
     /* Aviance Official Brand Colors (Derived from Official Logo Emblem) */
@@ -34,6 +196,10 @@
   html {
     color-scheme: light;
     font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+    font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
     scroll-behavior: smooth;
     background-color: #FFFFFF;
     color: #0F172A;
@@ -41,9 +207,218 @@
 
   body {
     background-color: #FFFFFF;
-    color: #1E293B;
+    color: #334155;
+    font-family: var(--font-sans);
+    line-height: 1.6;
+    letter-spacing: -0.005em;
     min-height: 100vh;
   }
+
+  /* International Swiss-Style Clean Typography Scale */
+  h1, .h1 {
+    font-family: var(--font-heading);
+    letter-spacing: -0.025em;
+    line-height: 1.15;
+    font-weight: 700;
+    color: #0F172A;
+  }
+
+  h2, .h2 {
+    font-family: var(--font-heading);
+    letter-spacing: -0.02em;
+    line-height: 1.2;
+    font-weight: 700;
+    color: #0F172A;
+  }
+
+  h3, .h3 {
+    font-family: var(--font-heading);
+    letter-spacing: -0.015em;
+    line-height: 1.28;
+    font-weight: 700;
+    color: #0F172A;
+  }
+
+  h4, .h4 {
+    font-family: var(--font-heading);
+    letter-spacing: -0.01em;
+    line-height: 1.35;
+    font-weight: 600;
+    color: #0F172A;
+  }
+
+  p {
+    line-height: 1.62;
+    letter-spacing: -0.005em;
+  }
+}
+
+/* Swissport Eyebrow & Badging Utility */
+.eyebrow {
+  font-size: 0.75rem;
+  line-height: 1.2;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  font-family: var(--font-heading);
+}
+
+/* Swissport Font Utility Helpers */
+.font-mark {
+  font-family: 'Mark Pro', Helvetica, Arial, sans-serif;
+}
+.font-mark-narrow {
+  font-family: 'Mark Pro Narrow', 'Mark Pro', Helvetica, Arial, sans-serif;
+}
+.font-mona {
+  font-family: 'Mona Sans', Helvetica, Arial, sans-serif;
+}
+.font-script {
+  font-family: 'Mynerve', cursive;
+}
+.font-numbers {
+  font-family: var(--font-numbers);
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum" 1;
+}
+
+/* ==========================================================================
+   Swissport Executive Button System (Sleek Pills & Micro-Interactions)
+   ========================================================================== */
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.8125rem 1.75rem;
+  border-radius: 9999px;
+  background-color: #204696;
+  color: #ffffff;
+  font-weight: 700;
+  font-size: 0.8125rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  box-shadow: 0 4px 14px 0 rgba(32, 70, 150, 0.22);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  cursor: pointer;
+  user-select: none;
+}
+.btn-primary:hover {
+  background-color: #153170;
+  box-shadow: 0 6px 20px 0 rgba(32, 70, 150, 0.32);
+  transform: translateY(-2px);
+}
+.btn-primary:active {
+  transform: scale(0.96);
+}
+
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.8125rem 1.75rem;
+  border-radius: 9999px;
+  background-color: #ffffff;
+  color: #1e293b;
+  border: 1px solid #cbd5e1;
+  font-weight: 700;
+  font-size: 0.8125rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.04);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  cursor: pointer;
+  user-select: none;
+}
+.btn-secondary:hover {
+  border-color: #204696;
+  color: #204696;
+  background-color: #f8fafc;
+  box-shadow: 0 4px 12px 0 rgba(32, 70, 150, 0.12);
+  transform: translateY(-2px);
+}
+.btn-secondary:active {
+  transform: scale(0.96);
+}
+
+.btn-accent {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.8125rem 1.75rem;
+  border-radius: 9999px;
+  background-color: #009EE0;
+  color: #ffffff;
+  font-weight: 700;
+  font-size: 0.8125rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  box-shadow: 0 4px 14px 0 rgba(0, 158, 224, 0.25);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  cursor: pointer;
+  user-select: none;
+}
+.btn-accent:hover {
+  background-color: #0089c4;
+  box-shadow: 0 6px 20px 0 rgba(0, 158, 224, 0.35);
+  transform: translateY(-2px);
+}
+.btn-accent:active {
+  transform: scale(0.96);
+}
+
+.btn-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 700;
+  font-size: 0.8125rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #204696;
+  background: transparent;
+  border: none;
+  padding: 0.25rem 0;
+  cursor: pointer;
+  user-select: none;
+  transition: all 0.25s ease;
+}
+.btn-link:hover {
+  color: #009EE0;
+}
+.btn-link .link-label {
+  text-decoration: underline;
+  text-underline-offset: 4px;
+  text-decoration-thickness: 2px;
+  text-decoration-color: #72BF44;
+}
+
+.btn-link-dark {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 700;
+  font-size: 0.8125rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #ffffff;
+  background: transparent;
+  border: none;
+  padding: 0.25rem 0;
+  cursor: pointer;
+  user-select: none;
+  transition: all 0.25s ease;
+}
+.btn-link-dark:hover {
+  color: #58C1EB;
+}
+.btn-link-dark .link-label {
+  text-decoration: underline;
+  text-underline-offset: 4px;
+  text-decoration-thickness: 2px;
+  text-decoration-color: #72BF44;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -355,6 +730,38 @@
 .animate-button-shimmer {
   animation: buttonShimmer 3.2s ease-in-out infinite;
 }
+
+/* Dual-Track Corporate Airline Marquee Animations */
+@keyframes marqueeLeft {
+  0% {
+    transform: translateX(0%);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+@keyframes marqueeRight {
+  0% {
+    transform: translateX(-50%);
+  }
+  100% {
+    transform: translateX(0%);
+  }
+}
+
+.animate-marquee-left {
+  animation: marqueeLeft 42s linear infinite;
+}
+
+.animate-marquee-right {
+  animation: marqueeRight 42s linear infinite;
+}
+
+.pause-hover:hover {
+  animation-play-state: paused;
+}
+
 
 
 

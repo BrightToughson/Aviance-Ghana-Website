@@ -3,6 +3,7 @@ import { Crown, Wifi, Coffee, ShowerHead, ShieldCheck, ArrowRight, Phone, Mail, 
 import { useTheme } from '../../context/ThemeContext';
 
 // Authentic Aviance Lounge Hospitality Photography
+import LOUNGE_OFFICIAL_IMG from '../../assets/aviance_images/services/lounge_official.jpg'; // Official Aviance Lounge Interior
 import LOUNGE_RECEPTION_IMG from '../../assets/aviance_images/lounge service/c0c393c8-9128-4ce5-b464-28d0417a13b5.png'; // Hostess at Adinkra Lounge desk
 import LOUNGE_SEATING_IMG from '../../assets/aviance_images/services/lounge_services.jpg'; // Adinkra lounge seating
 import LOUNGE_BAR_IMG from '../../assets/aviance_images/lounge service/9e1a4c0d-671a-4285-b24e-880e7659369e.png'; // Premium beverage bar
@@ -89,68 +90,145 @@ export const VipLoungePage: React.FC<VipLoungePageProps> = ({ onNavigate, onOpen
   ];
 
   return (
-    <div className="pb-24 sm:pb-32 space-y-16 sm:space-y-24 lg:space-y-32">
-      {/* Hero Header */}
-      <div className={`relative py-14 sm:py-20 lg:py-24 border-b overflow-hidden transition-colors ${
-        isLight
-          ? 'bg-gradient-to-b from-amber-50/50 via-slate-50 to-white border-slate-200'
-          : 'bg-gradient-to-b from-[#162238] via-[#0C1527] to-[#08101E] border-white/10'
-      }`}>
-        <div className="absolute inset-0 opacity-15">
-          <img
-            src="/assets/aviance_images/1791796145150.jpg"
-            alt="Adinkra Lounge interior at Kotoka Terminal 3"
-            className="w-full h-full object-cover object-center"
-          />
-        </div>
-
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-5 text-center sm:text-left">
-          <div className="flex items-center justify-center sm:justify-start gap-2.5">
-            <span className="w-1.5 h-6 rounded-full bg-gradient-to-b from-[#204696] via-[#009EE0] to-[#72BF44]" />
-            <h2 className="text-xs sm:text-sm font-extrabold uppercase tracking-widest text-amber-500">
-              Executive Lounge Hospitality <span className="text-[#009EE0]">·</span> <span className="text-[#72BF44]">Six Lounges Across Ghana</span>
-            </h2>
-          </div>
-
-          <h1 className={`text-3xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight ${
-            isLight ? 'text-slate-900' : 'text-white'
-          }`}>
-            Adinkra & U Lounge Hospitality
-          </h1>
-
-          <p className={`text-base sm:text-lg max-w-3xl leading-relaxed ${
-            isLight ? 'text-slate-600' : 'text-slate-300'
-          }`}>
-            Aviance Ghana provides comfortable airport lounge experiences for First and Business Class passengers, premium travellers, lounge programme members, and walk-in guests across Accra, Kumasi, and Tamale.
-          </p>
-
-          <div className="pt-4 flex flex-wrap gap-3 justify-center sm:justify-start">
-            <a
-              href="tel:+233557758345"
-              className={`px-5 py-3.5 border text-xs font-bold rounded-xl transition-colors flex items-center gap-2 ${
-                isLight
-                  ? 'bg-white border-slate-300 text-slate-800 hover:bg-slate-100 shadow-sm'
-                  : 'bg-white/5 border-white/10 hover:bg-white/10 text-slate-200'
-              }`}
+    <div className={`min-h-screen pb-24 sm:pb-32 transition-colors ${isLight ? 'bg-white text-slate-800' : 'bg-[#0B1528] text-slate-100'}`}>
+      {/* Breadcrumb Bar */}
+      <div className={`border-b transition-colors ${isLight ? 'bg-white border-slate-200/80' : 'bg-[#08101E] border-slate-800'}`}>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex items-center justify-between text-xs sm:text-sm">
+          <div className="flex items-center gap-2 text-slate-500">
+            <button
+              onClick={() => onNavigate('/')}
+              className="hover:text-[#204696] font-medium transition-colors cursor-pointer"
             >
-              <Phone className="w-3.5 h-3.5 text-amber-400" />
-              <span>Lounge Hotline: +233 557 75 8345</span>
-            </a>
+              Home
+            </button>
+            <span>/</span>
+            <button
+              onClick={() => onNavigate('/services')}
+              className="hover:text-[#204696] font-medium transition-colors cursor-pointer"
+            >
+              Services
+            </button>
+            <span>/</span>
+            <span className="text-[#204696] font-semibold">Lounge Services</span>
           </div>
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-16 sm:space-y-24 lg:space-y-32">
+      {/* Hero Header — Aviance Blue Grid Banner */}
+      <section className="relative overflow-hidden bg-gradient-to-br from-[#11244C] via-[#1A3670] to-[#204696] text-white py-14 sm:py-20 lg:py-24">
+        {/* Subtle aeronautical blueprint grid */}
+        <div className="absolute inset-0 opacity-10 pointer-events-none">
+          <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff_1px,transparent_1px),linear-gradient(to_bottom,#ffffff_1px,transparent_1px)] bg-[size:4rem_4rem]" />
+        </div>
+
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-5">
+          <h1 className="text-3xl sm:text-4xl lg:text-[46px] font-bold tracking-[-0.028em] text-white leading-[1.14]">
+            Adinkra &amp; U Lounge Hospitality
+          </h1>
+
+          <p className="text-base sm:text-lg text-blue-100/90 font-normal leading-relaxed max-w-3xl">
+            Aviance Ghana provides comfortable airport lounge experiences for First and Business Class passengers, premium travellers, lounge programme members, and walk-in guests across Accra, Kumasi, and Tamale.
+          </p>
+
+          <div className="pt-2 flex flex-wrap gap-3">
+            <a
+              href="tel:+233593816076"
+              className="px-5 py-3 border border-white/20 bg-white/10 hover:bg-white/15 text-white text-xs sm:text-sm font-semibold rounded-xl backdrop-blur-md transition-all flex items-center gap-2"
+            >
+              <Phone className="w-3.5 h-3.5 text-[#72BF44]" />
+              <span>CONTACT: +233 (0) 59 381 60 76</span>
+            </a>
+            <a
+              href="mailto:loungemanager@avianceghana.com"
+              className="px-5 py-3 border border-white/20 bg-white/10 hover:bg-white/15 text-white text-xs sm:text-sm font-semibold rounded-xl backdrop-blur-md transition-all flex items-center gap-2"
+            >
+              <Mail className="w-3.5 h-3.5 text-[#009EE0]" />
+              <span>loungemanager@avianceghana.com</span>
+            </a>
+          </div>
+        </div>
+      </section>
+
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-12 sm:pt-16 space-y-16 sm:space-y-24 lg:space-y-32">
         
+        {/* Official Scope & Services — Open 2-Column Layout */}
+        <section className="py-6 sm:py-10">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-14 items-center">
+            {/* Left Column: Scope & Key Services */}
+            <div className="lg:col-span-7 space-y-6 text-left">
+              <div>
+                <h2 className={`text-2xl sm:text-3xl lg:text-4xl font-extrabold uppercase tracking-tight ${
+                  isLight ? 'text-slate-900' : 'text-white'
+                }`}>
+                  Lounge Services
+                </h2>
+                <div className={`mt-4 space-y-3 text-sm sm:text-base leading-relaxed ${
+                  isLight ? 'text-slate-700' : 'text-slate-200'
+                }`}>
+                  <p>
+                    Aviance Ghana operates premium executive lounges designed to provide departing and transit passengers with a relaxing and comfortable atmosphere.
+                  </p>
+                  <p>
+                    With dedicated reception services, refreshments and comfortable seating, our lounges cater to airline customers, commercial partners and eligible travellers seeking convenience before their flight.
+                  </p>
+                </div>
+              </div>
+
+              <div>
+                <h3 className={`text-base sm:text-lg font-bold mb-3 ${
+                  isLight ? 'text-slate-900' : 'text-white'
+                }`}>
+                  Key services
+                </h3>
+                <ul className={`space-y-2.5 text-sm sm:text-base ${
+                  isLight ? 'text-slate-700' : 'text-slate-200'
+                }`}>
+                  {[
+                    'Passenger reception and access verification.',
+                    'Comfortable seating and work spaces.',
+                    'Complimentary food and beverage services.',
+                    'Flight information and boarding announcements.',
+                    'Wi-Fi and charging facilities.',
+                    'Shower facilities and rest amenities (Adinkra Lounge).'
+                  ].map((item, idx) => (
+                    <li key={idx} className="flex items-start gap-2.5">
+                      <span className="text-slate-400 dark:text-slate-500 font-bold select-none">•</span>
+                      <span>{item}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              <div className="pt-2 flex flex-wrap items-center gap-6 text-xs sm:text-sm font-semibold">
+                <a href="tel:+233593816076" className="inline-flex items-center gap-2 text-[#204696] dark:text-[#58C1EB] hover:underline">
+                  <Phone className="w-4 h-4 text-[#72BF44]" />
+                  <span>CONTACT: +233 (0) 59 381 60 76</span>
+                </a>
+                <a href="mailto:loungemanager@avianceghana.com" className="inline-flex items-center gap-2 text-[#204696] dark:text-[#58C1EB] hover:underline">
+                  <Mail className="w-4 h-4 text-[#009EE0]" />
+                  <span className="underline">loungemanager@avianceghana.com</span>
+                </a>
+              </div>
+            </div>
+
+            {/* Right Column: Authentic Page Image */}
+            <div className="lg:col-span-5">
+              <div className="relative rounded-2xl overflow-hidden shadow-lg border border-slate-200/80 dark:border-slate-800 group">
+                <img
+                  src={LOUNGE_OFFICIAL_IMG}
+                  alt="Aviance Ghana Lounge Services"
+                  className="w-full h-auto max-h-[520px] object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
+                />
+              </div>
+            </div>
+          </div>
+        </section>
+
         {/* WALK-IN PASS ESTIMATOR & PROMO BANNER */}
-        <div className={`p-8 sm:p-10 rounded-3xl border shadow-xl ${
-          isLight
-            ? 'bg-gradient-to-r from-amber-50 via-white to-amber-50/50 border-amber-300'
-            : 'bg-gradient-to-r from-[#182744] via-[#0D1829] to-[#14223A] border-amber-500/30'
-        }`}>
+        <div className="py-8 sm:py-12 border-b border-slate-200 dark:border-slate-800">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-center">
             <div className="lg:col-span-2 space-y-3">
-              <span className="text-xs font-mono font-bold text-amber-400 uppercase tracking-wider">
+              <span className="text-xs font-mono font-bold text-amber-500 uppercase tracking-wider">
                 Kotoka Terminal 3 Walk-In Rate
               </span>
               <h2 className={`text-2xl sm:text-3xl font-extrabold ${isLight ? 'text-slate-900' : 'text-white'}`}>
@@ -159,15 +237,13 @@ export const VipLoungePage: React.FC<VipLoungePageProps> = ({ onNavigate, onOpen
               <p className={`text-xs sm:text-sm leading-relaxed ${isLight ? 'text-slate-600' : 'text-slate-300'}`}>
                 No airline status or premium class ticket required! The U Lounge is located on the international departure level at Terminal 3 in Accra. Refreshments, high-speed Wi-Fi, comfortable armchairs, and flight departure status updates.
               </p>
-              <div className="flex items-center gap-2 text-xs text-amber-400 font-semibold pt-1">
+              <div className="flex items-center gap-2 text-xs text-amber-500 font-semibold pt-1">
                 <CheckCircle2 className="w-4 h-4" />
                 <span>Instant confirmation · Pay online or at the reception desk</span>
               </div>
             </div>
 
-            <div className={`p-6 rounded-2xl border ${
-              isLight ? 'bg-white border-slate-200 shadow-md' : 'bg-black/30 border-white/10'
-            }`}>
+            <div className="p-6 rounded-xl bg-amber-50/60 dark:bg-amber-950/20 border border-amber-200/80 dark:border-amber-700/30 space-y-2">
               <span className={`text-xs font-bold block mb-2 ${isLight ? 'text-slate-700' : 'text-slate-400'}`}>
                 Estimate Total Pass Cost
               </span>
@@ -190,7 +266,7 @@ export const VipLoungePage: React.FC<VipLoungePageProps> = ({ onNavigate, onOpen
                 </div>
               </div>
               <div className={`flex items-baseline justify-between border-t pt-3 mb-4 ${
-                isLight ? 'border-slate-100' : 'border-white/10'
+                isLight ? 'border-amber-200/60' : 'border-white/10'
               }`}>
                 <span className={`text-xs ${isLight ? 'text-slate-600' : 'text-slate-400'}`}>Total:</span>
                 <span className="text-2xl font-extrabold font-mono text-amber-600">
@@ -204,11 +280,6 @@ export const VipLoungePage: React.FC<VipLoungePageProps> = ({ onNavigate, onOpen
         {/* 6 LOUNGES DIRECTORY */}
         <div className="space-y-8">
           <div className="text-center max-w-2xl mx-auto space-y-2">
-            <span className={`text-xs font-mono font-bold uppercase tracking-wider ${
-              isLight ? 'text-[#204696]' : 'text-sky-400'
-            }`}>
-              Station Directory
-            </span>
             <h2 className={`text-3xl font-extrabold ${isLight ? 'text-slate-900' : 'text-white'}`}>
               The 6 Aviance Lounges in Ghana
             </h2>
@@ -217,18 +288,14 @@ export const VipLoungePage: React.FC<VipLoungePageProps> = ({ onNavigate, onOpen
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {lounges.map((l) => (
               <div
                 key={l.id}
-                className={`group rounded-2xl border overflow-hidden p-6 flex flex-col justify-between transition-all duration-300 hover:-translate-y-1 hover:shadow-xl ${
-                  isLight
-                    ? 'bg-white border-slate-200 hover:border-amber-400/40'
-                    : 'bg-[#0D1829] border-white/10 hover:border-amber-400/40'
-                }`}
+                className="group flex flex-col justify-between space-y-4 transition-all duration-300"
               >
                 {l.image && (
-                  <div className="relative aspect-[16/9] -mx-6 -mt-6 mb-4 overflow-hidden bg-slate-950">
+                  <div className="relative aspect-[16/10] rounded-xl overflow-hidden bg-slate-950">
                     <img
                       src={l.image}
                       alt={l.name}
@@ -242,13 +309,6 @@ export const VipLoungePage: React.FC<VipLoungePageProps> = ({ onNavigate, onOpen
                 )}
 
                 <div className="space-y-3">
-                  <div className="flex items-center justify-between">
-                    <span className={`text-[10px] font-mono px-2.5 py-1 rounded-full font-bold border ${l.badgeColor}`}>
-                      {l.tag}
-                    </span>
-                    <span className={`text-[11px] font-mono ${isLight ? 'text-slate-500' : 'text-slate-400'}`}>{l.capacity}</span>
-                  </div>
-
                   <h3 className={`text-lg font-bold ${isLight ? 'text-slate-900' : 'text-white'}`}>
                     {l.name}
                   </h3>
@@ -263,10 +323,9 @@ export const VipLoungePage: React.FC<VipLoungePageProps> = ({ onNavigate, onOpen
                   </p>
                 </div>
 
-                <div className={`pt-4 mt-4 border-t flex items-center justify-between ${
+                <div className={`pt-3 border-t flex items-center justify-between ${
                   isLight ? 'border-slate-100' : 'border-white/5'
                 }`}>
-                  <span className="text-xs font-mono font-bold text-amber-600">{l.price}</span>
                   <span className={`text-[11px] font-semibold ${isLight ? 'text-slate-500' : 'text-slate-400'}`}>
                     Active Station Lounge
                   </span>
@@ -294,9 +353,6 @@ export const VipLoungePage: React.FC<VipLoungePageProps> = ({ onNavigate, onOpen
                 Inside the Adinkra & U Lounges
               </h2>
             </div>
-            <span className="text-xs font-mono text-amber-500 font-semibold bg-amber-500/10 border border-amber-500/20 px-3 py-1 rounded-full self-start sm:self-auto">
-              Kotoka Terminal 3 (ACC)
-            </span>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -369,11 +425,6 @@ export const VipLoungePage: React.FC<VipLoungePageProps> = ({ onNavigate, onOpen
         {/* AMENITIES SHOWCASE */}
         <div className="space-y-6">
           <div className={`border-b pb-4 ${isLight ? 'border-slate-200' : 'border-white/10'}`}>
-            <span className={`text-xs font-mono font-bold uppercase ${
-              isLight ? 'text-[#204696]' : 'text-sky-400'
-            }`}>
-              World-Class Standards
-            </span>
             <h2 className={`text-2xl font-bold mt-1 ${isLight ? 'text-slate-900' : 'text-white'}`}>
               Lounge Amenities & Services
             </h2>

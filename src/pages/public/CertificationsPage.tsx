@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useSwipeGesture } from '../../hooks/useSwipeGesture';
 import {
   ShieldCheck,
   CheckCircle2,
@@ -167,6 +168,20 @@ export const CertificationsPage: React.FC<CertificationsPageProps> = ({ onNaviga
   const [zoomLevel, setZoomLevel] = useState<number>(1);
   const [copiedId, setCopiedId] = useState<string | null>(null);
 
+  const certTabs: Array<'all' | 'isago' | 'gcaa' | 'ra3'> = ['all', 'isago', 'gcaa', 'ra3'];
+  const { handlers: certSwipeHandlers } = useSwipeGesture({
+    onSwipeLeft: () => {
+      const idx = certTabs.indexOf(activeTab);
+      setActiveTab(certTabs[(idx + 1) % certTabs.length]);
+    },
+    onSwipeRight: () => {
+      const idx = certTabs.indexOf(activeTab);
+      setActiveTab(certTabs[(idx === 0 ? certTabs.length - 1 : idx - 1)]);
+    },
+    threshold: 45,
+    enableMouseDrag: true,
+  });
+
   const filteredCerts =
     activeTab === 'all'
       ? OFFICIAL_CERTIFICATES
@@ -190,43 +205,41 @@ export const CertificationsPage: React.FC<CertificationsPageProps> = ({ onNaviga
 
   return (
     <div className="pb-24 sm:pb-32 space-y-16 sm:space-y-24 lg:space-y-32 bg-white text-slate-900">
-      {/* Hero Header */}
-      <div className="py-14 sm:py-20 lg:py-24 text-center border-b border-slate-200 bg-slate-50 relative overflow-hidden">
-        <div className="relative z-10 max-w-4xl mx-auto px-4 space-y-4">
-          <div className="flex items-center justify-center gap-2.5">
-            <span className="w-1.5 h-6 rounded-full bg-gradient-to-b from-[#204696] via-[#009EE0] to-[#72BF44]" />
-            <h2 className="text-xs sm:text-sm font-extrabold uppercase tracking-widest text-[#204696]">
-              Aviation Governance &amp; Regulatory Compliance
-            </h2>
-          </div>
-          <h1 className="text-3xl sm:text-5xl font-extrabold tracking-tight text-slate-900">
+      {/* Hero Header in Signature Aviance Blue Grid */}
+      <section className="relative overflow-hidden bg-gradient-to-br from-[#11244C] via-[#1A3670] to-[#204696] text-white py-14 sm:py-20 lg:py-24">
+        <div className="absolute inset-0 opacity-10 pointer-events-none">
+          <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff_1px,transparent_1px),linear-gradient(to_bottom,#ffffff_1px,transparent_1px)] bg-[size:4rem_4rem]" />
+        </div>
+
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-4">
+          <h1 className="text-3xl sm:text-4xl lg:text-[46px] font-bold tracking-[-0.028em] text-white leading-[1.14]">
             Certifications, Licences &amp; Regulatory Standards
           </h1>
-          <p className="text-sm sm:text-base max-w-2xl mx-auto leading-relaxed text-slate-600">
+          <p className="text-base sm:text-lg text-blue-100/90 font-normal leading-relaxed max-w-3xl">
             Aviance Ghana operates under the highest international aviation governance frameworks, accredited by IATA, authorized by the Ghana Civil Aviation Authority (GCAA), and validated under UK &amp; European Union aviation security directives.
           </p>
 
           {/* Quick Compliance Metrics */}
-          <div className="pt-4 grid grid-cols-2 sm:grid-cols-4 gap-3 max-w-3xl mx-auto">
-            <div className="p-3 rounded-xl bg-white border border-slate-200 shadow-xs text-center">
-              <span className="text-xl sm:text-2xl font-extrabold text-[#204696] block">ISAGO</span>
-              <span className="text-[11px] text-slate-500 font-medium">IATA Global Registry</span>
+          <div className="pt-4 grid grid-cols-2 sm:grid-cols-4 gap-3 max-w-3xl">
+            <div className="p-3.5 rounded-xl bg-white/10 border border-white/20 backdrop-blur-md text-left">
+              <span className="text-xl sm:text-2xl font-extrabold text-white block">ISAGO</span>
+              <span className="text-[11px] text-blue-200 font-medium">IATA Global Registry</span>
             </div>
-            <div className="p-3 rounded-xl bg-white border border-slate-200 shadow-xs text-center">
-              <span className="text-xl sm:text-2xl font-extrabold text-[#72BF44] block">7 / 7</span>
-              <span className="text-[11px] text-slate-500 font-medium">Disciplines Certified</span>
+            <div className="p-3.5 rounded-xl bg-white/10 border border-white/20 backdrop-blur-md text-left">
+              <span className="text-xl sm:text-2xl font-extrabold text-[#A3E635] block">7 / 7</span>
+              <span className="text-[11px] text-blue-200 font-medium">Disciplines Certified</span>
             </div>
-            <div className="p-3 rounded-xl bg-white border border-slate-200 shadow-xs text-center">
-              <span className="text-xl sm:text-2xl font-extrabold text-[#009EE0] block">5-Year</span>
-              <span className="text-[11px] text-slate-500 font-medium">GCAA Statutory Mandate</span>
+            <div className="p-3.5 rounded-xl bg-white/10 border border-white/20 backdrop-blur-md text-left">
+              <span className="text-xl sm:text-2xl font-extrabold text-[#58C1EB] block">5-Year</span>
+              <span className="text-[11px] text-blue-200 font-medium">GCAA Statutory Mandate</span>
             </div>
-            <div className="p-3 rounded-xl bg-white border border-slate-200 shadow-xs text-center">
-              <span className="text-xl sm:text-2xl font-extrabold text-[#11244C] block">UK RA3</span>
-              <span className="text-[11px] text-slate-500 font-medium">EU Cargo Chain Validated</span>
+            <div className="p-3.5 rounded-xl bg-white/10 border border-white/20 backdrop-blur-md text-left">
+              <span className="text-xl sm:text-2xl font-extrabold text-white block">UK RA3</span>
+              <span className="text-[11px] text-blue-200 font-medium">EU Cargo Chain Validated</span>
             </div>
           </div>
         </div>
-      </div>
+      </section>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
         {/* Filter Navigation Tabs */}
@@ -234,40 +247,40 @@ export const CertificationsPage: React.FC<CertificationsPageProps> = ({ onNaviga
           <div className="flex items-center gap-2 flex-wrap">
             <button
               onClick={() => setActiveTab('all')}
-              className={`px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+              className={`px-5 py-2 rounded-full text-xs font-bold transition-all duration-300 cursor-pointer hover:-translate-y-0.5 active:scale-95 ${
                 activeTab === 'all'
                   ? 'bg-[#204696] text-white shadow-md shadow-[#204696]/20'
-                  : 'bg-slate-100 hover:bg-slate-200 text-slate-700'
+                  : 'bg-slate-100 hover:bg-slate-200 text-slate-700 shadow-2xs'
               }`}
             >
               All Official Documents (3)
             </button>
             <button
               onClick={() => setActiveTab('isago')}
-              className={`px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+              className={`px-5 py-2 rounded-full text-xs font-bold transition-all duration-300 cursor-pointer hover:-translate-y-0.5 active:scale-95 ${
                 activeTab === 'isago'
                   ? 'bg-[#204696] text-white shadow-md shadow-[#204696]/20'
-                  : 'bg-slate-100 hover:bg-slate-200 text-slate-700'
+                  : 'bg-slate-100 hover:bg-slate-200 text-slate-700 shadow-2xs'
               }`}
             >
               IATA ISAGO Accreditation
             </button>
             <button
               onClick={() => setActiveTab('gcaa')}
-              className={`px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+              className={`px-5 py-2 rounded-full text-xs font-bold transition-all duration-300 cursor-pointer hover:-translate-y-0.5 active:scale-95 ${
                 activeTab === 'gcaa'
                   ? 'bg-[#204696] text-white shadow-md shadow-[#204696]/20'
-                  : 'bg-slate-100 hover:bg-slate-200 text-slate-700'
+                  : 'bg-slate-100 hover:bg-slate-200 text-slate-700 shadow-2xs'
               }`}
             >
               GCAA Operating Licence
             </button>
             <button
               onClick={() => setActiveTab('ra3')}
-              className={`px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+              className={`px-5 py-2 rounded-full text-xs font-bold transition-all duration-300 cursor-pointer hover:-translate-y-0.5 active:scale-95 ${
                 activeTab === 'ra3'
                   ? 'bg-[#204696] text-white shadow-md shadow-[#204696]/20'
-                  : 'bg-slate-100 hover:bg-slate-200 text-slate-700'
+                  : 'bg-slate-100 hover:bg-slate-200 text-slate-700 shadow-2xs'
               }`}
             >
               UK / EU RA3 Cargo Security
@@ -280,17 +293,17 @@ export const CertificationsPage: React.FC<CertificationsPageProps> = ({ onNaviga
           </div>
         </div>
 
-        {/* PRIMARY CERTIFICATES SHOWCASE (Rendered with the Actual Asset Images) */}
-        <div className="space-y-12">
+        {/* PRIMARY CERTIFICATES SHOWCASE WITH UNIFIED GESTURES */}
+        <div
+          {...certSwipeHandlers}
+          className="space-y-12 select-none cursor-grab active:cursor-grabbing"
+        >
           {filteredCerts.map((cert) => (
             <div
               key={cert.id}
-              className="rounded-3xl border border-slate-200 bg-white shadow-lg overflow-hidden transition-all duration-300 hover:border-[#204696]/40"
+              className="py-10 sm:py-14 border-b border-slate-200 last:border-b-0 text-left"
             >
-              {/* Card Header Strip with Brand Gradient */}
-              <div className="h-1.5 w-full bg-gradient-to-r from-[#204696] via-[#009EE0] to-[#72BF44]" />
-
-              <div className="p-6 sm:p-10 grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+              <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
                 {/* Left Visual Column: Authentic Document Display with Plaque Frame */}
                 <div className="lg:col-span-5 flex flex-col items-center">
                   <div
@@ -361,7 +374,7 @@ export const CertificationsPage: React.FC<CertificationsPageProps> = ({ onNaviga
                   </p>
 
                   {/* Metadata Spec Grid */}
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 p-4 rounded-2xl bg-slate-50 border border-slate-200 text-xs">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-3 border-t border-slate-200 text-xs">
                     <div>
                       <span className="text-slate-400 block text-[10px] uppercase font-mono font-bold">
                         Certificate / Licence Number
@@ -434,9 +447,9 @@ export const CertificationsPage: React.FC<CertificationsPageProps> = ({ onNaviga
                   <div className="flex items-center gap-3 pt-2 flex-wrap">
                     <button
                       onClick={() => openLightbox(cert)}
-                      className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#204696] hover:bg-[#153170] text-white text-xs font-bold transition-all shadow-xs cursor-pointer"
+                      className="btn-primary group !py-2.5 !px-5 text-xs"
                     >
-                      <Eye className="w-4 h-4" />
+                      <Eye className="w-4 h-4 text-[#58C1EB]" />
                       <span>Inspect Full Document</span>
                     </button>
 
@@ -445,7 +458,7 @@ export const CertificationsPage: React.FC<CertificationsPageProps> = ({ onNaviga
                         href={cert.verificationUrl}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl border border-slate-300 bg-white hover:bg-slate-50 text-slate-700 text-xs font-bold transition-all shadow-xs"
+                        className="btn-secondary group !py-2.5 !px-5 text-xs"
                       >
                         <ExternalLink className="w-3.5 h-3.5 text-[#204696]" />
                         <span>{cert.verificationLabel || 'Verify Online'}</span>
@@ -455,7 +468,7 @@ export const CertificationsPage: React.FC<CertificationsPageProps> = ({ onNaviga
                     <a
                       href={cert.image}
                       download={`${cert.id}_certificate_aviance_ghana.jpg`}
-                      className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl border border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-600 text-xs font-semibold transition-all"
+                      className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-full border border-slate-300 bg-slate-50 hover:bg-slate-100 text-slate-700 text-xs font-bold uppercase tracking-wider transition-all duration-300 shadow-2xs hover:shadow-xs hover:-translate-y-0.5 active:scale-95"
                     >
                       <Download className="w-3.5 h-3.5" />
                       <span>Download Copy</span>
@@ -468,34 +481,34 @@ export const CertificationsPage: React.FC<CertificationsPageProps> = ({ onNaviga
         </div>
 
         {/* ISAGO 7-DISCIPLINE OPERATIONAL MATRIX */}
-        <div className="p-8 sm:p-10 rounded-3xl border border-slate-200 bg-slate-50 space-y-6">
+        <div className="pt-10 sm:pt-14 border-t border-slate-200 space-y-8 text-left">
           <div className="max-w-3xl space-y-2">
-            <span className="text-xs font-mono font-bold uppercase tracking-wider text-[#204696] flex items-center gap-1.5">
+            <span className="text-xs font-bold uppercase tracking-wider text-[#204696] flex items-center gap-1.5">
               <ShieldCheck className="w-4 h-4 text-[#72BF44]" />
               ISAGO Scope of Accreditation
             </span>
-            <h3 className="text-2xl font-extrabold text-slate-900">
+            <h3 className="text-2xl sm:text-3xl font-bold text-slate-900 tracking-tight">
               Complete Seven-Discipline ISAGO Conformance
             </h3>
-            <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
+            <p className="text-sm sm:text-base text-slate-600 leading-relaxed font-normal">
               Under IATA audit criteria, ground handlers are audited against specific operational disciplines. Aviance Ghana has earned accreditation across every discipline defined in the ISAGO program:
             </p>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {ISAGO_DISCIPLINE_CARDS.map((card) => (
               <div
                 key={card.code}
-                className="p-4 rounded-2xl bg-white border border-slate-200 shadow-xs space-y-2 hover:border-[#204696]/40 transition-colors"
+                className="space-y-2 pt-4 border-t border-slate-200 text-left group"
               >
                 <div className="flex items-center justify-between">
-                  <span className="px-2.5 py-1 rounded-md bg-[#204696] text-white font-mono font-extrabold text-xs">
+                  <span className="px-2.5 py-1 rounded-md bg-[#204696] text-white font-mono font-bold text-xs">
                     {card.code}
                   </span>
                   <CheckCircle2 className="w-4 h-4 text-emerald-600" />
                 </div>
-                <h4 className="text-xs font-bold text-slate-900">{card.name}</h4>
-                <p className="text-[11px] text-slate-500 leading-relaxed">{card.desc}</p>
+                <h4 className="text-sm font-bold text-slate-900 group-hover:text-[#204696] transition-colors">{card.name}</h4>
+                <p className="text-xs text-slate-600 leading-relaxed font-normal">{card.desc}</p>
               </div>
             ))}
           </div>

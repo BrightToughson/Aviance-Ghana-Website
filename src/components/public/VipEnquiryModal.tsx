@@ -111,7 +111,7 @@ ${formData.notes || 'None specified'}
               <div className="pt-4">
                 <button
                   onClick={onClose}
-                  className="px-6 py-2.5 bg-[#204696] text-white border border-[#58C1EB]/40 font-semibold text-xs rounded-lg hover:bg-[#183878] transition-colors"
+                  className="btn-primary !py-2.5 !px-6 text-xs"
                 >
                   Done
                 </button>
@@ -251,14 +251,14 @@ ${formData.notes || 'None specified'}
                 <button
                   type="button"
                   onClick={onClose}
-                  className="px-4 py-2 bg-slate-800 text-slate-300 hover:text-white rounded-lg text-xs font-medium"
+                  className="px-5 py-2 bg-slate-800 text-slate-300 hover:text-white rounded-full text-xs font-bold uppercase tracking-wider transition-all duration-300 hover:-translate-y-0.5 active:scale-95 cursor-pointer"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="px-6 py-2 bg-[#204696] text-white border border-[#58C1EB]/40 font-semibold text-xs rounded-lg hover:bg-[#183878] transition-colors shadow-sm disabled:opacity-50"
+                  className="btn-primary !py-2.5 !px-6 text-xs disabled:opacity-50"
                 >
                   {isSubmitting ? 'Submitting...' : 'Submit VIP Request'}
                 </button>

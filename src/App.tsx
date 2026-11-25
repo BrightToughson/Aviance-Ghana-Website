@@ -31,19 +31,28 @@ import { PartnerPortalPage } from './pages/public/PartnerPortalPage';
 import { DocumentCentrePage } from './pages/public/DocumentCentrePage';
 import { FaqPage } from './pages/public/FaqPage';
 import { TrainingPage } from './pages/public/TrainingPage';
+import { PassengerServicesPage } from './pages/public/PassengerServicesPage';
+import { RampHandlingPage } from './pages/public/RampHandlingPage';
+import { VipCharterPage } from './pages/public/VipCharterPage';
+import { GseMaintenancePage } from './pages/public/GseMaintenancePage';
+import { QhseSafetyPage } from './pages/public/QhseSafetyPage';
+import { AviationItPage } from './pages/public/AviationItPage';
 
 import { dataService, subscribeToDataChanges } from './services/dataService';
 import { analyticsService } from './services/analyticsService';
 import { Service, LocationItem, Certification, NewsArticle, CustomerPartner } from './types';
+
+const LANG_CODES: string[] = ['en', 'fr'];
 
 /**
  * Normalizes any route string or window.location URL into:
  * - fullPath: Canonical URL displayed in browser address bar (e.g. '/contact#stations', '/services')
  * - cleanPath: Base route path for component view matching (e.g. '/contact', '/services')
  * - hash: Anchor hash for in-page section scrolling (e.g. '#stations')
+ * - detectedLang: Language code if a prefix was present (e.g. 'fr')
  */
-function parseUrl(url: string): { fullPath: string; cleanPath: string; hash: string } {
-  if (!url) return { fullPath: '/', cleanPath: '/', hash: '' };
+function parseUrl(url: string): { fullPath: string; cleanPath: string; hash: string; detectedLang: string | null } {
+  if (!url) return { fullPath: '/', cleanPath: '/', hash: '', detectedLang: null };
 
   const hashIndex = url.indexOf('#');
   let pathPart = hashIndex !== -1 ? url.substring(0, hashIndex) : url;
@@ -64,15 +73,28 @@ function parseUrl(url: string): { fullPath: string; cleanPath: string; hash: str
     pathPart = pathPart.replace(/\/+$/, '');
   }
 
+  // Strip language prefix (e.g. /fr/cargo -> /cargo, /en -> /)
+  let detectedLang: string | null = null;
+  for (const code of LANG_CODES) {
+    if (pathPart === `/${code}` || pathPart.startsWith(`/${code}/`)) {
+      detectedLang = code;
+      pathPart = pathPart === `/${code}` ? '/' : pathPart.slice(code.length + 1);
+      break;
+    }
+  }
+
   // Standardize canonical route aliases
   if (pathPart === '/aviance-services') pathPart = '/services';
-  if (pathPart === '/occ') pathPart = '/operations';
+  if (pathPart === '/occ' || pathPart === '/occ-flight-operations' || pathPart === '/flight-operations') pathPart = '/operations';
   if (pathPart === '/baggage') pathPart = '/find-my-bag';
-  if (pathPart === '/services/cargo') pathPart = '/cargo';
-  if (pathPart === '/services/lounge') pathPart = '/lounge';
-  if (pathPart === '/services/vip-charter') pathPart = '/vip-charter';
+  if (pathPart === '/cargo-services' || pathPart === '/services/cargo') pathPart = '/cargo';
+  if (pathPart === '/lounge-services' || pathPart === '/services/lounge') pathPart = '/lounge';
+  if (pathPart === '/vip-and-charter-services' || pathPart === '/services/vip-charter' || pathPart === '/services/vip') pathPart = '/vip-charter';
   if (pathPart === '/services/find-my-bag') pathPart = '/find-my-bag';
   if (pathPart === '/services/operations') pathPart = '/operations';
+  if (pathPart === '/services/passenger-services' || pathPart === '/passenger') pathPart = '/passenger-services';
+  if (pathPart === '/services/ramp-handling' || pathPart === '/ramp') pathPart = '/ramp-handling';
+  if (pathPart === '/gse-and-fleet-maintenance' || pathPart === '/gse-maintenance' || pathPart === '/services/gse-and-fleet-maintenance' || pathPart === '/services/gse-fleet-maintenance' || pathPart === '/gse') pathPart = '/gse-fleet-maintenance';
   if (pathPart === '/facts-and-figures' || pathPart === '/facts') pathPart = '/facts-figures';
   if (pathPart === '/management-team') pathPart = '/management';
   if (pathPart === '/certifications-licenses' || pathPart === '/licenses' || pathPart === '/accreditations') pathPart = '/certifications';
@@ -83,10 +105,12 @@ function parseUrl(url: string): { fullPath: string; cleanPath: string; hash: str
   if (pathPart.startsWith('/post/')) pathPart = pathPart.replace('/post/', '/news/');
 
   const fullPath = pathPart + hashPart;
-  return { fullPath, cleanPath: pathPart, hash: hashPart };
+  return { fullPath, cleanPath: pathPart, hash: hashPart, detectedLang };
 }
 
 function MainApp() {
+  const { language, setLanguage } = useLanguage();
+
   const [currentPath, setCurrentPath] = useState<string>(() => {
     const { cleanPath } = parseUrl(window.location.pathname + window.location.hash);
     return cleanPath;
@@ -94,11 +118,14 @@ function MainApp() {
 
   const [cargoModalOpen, setCargoModalOpen] = useState(false);
 
-  // Sync with browser back/forward buttons
+  // Sync with browser back/forward buttons — also sync language from URL prefix
   useEffect(() => {
     const handlePopState = () => {
-      const { cleanPath, hash } = parseUrl(window.location.pathname + window.location.hash);
+      const { cleanPath, hash, detectedLang } = parseUrl(window.location.pathname + window.location.hash);
       setCurrentPath(cleanPath);
+      if (detectedLang && (detectedLang === 'en' || detectedLang === 'fr') && detectedLang !== language) {
+        setLanguage(detectedLang as 'en' | 'fr');
+      }
       if (hash) {
         setTimeout(() => {
           const id = hash.replace('#', '');
@@ -109,7 +136,7 @@ function MainApp() {
     };
     window.addEventListener('popstate', handlePopState);
     return () => window.removeEventListener('popstate', handlePopState);
-  }, []);
+  }, [language, setLanguage]);
 
   // Initial scroll to hash if user opened direct link with anchor (e.g. /contact#stations)
   useEffect(() => {
@@ -148,10 +175,15 @@ function MainApp() {
   const navigate = (targetUrl: string) => {
     const { fullPath, cleanPath, hash } = parseUrl(targetUrl);
 
+    // Prepend the current language prefix to the URL (e.g. /fr/cargo)
+    const langPrefix = `/${language}`;
+    const prefixedPath = cleanPath === '/' ? langPrefix : langPrefix + cleanPath;
+    const prefixedFull = prefixedPath + hash;
+
     // Update browser address bar unconditionally whenever URL changes
     const currentFull = window.location.pathname + window.location.hash;
-    if (currentFull !== fullPath) {
-      window.history.pushState(null, '', fullPath);
+    if (currentFull !== prefixedFull) {
+      window.history.pushState(null, '', prefixedFull);
     }
 
     setCurrentPath(cleanPath);
@@ -170,20 +202,12 @@ function MainApp() {
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
-    analyticsService.trackEvent('page_view', fullPath);
+    analyticsService.trackEvent('page_view', prefixedFull);
   };
 
-  // Handle service alias routes like /passenger-services or /services/:slug
+  // Handle service alias routes for IT, Safety, and /services/:slug
   let activeService: Service | undefined;
-  if (currentPath === '/passenger-services') {
-    activeService = services.find((s) => s.slug === 'passenger-services') || services[0];
-  } else if (currentPath === '/ramp-handling') {
-    activeService = services.find((s) => s.slug === 'ramp-handling') || services[1];
-  } else if (currentPath === '/gse-fleet-maintenance') {
-    activeService = services.find((s) => s.slug === 'gse-fleet-maintenance') || services[6];
-  } else if (currentPath === '/vip-charter') {
-    activeService = services.find((s) => s.slug === 'vip-charter') || services[3];
-  } else if (currentPath === '/information-technology') {
+  if (currentPath === '/information-technology') {
     activeService = services.find((s) => s.slug === 'information-technology') || services[8];
   } else if (currentPath === '/quality-safety-health') {
     activeService = services.find((s) => s.slug === 'quality-safety-health') || services[9];
@@ -230,7 +254,15 @@ function MainApp() {
       '/code-of-conduct': 'Corporate Code of Conduct — Aviance Ghana',
       '/privacy-policy': 'Privacy Policy — Aviance Ghana',
       '/terms': 'Terms of Use — Aviance Ghana',
-      '/training': 'Training & Room Hire — Aviance Ghana',
+      '/training': 'Training & Room Hire | Ground Handling Ghana, KIA — Aviance Ghana',
+      '/passenger-services': 'Passenger Services | Ground Handling Ghana, KIA — Aviance Ghana',
+      '/ramp-handling': 'Ramp Handling | Ground Handling Ghana, KIA — Aviance Ghana',
+      '/lounge': 'Lounge Services | Adinkra & U Lounge KIA — Aviance Ghana',
+      '/vip-charter': 'VIP & Charter Services | Ground Handling Ghana, KIA — Aviance Ghana',
+      '/cargo': 'Cargo Services | 60% National Market Share KIA — Aviance Ghana',
+      '/operations': 'OCC - Flight Operations | 24/7 Dispatch KIA — Aviance Ghana',
+      '/find-my-bag': 'Find My Bag | Baggage Tracing KIA — Aviance Ghana',
+      '/gse-fleet-maintenance': 'GSE & Fleet Maintenance | Ground Handling Ghana, KIA — Aviance Ghana',
     };
 
     if (activeService) {
@@ -248,6 +280,9 @@ function MainApp() {
     currentPath === '/' ||
     currentPath === '/services' ||
     Boolean(activeService) ||
+    currentPath === '/passenger-services' ||
+    currentPath === '/ramp-handling' ||
+    currentPath === '/gse-fleet-maintenance' ||
     currentPath === '/operations' ||
     currentPath === '/cargo' ||
     currentPath === '/find-my-bag' ||
@@ -309,7 +344,7 @@ function MainApp() {
           />
         )}
 
-        {activeService && (
+        {activeService && (currentPath.startsWith('/services/') || currentPath === '/information-technology' || currentPath === '/quality-safety-health') && (
           <ServiceDetailPage
             service={activeService}
             allServices={services}
@@ -349,6 +384,34 @@ function MainApp() {
 
         {currentPath === '/training' && (
           <TrainingPage onNavigate={navigate} />
+        )}
+
+        {currentPath === '/passenger-services' && (
+          <PassengerServicesPage
+            onNavigate={navigate}
+            onOpenCargoModal={() => setCargoModalOpen(true)}
+          />
+        )}
+
+        {currentPath === '/ramp-handling' && (
+          <RampHandlingPage
+            onNavigate={navigate}
+            onOpenCargoModal={() => setCargoModalOpen(true)}
+          />
+        )}
+
+        {currentPath === '/vip-charter' && (
+          <VipCharterPage
+            onNavigate={navigate}
+            onOpenCargoModal={() => setCargoModalOpen(true)}
+          />
+        )}
+
+        {currentPath === '/gse-fleet-maintenance' && (
+          <GseMaintenancePage
+            onNavigate={navigate}
+            onOpenCargoModal={() => setCargoModalOpen(true)}
+          />
         )}
 
         {currentPath === '/about' && (

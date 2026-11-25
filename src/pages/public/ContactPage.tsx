@@ -146,12 +146,7 @@ export const ContactPage: React.FC<ContactPageProps> = ({ onNavigate }) => {
             <span className="text-[#204696] font-semibold">Contact</span>
           </div>
 
-          <div className="flex items-center gap-2">
-            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-blue-50 text-[#204696] border border-blue-200">
-              <span className="w-1.5 h-1.5 rounded-full bg-[#204696] animate-pulse" />
-              Kotoka International Airport (ACC)
-            </span>
-          </div>
+
         </div>
       </div>
 
@@ -162,16 +157,11 @@ export const ContactPage: React.FC<ContactPageProps> = ({ onNavigate }) => {
         </div>
         
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-4">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-xs sm:text-sm font-semibold text-blue-100">
-            <Building2 className="w-4 h-4 text-[#009EE0]" />
-            <span>Aviance Ghana Limited &bull; Contact Directory</span>
-          </div>
-
-          <h1 className="text-3xl sm:text-5xl font-black tracking-tight text-white uppercase">
-            CONTACT US
+          <h1 className="text-3xl sm:text-4xl lg:text-[46px] font-bold tracking-[-0.028em] text-white leading-[1.14]">
+            Contact Aviance Ghana
           </h1>
 
-          <p className="text-base sm:text-xl text-blue-100/95 font-light leading-relaxed max-w-3xl">
+          <p className="text-base sm:text-lg text-blue-100/90 font-normal leading-relaxed max-w-3xl">
             Get in touch with Aviance Ghana for enquiries about our aviation services, cargo operations, lounges, VIP services, training or delayed baggage.
           </p>
         </div>
@@ -184,12 +174,8 @@ export const ContactPage: React.FC<ContactPageProps> = ({ onNavigate }) => {
         <section className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-stretch">
           
           {/* Left Column: Head Office Card */}
-          <div className="lg:col-span-5 flex flex-col justify-between">
-            <div className={`p-8 rounded-3xl border shadow-xl flex-1 flex flex-col justify-between transition-all ${
-              isLight
-                ? 'bg-white border-slate-200/90 shadow-slate-200/60'
-                : 'bg-[#0C1933] border-[#204696]/40 shadow-2xl'
-            }`}>
+          <div className="lg:col-span-5 flex flex-col justify-between space-y-6">
+            <div className="space-y-6 flex-1 flex flex-col justify-between">
               <div className="space-y-6">
                 
                 {/* Header */}
@@ -294,84 +280,76 @@ export const ContactPage: React.FC<ContactPageProps> = ({ onNavigate }) => {
           </div>
 
           {/* Right Column: Interactive Map View */}
-          <div className="lg:col-span-7 flex flex-col">
-            <div className={`p-4 sm:p-5 rounded-3xl border shadow-xl flex-1 flex flex-col transition-all ${
-              isLight
-                ? 'bg-white border-slate-200/90 shadow-slate-200/60'
-                : 'bg-[#0C1933] border-[#204696]/40 shadow-2xl'
-            }`}>
-              
-              {/* Map Bar */}
-              <div className="flex items-center justify-between pb-3 px-1 text-xs">
-                <div className="flex items-center gap-2">
-                  <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />
-                  <span className="font-bold text-slate-800 dark:text-white">
-                    Airport Bypass Rd, Accra, Ghana
-                  </span>
-                  <span className="text-slate-400 hidden sm:inline">&bull; Kotoka International</span>
-                </div>
-                
-                <a
-                  href="https://www.google.com/maps/dir/?api=1&destination=5.59829146036185,-0.1744891351782267"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#204696] hover:bg-[#153170] text-white font-bold text-xs transition-colors shadow-sm"
-                >
-                  <Navigation className="w-3.5 h-3.5" />
-                  Directions
-                </a>
+          <div className="lg:col-span-7 flex flex-col space-y-3">
+            {/* Map Bar */}
+            <div className="flex items-center justify-between pb-1 px-1 text-xs">
+              <div className="flex items-center gap-2">
+                <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />
+                <span className="font-bold text-slate-800 dark:text-white">
+                  Airport Bypass Rd, Accra, Ghana
+                </span>
+                <span className="text-slate-400 hidden sm:inline">&bull; Kotoka International</span>
               </div>
+              
+              <a
+                href="https://www.google.com/maps/dir/?api=1&destination=5.59829146036185,-0.1744891351782267"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#204696] hover:bg-[#153170] text-white font-bold text-xs transition-colors shadow-sm"
+              >
+                <Navigation className="w-3.5 h-3.5" />
+                Directions
+              </a>
+            </div>
 
-              {/* Map Container */}
-              <div className="relative flex-1 min-h-[340px] sm:min-h-[420px] rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-700 bg-slate-100 dark:bg-slate-900">
-                <iframe
-                  title="Aviance Ghana Limited Head Office Map"
-                  src="https://maps.google.com/maps?q=5.59829146036185,-0.1744891351782267&amp;hl=en&amp;z=17&amp;output=embed"
-                  className="w-full h-full border-0 absolute inset-0"
-                  loading="lazy"
-                  allowFullScreen
-                />
+            {/* Map Container */}
+            <div className="relative flex-1 min-h-[340px] sm:min-h-[420px] rounded-2xl overflow-hidden bg-slate-100 dark:bg-slate-900">
+              <iframe
+                title="Aviance Ghana Limited Head Office Map"
+                src="https://maps.google.com/maps?q=5.59829146036185,-0.1744891351782267&amp;hl=en&amp;z=17&amp;output=embed"
+                className="w-full h-full border-0 absolute inset-0"
+                loading="lazy"
+                allowFullScreen
+              />
 
-                {/* Custom Overlay Pin Card matching the original screenshot popup */}
-                <div className="absolute top-4 left-4 z-10 p-3.5 rounded-xl bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border border-slate-200 dark:border-slate-700 shadow-xl max-w-[270px] text-xs">
-                  <div className="flex items-start gap-2.5">
-                    <div className="w-7 h-7 rounded-full bg-red-100 text-red-600 flex items-center justify-center shrink-0 mt-0.5 shadow-sm">
-                      <MapPin className="w-4 h-4" />
-                    </div>
-                    <div>
-                      <p className="font-extrabold text-slate-900 dark:text-white text-xs">
-                        Aviance Ghana Limited
-                      </p>
-                      <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">
-                        Airport Bypass Rd, Accra, Ghana
-                      </p>
-                      <p className="font-mono text-[10px] text-[#204696] dark:text-[#009EE0] mt-0.5">
-                        5.598291, -0.174489
-                      </p>
-                      <a
-                        href="https://www.google.com/maps/dir/?api=1&destination=5.59829146036185,-0.1744891351782267"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-flex items-center gap-1 text-[11px] font-bold text-[#009EE0] hover:underline mt-1.5"
-                      >
-                        Directions <ExternalLink className="w-3 h-3" />
-                      </a>
-                    </div>
+              {/* Custom Overlay Pin Card matching the original screenshot popup */}
+              <div className="absolute top-4 left-4 z-10 p-3.5 rounded-xl bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border border-slate-200 dark:border-slate-700 shadow-xl max-w-[270px] text-xs">
+                <div className="flex items-start gap-2.5">
+                  <div className="w-7 h-7 rounded-full bg-red-100 text-red-600 flex items-center justify-center shrink-0 mt-0.5 shadow-sm">
+                    <MapPin className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <p className="font-extrabold text-slate-900 dark:text-white text-xs">
+                      Aviance Ghana Limited
+                    </p>
+                    <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">
+                      Airport Bypass Rd, Accra, Ghana
+                    </p>
+                    <p className="font-mono text-[10px] text-[#204696] dark:text-[#009EE0] mt-0.5">
+                      5.598291, -0.174489
+                    </p>
+                    <a
+                      href="https://www.google.com/maps/dir/?api=1&destination=5.59829146036185,-0.1744891351782267"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1 text-[11px] font-bold text-[#009EE0] hover:underline mt-1.5"
+                    >
+                      Directions <ExternalLink className="w-3 h-3" />
+                    </a>
                   </div>
                 </div>
+              </div>
 
-                {/* Bottom External Link */}
-                <div className="absolute bottom-2 right-2 z-10 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md px-2.5 py-1 rounded-lg text-[10px] text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 shadow-sm">
-                  <a
-                    href="https://www.google.com/maps?q=5.59829146036185,-0.1744891351782267"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="hover:text-[#204696] font-bold flex items-center gap-1"
-                  >
-                    Open in Google Maps &rarr;
-                  </a>
-                </div>
-
+              {/* Bottom External Link */}
+              <div className="absolute bottom-2 right-2 z-10 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md px-2.5 py-1 rounded-lg text-[10px] text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 shadow-sm">
+                <a
+                  href="https://www.google.com/maps?q=5.59829146036185,-0.1744891351782267"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hover:text-[#204696] font-bold flex items-center gap-1"
+                >
+                  Open in Google Maps &rarr;
+                </a>
               </div>
 
             </div>
@@ -399,11 +377,7 @@ export const ContactPage: React.FC<ContactPageProps> = ({ onNavigate }) => {
             {departmentalContacts.map((dept) => (
               <div
                 key={dept.id}
-                className={`p-6 rounded-2xl border shadow-sm hover:shadow-lg transition-all duration-300 flex flex-col justify-between ${
-                  isLight
-                    ? 'bg-white border-slate-200/90 hover:border-[#204696]/40'
-                    : 'bg-[#0C1933] border-[#204696]/30 hover:border-[#009EE0]/60'
-                }`}
+                className="pt-5 border-t border-slate-200 dark:border-slate-800 flex flex-col justify-between space-y-3"
               >
                 <div className="space-y-3">
                   <div className="flex items-center justify-between">
@@ -425,7 +399,7 @@ export const ContactPage: React.FC<ContactPageProps> = ({ onNavigate }) => {
                   </div>
                 </div>
 
-                <div className="pt-4 mt-4 border-t border-slate-100 dark:border-slate-800 space-y-2">
+                <div className="pt-4 mt-2 border-t border-slate-100 dark:border-slate-800 space-y-2">
                   <div className="flex items-center gap-2 text-xs">
                     <Phone className="w-3.5 h-3.5 text-[#204696] dark:text-[#009EE0] shrink-0" />
                     <a
@@ -453,11 +427,7 @@ export const ContactPage: React.FC<ContactPageProps> = ({ onNavigate }) => {
         </section>
 
         {/* SECTION 3: ONLINE ENQUIRY FORM */}
-        <section className={`rounded-3xl p-8 sm:p-12 border shadow-xl transition-all ${
-          isLight
-            ? 'bg-white border-slate-200/90 shadow-slate-200/60'
-            : 'bg-[#0C1933] border-[#204696]/30 shadow-2xl'
-        }`}>
+        <section className="pt-12 sm:pt-16 border-t border-slate-200 dark:border-slate-800">
           <div className="max-w-3xl mx-auto space-y-6">
             
             <div className="text-center space-y-2">
@@ -589,10 +559,10 @@ export const ContactPage: React.FC<ContactPageProps> = ({ onNavigate }) => {
                   <button
                     type="submit"
                     disabled={isSubmitting}
-                    className="px-6 py-3 rounded-xl bg-[#204696] hover:bg-[#153170] text-white font-bold text-xs sm:text-sm transition-all shadow-md flex items-center gap-2 cursor-pointer disabled:opacity-50"
+                    className="btn-primary group !py-3.5 !px-8 disabled:opacity-50"
                   >
-                    <Send className="w-4 h-4" />
-                    {isSubmitting ? 'Transmitting...' : 'Send Enquiry'}
+                    <Send className="w-4 h-4 text-[#58C1EB] group-hover:translate-x-1 transition-transform" />
+                    <span>{isSubmitting ? 'Transmitting...' : 'Send Enquiry'}</span>
                   </button>
                 </div>
               </form>

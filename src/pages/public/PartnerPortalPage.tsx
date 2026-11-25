@@ -19,6 +19,7 @@ import { StatusBadge } from '../../components/ui/StatusBadge';
 import { INITIAL_PARTNER_REQUESTS } from '../../constants/avianceData';
 import { PartnerRequest } from '../../types';
 import { useToast } from '../../context/ToastContext';
+import { useSwipeGesture } from '../../hooks/useSwipeGesture';
 
 interface PartnerPortalPageProps {
   onNavigate: (path: string) => void;
@@ -28,6 +29,25 @@ export const PartnerPortalPage: React.FC<PartnerPortalPageProps> = ({ onNavigate
   const [activeTab, setActiveTab] = useState<'requests' | 'submit' | 'contacts' | 'documents'>('requests');
   const [requests, setRequests] = useState<PartnerRequest[]>(INITIAL_PARTNER_REQUESTS);
   const { toast } = useToast();
+
+  const portalTabs: Array<'requests' | 'submit' | 'contacts' | 'documents'> = [
+    'requests',
+    'submit',
+    'contacts',
+    'documents'
+  ];
+  const { handlers: portalSwipeHandlers } = useSwipeGesture({
+    onSwipeLeft: () => {
+      const idx = portalTabs.indexOf(activeTab);
+      setActiveTab(portalTabs[(idx + 1) % portalTabs.length]);
+    },
+    onSwipeRight: () => {
+      const idx = portalTabs.indexOf(activeTab);
+      setActiveTab(portalTabs[(idx === 0 ? portalTabs.length - 1 : idx - 1)]);
+    },
+    threshold: 45,
+    enableMouseDrag: false, // Don't interfere with form typing/dragging
+  });
 
   const [form, setForm] = useState({
     airline: 'British Airways',
@@ -72,25 +92,29 @@ export const PartnerPortalPage: React.FC<PartnerPortalPageProps> = ({ onNavigate
   };
 
   return (
-    <div className="py-12 sm:py-16 lg:py-20 pb-24 sm:pb-32 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12 sm:space-y-16 animate-in fade-in duration-150">
-      {/* Top Banner Notice */}
-      <div className="bg-[#0A162C]/95 border border-[#204696]/35 rounded-3xl p-6 sm:p-10 space-y-4 shadow-2xl relative overflow-hidden">
-        {/* Subtle Ambient Backing Glow */}
-        <div className="absolute top-0 right-0 w-96 h-96 bg-[#204696]/20 rounded-full blur-3xl pointer-events-none" />
+    <div className="pb-24 sm:pb-32 bg-[#08101E] text-slate-100 min-h-screen">
+      {/* Hero Header in Signature Aviance Blue Grid */}
+      <section className="relative overflow-hidden bg-gradient-to-br from-[#11244C] via-[#1A3670] to-[#204696] text-white py-14 sm:py-20 lg:py-24">
+        <div className="absolute inset-0 opacity-10 pointer-events-none">
+          <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff_1px,transparent_1px),linear-gradient(to_bottom,#ffffff_1px,transparent_1px)] bg-[size:4rem_4rem]" />
+        </div>
+
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-4">
+          <h1 className="text-3xl sm:text-4xl lg:text-[46px] font-bold text-white tracking-[-0.028em] leading-[1.14]">
+            Airline Customer &amp; Operations Portal
+          </h1>
+          <p className="text-base sm:text-lg text-blue-100/90 max-w-3xl leading-relaxed font-normal">
+            Direct station interface enabling commercial carrier station managers to coordinate ad-hoc turnaround slots, ground power units, ambulifts, and SGHA billing documentation at Kotoka International Airport.
+          </p>
+        </div>
+      </section>
+
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-10 sm:pt-14 space-y-10 sm:space-y-12 animate-in fade-in duration-150">
+        {/* Top Operational Session Card */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-800 pb-5">
           <div className="space-y-1">
-            <div className="flex items-center gap-2.5">
-              <span className="w-1.5 h-5 rounded-full bg-gradient-to-b from-[#204696] via-[#009EE0] to-[#72BF44]" />
-              <h2 className="text-xs sm:text-sm font-extrabold uppercase tracking-widest text-[#58C1EB]">
-                Airline Commercial Gateway <span className="text-[#009EE0]">·</span> <span className="text-[#72BF44]">Verified Official</span>
-              </h2>
-            </div>
-            <h1 className="text-2xl sm:text-4xl font-extrabold text-white tracking-tight">
-              Airline Customer & Operations Portal
-            </h1>
-            <p className="text-xs sm:text-sm text-slate-300 max-w-3xl leading-relaxed">
-              Direct station interface enabling commercial carrier station managers to coordinate ad-hoc turnaround slots, ground power units, ambulifts, and SGHA billing documentation at Kotoka International Airport.
-            </p>
+            <span className="text-xs uppercase tracking-wider text-slate-400 font-semibold">Live Operational Interface</span>
+            <p className="text-sm text-slate-300">Coordinating turnaround requisitions with Kotoka Terminal 3 Apron Operations</p>
           </div>
 
           <div className="p-3 bg-[#060D1A] rounded-xl border border-[#204696]/25 text-xs text-slate-400 space-y-1 sm:text-right">
@@ -109,13 +133,13 @@ export const PartnerPortalPage: React.FC<PartnerPortalPageProps> = ({ onNavigate
         </div>
       </div>
 
-      {/* Navigation Tabs */}
+      {/* Navigation Tabs (Modern Rounded-Full Pills) */}
       <div className="flex items-center gap-2 border-b border-[#204696]/30 pb-3 text-xs font-semibold overflow-x-auto">
         <button
           onClick={() => setActiveTab('requests')}
-          className={`px-4 py-2 rounded-xl transition-all shrink-0 ${
+          className={`px-5 py-2 rounded-full transition-all duration-300 shrink-0 cursor-pointer hover:-translate-y-0.5 active:scale-95 ${
             activeTab === 'requests'
-              ? 'bg-[#204696] text-white border border-[#58C1EB]/40 font-bold shadow-sm'
+              ? 'bg-[#204696] text-white border border-[#58C1EB]/40 font-bold shadow-md shadow-[#204696]/20'
               : 'bg-[#0A162C] border border-[#204696]/25 text-slate-300 hover:text-white'
           }`}
         >
@@ -123,9 +147,9 @@ export const PartnerPortalPage: React.FC<PartnerPortalPageProps> = ({ onNavigate
         </button>
         <button
           onClick={() => setActiveTab('submit')}
-          className={`px-4 py-2 rounded-xl transition-all shrink-0 ${
+          className={`px-5 py-2 rounded-full transition-all duration-300 shrink-0 cursor-pointer hover:-translate-y-0.5 active:scale-95 ${
             activeTab === 'submit'
-              ? 'bg-[#204696] text-white border border-[#58C1EB]/40 font-bold shadow-sm'
+              ? 'bg-[#204696] text-white border border-[#58C1EB]/40 font-bold shadow-md shadow-[#204696]/20'
               : 'bg-[#0A162C] border border-[#204696]/25 text-slate-300 hover:text-white'
           }`}
         >
@@ -133,9 +157,9 @@ export const PartnerPortalPage: React.FC<PartnerPortalPageProps> = ({ onNavigate
         </button>
         <button
           onClick={() => setActiveTab('contacts')}
-          className={`px-4 py-2 rounded-xl transition-all shrink-0 ${
+          className={`px-5 py-2 rounded-full transition-all duration-300 shrink-0 cursor-pointer hover:-translate-y-0.5 active:scale-95 ${
             activeTab === 'contacts'
-              ? 'bg-[#204696] text-white border border-[#58C1EB]/40 font-bold shadow-sm'
+              ? 'bg-[#204696] text-white border border-[#58C1EB]/40 font-bold shadow-md shadow-[#204696]/20'
               : 'bg-[#0A162C] border border-[#204696]/25 text-slate-300 hover:text-white'
           }`}
         >
@@ -143,9 +167,9 @@ export const PartnerPortalPage: React.FC<PartnerPortalPageProps> = ({ onNavigate
         </button>
         <button
           onClick={() => setActiveTab('documents')}
-          className={`px-4 py-2 rounded-xl transition-all shrink-0 ${
+          className={`px-5 py-2 rounded-full transition-all duration-300 shrink-0 cursor-pointer hover:-translate-y-0.5 active:scale-95 ${
             activeTab === 'documents'
-              ? 'bg-[#204696] text-white border border-[#58C1EB]/40 font-bold shadow-sm'
+              ? 'bg-[#204696] text-white border border-[#58C1EB]/40 font-bold shadow-md shadow-[#204696]/20'
               : 'bg-[#0A162C] border border-[#204696]/25 text-slate-300 hover:text-white'
           }`}
         >
@@ -153,6 +177,7 @@ export const PartnerPortalPage: React.FC<PartnerPortalPageProps> = ({ onNavigate
         </button>
       </div>
 
+      <div {...portalSwipeHandlers} className="min-h-[400px]">
       {/* Tab 1: Active Requests List */}
       {activeTab === 'requests' && (
         <div className="space-y-4">
@@ -165,7 +190,7 @@ export const PartnerPortalPage: React.FC<PartnerPortalPageProps> = ({ onNavigate
             {requests.map((req) => (
               <div
                 key={req.id}
-                className="bg-[#0C1933]/90 border border-[#204696]/30 rounded-2xl p-5 space-y-3 flex flex-col justify-between shadow-xl shadow-[#204696]/5"
+                className="pt-5 border-t border-slate-800 space-y-3 flex flex-col justify-between"
               >
                 <div className="space-y-2">
                   <div className="flex items-center justify-between">
@@ -208,7 +233,7 @@ export const PartnerPortalPage: React.FC<PartnerPortalPageProps> = ({ onNavigate
 
       {/* Tab 2: Submit Requisition Form */}
       {activeTab === 'submit' && (
-        <div className="bg-[#0C1933]/90 border border-[#204696]/35 rounded-2xl p-6 sm:p-8 max-w-2xl mx-auto space-y-6 shadow-2xl">
+        <div className="max-w-2xl mx-auto space-y-6 pt-4">
           <div className="border-b border-[#204696]/30 pb-3">
             <h3 className="text-base font-bold text-white">Submit Ad-Hoc Service Requisition</h3>
             <p className="text-xs text-slate-400 mt-0.5">
@@ -305,9 +330,9 @@ export const PartnerPortalPage: React.FC<PartnerPortalPageProps> = ({ onNavigate
             <div className="pt-2 flex justify-end">
               <button
                 type="submit"
-                className="px-6 py-2.5 bg-[#204696] hover:bg-[#183878] text-white border border-[#58C1EB]/40 shadow-sm font-bold rounded-xl transition-colors shadow-sm flex items-center gap-2"
+                className="btn-primary !py-3 !px-7 text-xs flex items-center gap-2"
               >
-                <Send className="w-4 h-4" />
+                <Send className="w-4 h-4 text-[#58C1EB]" />
                 <span>Submit Requisition</span>
               </button>
             </div>
@@ -317,20 +342,20 @@ export const PartnerPortalPage: React.FC<PartnerPortalPageProps> = ({ onNavigate
 
       {/* Tab 3: Supervisory Contacts */}
       {activeTab === 'contacts' && (
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="bg-[#0C1933]/90 border border-[#204696]/30 rounded-2xl p-6 space-y-3 shadow-xl">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-2">
+          <div className="pt-4 border-t border-slate-800 space-y-2">
             <h3 className="text-sm font-bold text-white">Operations Control Centre (OCC)</h3>
             <p className="text-xs text-slate-400">24/7 Flight Dispatch & Turnaround Supervision</p>
             <div className="text-xs font-mono text-[#58C1EB]">+233 302 778 025</div>
             <div className="text-xs text-slate-300">operations@avianceghana.com</div>
           </div>
-          <div className="bg-[#0C1933]/90 border border-[#204696]/30 rounded-2xl p-6 space-y-3 shadow-xl">
+          <div className="pt-4 border-t border-slate-800 space-y-2">
             <h3 className="text-sm font-bold text-white">Cargo Village Terminal Liaison</h3>
             <p className="text-xs text-slate-400">Robert Amenyah, Cargo Manager</p>
             <div className="text-xs font-mono text-[#58C1EB]">+233 593 816 076</div>
             <div className="text-xs text-slate-300">cargosales@avianceghana.com</div>
           </div>
-          <div className="bg-[#0C1933]/90 border border-[#204696]/30 rounded-2xl p-6 space-y-3 shadow-xl">
+          <div className="pt-4 border-t border-slate-800 space-y-2">
             <h3 className="text-sm font-bold text-white">Baggage Services Office (BSO)</h3>
             <p className="text-xs text-slate-400">Belinda Adade, Lost & Found Manager</p>
             <div className="text-xs font-mono text-[#58C1EB]">+233 244 334 022</div>
@@ -341,7 +366,7 @@ export const PartnerPortalPage: React.FC<PartnerPortalPageProps> = ({ onNavigate
 
       {/* Tab 4: Documents */}
       {activeTab === 'documents' && (
-        <div className="bg-[#0C1933]/90 border border-[#204696]/30 rounded-2xl p-6 space-y-4 shadow-xl">
+        <div className="space-y-4 pt-2">
           <h3 className="text-sm font-bold text-white">Operational Service Level Agreements (SLA) & Manuals</h3>
           <p className="text-xs text-slate-400">Standard documents available for airline station directors:</p>
           <div className="space-y-2">
@@ -372,6 +397,7 @@ export const PartnerPortalPage: React.FC<PartnerPortalPageProps> = ({ onNavigate
           </div>
         </div>
       )}
+      </div>
     </div>
   );
 };

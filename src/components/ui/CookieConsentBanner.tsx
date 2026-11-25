@@ -161,7 +161,7 @@ export const CookieConsentBanner: React.FC<CookieConsentBannerProps> = ({ onNavi
                   <button
                     type="button"
                     onClick={() => setIsModalOpen(true)}
-                    className="px-4 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200 text-xs sm:text-sm font-semibold transition-all flex items-center justify-center gap-2 cursor-pointer shadow-2xs hover:border-slate-400"
+                    className="px-5 py-2.5 rounded-full border border-slate-300 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200 text-xs sm:text-sm font-bold uppercase tracking-wider transition-all duration-300 flex items-center justify-center gap-2 cursor-pointer shadow-2xs hover:shadow-xs hover:-translate-y-0.5 active:scale-95 hover:border-slate-400"
                   >
                     <SlidersHorizontal className="w-4 h-4 text-[#204696] dark:text-[#58C1EB]" />
                     <span>Customize</span>
@@ -170,7 +170,7 @@ export const CookieConsentBanner: React.FC<CookieConsentBannerProps> = ({ onNavi
                   <button
                     type="button"
                     onClick={handleAcceptEssential}
-                    className="px-4 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs sm:text-sm font-semibold transition-all cursor-pointer text-center shadow-2xs"
+                    className="px-5 py-2.5 rounded-full bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs sm:text-sm font-bold uppercase tracking-wider transition-all duration-300 cursor-pointer text-center shadow-2xs hover:shadow-xs hover:-translate-y-0.5 active:scale-95"
                   >
                     Essential Only
                   </button>
@@ -178,7 +178,7 @@ export const CookieConsentBanner: React.FC<CookieConsentBannerProps> = ({ onNavi
                   <button
                     type="button"
                     onClick={handleAcceptAll}
-                    className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-[#204696] via-[#1a3d8c] to-[#009EE0] hover:brightness-110 active:scale-[0.98] text-white text-xs sm:text-sm font-bold shadow-md hover:shadow-lg transition-all cursor-pointer text-center"
+                    className="px-6 py-2.5 rounded-full bg-gradient-to-r from-[#204696] via-[#1a3d8c] to-[#009EE0] hover:brightness-110 active:scale-95 text-white text-xs sm:text-sm font-bold uppercase tracking-wider shadow-md hover:shadow-lg transition-all duration-300 hover:-translate-y-0.5 cursor-pointer text-center"
                   >
                     Accept All Cookies
                   </button>
@@ -349,21 +349,21 @@ export const CookieConsentBanner: React.FC<CookieConsentBannerProps> = ({ onNavi
               <button
                 type="button"
                 onClick={handleAcceptEssential}
-                className="px-3.5 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-semibold rounded-xl transition-colors cursor-pointer"
+                className="px-4 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-bold uppercase tracking-wider rounded-full transition-all duration-300 hover:-translate-y-0.5 active:scale-95 cursor-pointer shadow-2xs"
               >
                 Essential Only
               </button>
               <button
                 type="button"
                 onClick={handleSaveCustom}
-                className="px-4 py-2 bg-[#204696] hover:bg-[#183878] text-white text-xs font-bold rounded-xl transition-colors cursor-pointer shadow-xs"
+                className="px-5 py-2 bg-[#204696] hover:bg-[#183878] text-white text-xs font-bold uppercase tracking-wider rounded-full transition-all duration-300 hover:-translate-y-0.5 active:scale-95 cursor-pointer shadow-md shadow-[#204696]/20"
               >
                 Save My Preferences
               </button>
               <button
                 type="button"
                 onClick={handleAcceptAll}
-                className="px-4 py-2 bg-gradient-to-r from-[#204696] via-[#1a3d8c] to-[#009EE0] hover:brightness-105 active:scale-[0.98] text-white text-xs font-bold rounded-xl shadow-xs transition-all cursor-pointer"
+                className="px-5 py-2 bg-gradient-to-r from-[#204696] via-[#1a3d8c] to-[#009EE0] hover:brightness-105 active:scale-95 text-white text-xs font-bold uppercase tracking-wider rounded-full shadow-md hover:shadow-lg transition-all duration-300 hover:-translate-y-0.5 cursor-pointer"
               >
                 Accept All
               </button>

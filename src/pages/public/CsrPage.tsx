@@ -20,6 +20,8 @@ import {
   ChevronRight,
   ChevronLeft
 } from 'lucide-react';
+import { SlidePagination } from '../../components/ui/SlidePagination';
+import { useSwipeGesture } from '../../hooks/useSwipeGesture';
 
 // Authentic Official CSR Photography from src/assets/aviance_images/csr/
 import csrChildLiftImg from '../../assets/aviance_images/csr/f52640_831252991b76460598417e8e658fbafc~mv2.jpg';
@@ -226,6 +228,77 @@ export const CsrPage: React.FC<CsrPageProps> = ({ onNavigate }) => {
 
   const filtered = officialInitiatives;
 
+  // Responsive cards per slide
+  const [visibleItemsCount, setVisibleItemsCount] = useState(3);
+
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth < 640) {
+        setVisibleItemsCount(1);
+      } else if (window.innerWidth < 1024) {
+        setVisibleItemsCount(2);
+      } else {
+        setVisibleItemsCount(3);
+      }
+    };
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  // Rolling Showcase for Initiatives
+  const [initiativeSlide, setInitiativeSlide] = useState(0);
+  const [isInitiativesPaused, setIsInitiativesPaused] = useState(false);
+
+  // Rolling Showcase for Photo Gallery
+  const [gallerySlide, setGallerySlide] = useState(0);
+  const [isGalleryPaused, setIsGalleryPaused] = useState(false);
+
+  const maxInitiativeSlide = Math.max(0, officialInitiatives.length - visibleItemsCount);
+  const maxGallerySlide = Math.max(0, csrGallery.length - visibleItemsCount);
+
+  // Auto-advance initiatives
+  useEffect(() => {
+    if (isInitiativesPaused) return;
+    const interval = setInterval(() => {
+      setInitiativeSlide((prev) => (prev >= maxInitiativeSlide ? 0 : prev + 1));
+    }, 5000);
+    return () => clearInterval(interval);
+  }, [isInitiativesPaused, maxInitiativeSlide]);
+
+  // Auto-advance photo gallery
+  useEffect(() => {
+    if (isGalleryPaused) return;
+    const interval = setInterval(() => {
+      setGallerySlide((prev) => (prev >= maxGallerySlide ? 0 : prev + 1));
+    }, 4500);
+    return () => clearInterval(interval);
+  }, [isGalleryPaused, maxGallerySlide]);
+
+  // Unified Gestures for CSR Initiatives (Touch Swipe & Desktop Mouse Drag)
+  const { handlers: initSwipeHandlers } = useSwipeGesture({
+    onSwipeLeft: () => setInitiativeSlide((prev) => Math.min(prev + 1, maxInitiativeSlide)),
+    onSwipeRight: () => setInitiativeSlide((prev) => Math.max(prev - 1, 0)),
+    threshold: 45,
+    enableMouseDrag: true,
+  });
+
+  // Unified Gestures for CSR Gallery (Touch Swipe & Desktop Mouse Drag)
+  const { handlers: galSwipeHandlers } = useSwipeGesture({
+    onSwipeLeft: () => setGallerySlide((prev) => Math.min(prev + 1, maxGallerySlide)),
+    onSwipeRight: () => setGallerySlide((prev) => Math.max(prev - 1, 0)),
+    threshold: 45,
+    enableMouseDrag: true,
+  });
+
+  // Unified Gestures for 3D Cylindrical Hero Gallery (Touch Swipe & Desktop Mouse Drag)
+  const { handlers: cylinderSwipeHandlers } = useSwipeGesture({
+    onSwipeLeft: () => handleSlideChange(nextIndex),
+    onSwipeRight: () => handleSlideChange(prevIndex),
+    threshold: 35,
+    enableMouseDrag: true,
+  });
+
   // Auto-rotate hero image show every 4.5 seconds continuously, even after controls are clicked
   const timerRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -340,26 +413,24 @@ export const CsrPage: React.FC<CsrPageProps> = ({ onNavigate }) => {
           <div className="absolute -left-20 -bottom-20 w-80 h-80 rounded-full bg-emerald-100/40 blur-3xl pointer-events-none" />
         </div>
 
-        <div className="relative z-10 max-w-5xl mx-auto px-4 space-y-6">
-          {/* Eyebrow */}
-          <div className="flex items-center justify-center gap-2.5">
-            <span className="w-1.5 h-6 rounded-full bg-gradient-to-b from-[#204696] via-[#009EE0] to-[#72BF44]" />
-            <h2 className="text-xs sm:text-sm font-extrabold uppercase tracking-widest text-[#204696]">
-              Community Stewardship <span className="text-[#009EE0]">·</span> <span className="text-[#3B7A1C]">Sustainable Aviation</span>
-            </h2>
-          </div>
-
+        <div className="relative z-10 max-w-5xl mx-auto px-4 space-y-6 text-center">
           {/* Official Page Title */}
-          <h1 className="text-3xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-slate-900 leading-tight">
-            Corporate Social Responsibility
-          </h1>
+          <div className="space-y-4">
+            <h1 className="text-3xl sm:text-4xl lg:text-[46px] font-bold tracking-[-0.028em] text-slate-900 leading-[1.14]">
+              Corporate Social Responsibility
+            </h1>
+            <p className="text-base sm:text-lg text-slate-600 font-normal leading-relaxed max-w-3xl mx-auto">
+              Empowering local communities, youth education, sustainable healthcare and sports development across Ghana.
+            </p>
+          </div>
 
           {/* AUTHENTIC 3D ROLLING IMAGE CAROUSEL SHOWCASE (Rolling cylinder animation across all 6 CSR photos) */}
           <div className="relative max-w-5xl mx-auto pt-2 pb-2 px-2 sm:px-4">
             
-            {/* The 3D Rolling Carousel Cylinder Stage */}
+            {/* The 3D Rolling Carousel Cylinder Stage with Unified Gestures */}
             <div
-              className="relative w-full h-[290px] sm:h-[350px] md:h-[400px] flex items-center justify-center [perspective:1200px] overflow-hidden select-none my-2"
+              {...cylinderSwipeHandlers}
+              className="relative w-full h-[290px] sm:h-[350px] md:h-[400px] flex items-center justify-center [perspective:1200px] overflow-hidden select-none my-2 cursor-grab active:cursor-grabbing"
             >
               
               {/* Floating Left Arrow Button */}
@@ -410,22 +481,7 @@ export const CsrPage: React.FC<CsrPageProps> = ({ onNavigate }) => {
                       />
                     )}
 
-                    {/* Active Center Card Badges */}
-                    {diff === 0 ? (
-                      <>
-                        <div className="absolute top-2.5 right-2.5 flex items-center gap-1.5">
-                          <span className="px-2.5 py-1 rounded-full text-[10px] font-bold bg-[#3B7A1C]/95 text-white shadow-xs backdrop-blur-xs flex items-center gap-1">
-                            <Sparkles className="w-3 h-3" />
-                            <span>{photo.tag}</span>
-                          </span>
-                        </div>
-                        <div className="absolute top-2.5 left-2.5">
-                          <span className="px-2.5 py-1 rounded-full text-[10px] font-mono font-bold bg-slate-900/85 text-white shadow-xs backdrop-blur-xs">
-                            {index + 1} of {totalSlides}
-                          </span>
-                        </div>
-                      </>
-                    ) : (
+                    {diff !== 0 && (
                       <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-slate-950/30">
                         <span className="px-3 py-1.5 rounded-full text-[11px] font-bold bg-white/95 text-[#204696] shadow-md backdrop-blur-xs">
                           Click to roll
@@ -468,8 +524,8 @@ export const CsrPage: React.FC<CsrPageProps> = ({ onNavigate }) => {
                 ))}
               </div>
 
-              {/* Active Photo Caption & Info Card */}
-              <div className="max-w-xl mx-auto px-4 py-2.5 bg-white/95 backdrop-blur-xs rounded-2xl border border-slate-200 shadow-xs text-center space-y-1">
+              {/* Active Photo Caption & Info */}
+              <div className="max-w-xl mx-auto px-4 py-2 text-center space-y-1">
                 <div className="flex items-center justify-center gap-2">
                   <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-[#204696]/10 text-[#204696] uppercase tracking-wider">
                     {currentPhoto.tag}
@@ -504,7 +560,7 @@ export const CsrPage: React.FC<CsrPageProps> = ({ onNavigate }) => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-16 sm:space-y-24 lg:space-y-32">
         
         {/* 2. OFFICIAL EXCELLENCE IN CSR AWARD CARD */}
-        <div className="p-8 sm:p-10 rounded-3xl border border-slate-200/90 bg-gradient-to-r from-blue-50/70 via-white to-emerald-50/50 shadow-sm relative overflow-hidden text-left">
+        <div className="py-8 sm:py-12 border-b border-slate-200 text-left">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
             <div className="lg:col-span-8 space-y-4">
               <div className="flex items-center gap-2.5">
@@ -520,7 +576,7 @@ export const CsrPage: React.FC<CsrPageProps> = ({ onNavigate }) => {
                 Conferred at the prestigious <strong>Ghana Shippers’ Authority Awards</strong>, this honor recognizes Aviance Ghana’s outstanding track record of investing back into the Ghanaian community — from rural school building and medical mission turnarounds to neurodiverse travel accessibility and airside green fleet modernization.
               </p>
               <div className="flex flex-wrap items-center gap-3 pt-2 text-xs font-mono">
-                <span className="px-3 py-1.5 rounded-lg bg-white border border-slate-200 font-bold text-slate-800 shadow-2xs">
+                <span className="px-3 py-1.5 rounded-lg bg-slate-50 border border-slate-200 font-bold text-slate-800">
                   Awarding Body: Ghana Shippers’ Authority
                 </span>
                 <span className="px-3 py-1.5 rounded-lg bg-[#72BF44]/15 border border-[#72BF44]/35 font-bold text-[#3B7A1C]">
@@ -529,12 +585,12 @@ export const CsrPage: React.FC<CsrPageProps> = ({ onNavigate }) => {
               </div>
             </div>
 
-            <div className="lg:col-span-4 bg-white p-6 rounded-2xl border border-slate-200 shadow-md text-center space-y-3">
+            <div className="lg:col-span-4 p-6 text-center space-y-3 pt-6 lg:pt-0 lg:border-l border-slate-200">
               <div className="w-14 h-14 rounded-2xl bg-amber-50 text-[#D97706] flex items-center justify-center mx-auto shadow-2xs">
                 <Award className="w-8 h-8" />
               </div>
               <h4 className="font-extrabold text-lg text-slate-900">30+ Years of Giving Back</h4>
-              <p className="text-xs text-slate-500 leading-relaxed">
+              <p className="text-xs text-slate-500 leading-relaxed font-normal">
                 Empowering Ghana’s aviation corridors, children's homes and regional communities since 1994.
               </p>
               <div className="pt-2 border-t border-slate-100 flex items-center justify-center gap-1.5 text-xs font-bold text-[#204696]">
@@ -545,157 +601,261 @@ export const CsrPage: React.FC<CsrPageProps> = ({ onNavigate }) => {
           </div>
         </div>
 
-        {/* 3. COMPLETE AUTHENTIC CSR INITIATIVES SECTION */}
+        {/* 3. COMPLETE AUTHENTIC CSR INITIATIVES SECTION (ROLLING SHOWCASE + IMAGES) */}
         <div className="space-y-8">
-          <div className="space-y-3 max-w-3xl text-left">
-            <div className="flex items-center gap-2.5">
-              <span className="w-1.5 h-5 rounded-full bg-gradient-to-b from-[#204696] via-[#009EE0] to-[#72BF44]" />
-              <h3 className="text-xs sm:text-sm font-extrabold uppercase tracking-widest text-[#204696]">
-                Real Community Impact <span className="text-[#009EE0]">·</span> <span className="text-[#3B7A1C]">1994 – 2026</span>
-              </h3>
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-slate-200 pb-6 text-left">
+            <div className="space-y-3 max-w-2xl">
+              <div className="flex items-center gap-2.5">
+                <span className="w-1.5 h-5 rounded-full bg-gradient-to-b from-[#204696] via-[#009EE0] to-[#72BF44]" />
+                <h3 className="text-xs sm:text-sm font-extrabold uppercase tracking-widest text-[#204696]">
+                  Real Community Impact <span className="text-[#009EE0]">·</span> <span className="text-[#3B7A1C]">1994 – 2026</span>
+                </h3>
+              </div>
+              <h2 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-slate-900 tracking-tight leading-tight">
+                Our recent and long-standing CSR initiatives include:
+              </h2>
+              <p className="text-sm sm:text-base text-slate-600 leading-relaxed font-normal">
+                From humanitarian medical airlifts and child welfare support to rural school building and environmental stewardship, explore Aviance Ghana's certified community contributions.
+              </p>
             </div>
-            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-slate-900 tracking-tight leading-tight">
-              Our recent and long-standing CSR initiatives include:
-            </h2>
-            <p className="text-sm sm:text-base text-slate-600 leading-relaxed">
-              From humanitarian medical airlifts and child welfare support to rural school building and environmental stewardship, explore Aviance Ghana's certified community contributions.
-            </p>
           </div>
 
-          {/* Grid of all 12 authentic initiatives */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 text-left">
-            {filtered.map((item, index) => {
-              const Icon = item.icon;
-              return (
-                <div
-                  key={item.id}
-                  className="rounded-2xl border border-slate-200 bg-white p-6 sm:p-7 flex flex-col justify-between shadow-xs hover:shadow-md hover:border-[#204696]/40 transition-all group relative overflow-hidden"
-                >
-                  <div className="space-y-4">
-                    {/* Top Row: Year/Milestone & Pillar Icon */}
-                    <div className="flex items-center justify-between gap-2 border-b border-slate-100 pb-3">
-                      <span className="px-2.5 py-1 rounded-md text-[10px] font-mono font-bold bg-blue-50 text-[#204696] border border-blue-100 uppercase tracking-wider">
-                        {item.year}
-                      </span>
-                      <div className="w-8 h-8 rounded-lg bg-slate-50 flex items-center justify-center text-[#204696] group-hover:bg-[#204696] group-hover:text-white transition-colors">
-                        <Icon className="w-4 h-4" />
-                      </div>
-                    </div>
-
-                    {/* Initiative Title */}
-                    <h4 className="text-base sm:text-lg font-bold text-slate-900 group-hover:text-[#204696] transition-colors leading-snug">
-                      {item.title}
-                    </h4>
-
-                    {/* Exact Official Text */}
-                    <p className="text-xs sm:text-sm text-slate-600 leading-relaxed font-normal">
-                      {item.text}
-                    </p>
-                  </div>
-
-                  {/* Partner / Pillar Footer */}
-                  <div className="pt-4 mt-4 border-t border-slate-100 flex items-center justify-between text-xs">
-                    <span className="text-[11px] font-semibold text-[#3B7A1C] flex items-center gap-1">
-                      <CheckCircle2 className="w-3.5 h-3.5 text-[#72BF44]" />
-                      <span>{item.partner}</span>
-                    </span>
-                    <span className="text-[10px] font-mono text-slate-400">
-                      #{index + 1}
-                    </span>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-
-        {/* 4. AUTHENTIC OPERATIONAL PHOTOGRAPHY GALLERY (All 6 Photos from the csr folder) */}
-        <div className="bg-slate-50 rounded-3xl border border-slate-200 p-6 sm:p-8 lg:p-10 text-left space-y-6">
-          <div className="space-y-2 max-w-2xl">
-            <div className="flex items-center gap-2.5">
-              <span className="w-1.5 h-5 rounded-full bg-gradient-to-b from-[#204696] via-[#009EE0] to-[#72BF44]" />
-              <h3 className="text-xs sm:text-sm font-extrabold uppercase tracking-widest text-[#204696]">
-                Authentic CSR Photography <span className="text-[#009EE0]">·</span> <span className="text-[#3B7A1C]">Official Archive</span>
-              </h3>
-            </div>
-            <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
-              Moments of Community Stewardship
-            </h2>
-            <p className="text-xs sm:text-sm text-slate-600">
-              High-resolution authentic imagery captured directly from our educational outreaches, environmental clean-ups, and children's home celebrations across Ghana.
-            </p>
-          </div>
-
-          {/* 6-Photo Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {csrGallery.map((photo, index) => (
-              <div
-                key={photo.id}
-                onClick={() => {
-                  setCurrentSlide(index);
-                  window.scrollTo({ top: 100, behavior: 'smooth' });
-                }}
-                className="group relative h-64 sm:h-72 rounded-2xl overflow-hidden border border-slate-200 bg-slate-900 cursor-pointer shadow-xs hover:shadow-lg transition-all duration-300 hover:-translate-y-1"
-                title={`Roll to photo: ${photo.title}`}
+          {/* Rolling Showcase Mode with Dedicated Gutters and Side Circular Navigation Buttons */}
+          <div
+            className="relative px-8 sm:px-12 lg:px-16 select-none cursor-grab active:cursor-grabbing"
+            onMouseEnter={() => setIsInitiativesPaused(true)}
+            onMouseLeave={() => setIsInitiativesPaused(false)}
+            {...initSwipeHandlers}
+          >
+            {/* Left Side Arrow Button */}
+            {officialInitiatives.length > visibleItemsCount && (
+              <button
+                type="button"
+                onClick={() => setInitiativeSlide((prev) => (prev <= 0 ? maxInitiativeSlide : prev - 1))}
+                aria-label="Previous initiative"
+                className="absolute left-0 sm:left-1 lg:left-2 top-1/2 -translate-y-1/2 z-30 w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-white shadow-xl border border-slate-200/90 text-slate-700 hover:text-white hover:bg-[#204696] hover:border-[#204696] active:scale-90 transition-all duration-300 flex items-center justify-center cursor-pointer hover:scale-110"
               >
-                <img
-                  src={photo.image}
-                  alt={photo.title}
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                  loading="lazy"
-                />
-                
-                {/* Gradient Overlay */}
-                <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-950/30 to-transparent opacity-85 group-hover:opacity-95 transition-opacity" />
+                <ChevronLeft className="w-5 h-5 sm:w-6 sm:h-6" />
+              </button>
+            )}
 
-                {/* Top Category Badge */}
-                <div className="absolute top-3 left-3">
-                  <span className="px-2.5 py-1 rounded-md text-[10px] font-bold bg-[#204696]/90 text-white backdrop-blur-xs shadow-xs">
-                    {photo.tag}
-                  </span>
-                </div>
+            {/* Right Side Arrow Button */}
+            {officialInitiatives.length > visibleItemsCount && (
+              <button
+                type="button"
+                onClick={() => setInitiativeSlide((prev) => (prev >= maxInitiativeSlide ? 0 : prev + 1))}
+                aria-label="Next initiative"
+                className="absolute right-0 sm:right-1 lg:right-2 top-1/2 -translate-y-1/2 z-30 w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-white shadow-xl border border-slate-200/90 text-slate-700 hover:text-white hover:bg-[#204696] hover:border-[#204696] active:scale-90 transition-all duration-300 flex items-center justify-center cursor-pointer hover:scale-110"
+              >
+                <ChevronRight className="w-5 h-5 sm:w-6 sm:h-6" />
+              </button>
+            )}
 
-                {/* Bottom Title & Action */}
-                <div className="absolute bottom-3.5 left-3.5 right-3.5 space-y-1 text-white">
-                  <h4 className="text-xs sm:text-sm font-bold leading-tight drop-shadow-xs">
-                    {photo.title}
-                  </h4>
-                  <p className="text-[11px] text-slate-300 line-clamp-2 font-normal leading-relaxed">
-                    {photo.desc}
-                  </p>
+            <div className="overflow-hidden -mx-3 py-2">
+                <div
+                  className="flex transition-transform duration-700 ease-out"
+                  style={{
+                    transform: `translateX(-${initiativeSlide * (100 / visibleItemsCount)}%)`
+                  }}
+                >
+                  {officialInitiatives.map((item, index) => {
+                    const Icon = item.icon;
+                    return (
+                      <div
+                        key={item.id}
+                        className="w-full sm:w-1/2 lg:w-1/3 shrink-0 px-3"
+                      >
+                        <div className="h-full flex flex-col justify-between bg-white rounded-2xl sm:rounded-3xl border border-slate-200/90 shadow-xs hover:shadow-xl hover:border-slate-300 transition-all duration-300 overflow-hidden group text-left">
+                          {/* Card Image */}
+                          <div className="relative aspect-[16/10] overflow-hidden bg-slate-900">
+                            <img
+                              src={item.image}
+                              alt={item.title}
+                              className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-700 ease-out"
+                              loading="lazy"
+                            />
+                          </div>
+
+                          {/* Card Content */}
+                          <div className="p-5 sm:p-6 flex-1 flex flex-col justify-between space-y-4">
+                            <div className="space-y-2">
+                              <h4 className="text-base sm:text-lg font-bold text-slate-900 group-hover:text-[#204696] transition-colors leading-snug line-clamp-2">
+                                {item.title}
+                              </h4>
+                              <p className="text-xs sm:text-sm text-slate-600 leading-relaxed font-normal line-clamp-3">
+                                {item.text}
+                              </p>
+                            </div>
+
+                            {/* Partner / Verification Footer */}
+                            <div className="pt-3 border-t border-slate-100 flex items-center justify-between text-xs">
+                              <span className="text-[11px] font-semibold text-[#3B7A1C] flex items-center gap-1 truncate max-w-[80%]">
+                                <CheckCircle2 className="w-3.5 h-3.5 text-[#72BF44] shrink-0" />
+                                <span className="truncate">{item.partner}</span>
+                              </span>
+                              <span className="text-[10px] font-mono text-slate-400 shrink-0">
+                                #{index + 1}
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
                 </div>
               </div>
-            ))}
+
+              {/* Modern Numbered Slide Indicator Capsule */}
+              <div className="flex items-center justify-center pt-4">
+                <SlidePagination
+                  current={initiativeSlide}
+                  total={maxInitiativeSlide + 1}
+                  onChange={setInitiativeSlide}
+                />
+              </div>
+            </div>
+          </div>
+
+        {/* 4. AUTHENTIC OPERATIONAL PHOTOGRAPHY GALLERY (ROLLING SHOWCASE) */}
+        <div className="pt-10 sm:pt-14 border-t border-slate-200 text-left space-y-8">
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-slate-200 pb-6">
+            <div className="space-y-2 max-w-2xl">
+              <div className="flex items-center gap-2.5">
+                <span className="w-1.5 h-5 rounded-full bg-gradient-to-b from-[#204696] via-[#009EE0] to-[#72BF44]" />
+                <h3 className="text-xs sm:text-sm font-extrabold uppercase tracking-widest text-[#204696]">
+                  Authentic CSR Photography <span className="text-[#009EE0]">·</span> <span className="text-[#3B7A1C]">Official Archive</span>
+                </h3>
+              </div>
+              <h2 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-slate-900 tracking-tight">
+                Moments of Community Stewardship
+              </h2>
+              <p className="text-sm sm:text-base text-slate-600 font-normal">
+                High-resolution authentic imagery captured directly from our educational outreaches, environmental clean-ups, and children's home celebrations across Ghana.
+              </p>
+            </div>
+          </div>
+
+          {/* Rolling Gallery Mode with Dedicated Gutters and Side Circular Navigation Buttons */}
+          <div
+            className="relative px-8 sm:px-12 lg:px-16 select-none cursor-grab active:cursor-grabbing"
+            onMouseEnter={() => setIsGalleryPaused(true)}
+            onMouseLeave={() => setIsGalleryPaused(false)}
+            {...galSwipeHandlers}
+          >
+            {/* Left Side Arrow Button */}
+            {csrGallery.length > visibleItemsCount && (
+              <button
+                type="button"
+                onClick={() => setGallerySlide((prev) => (prev <= 0 ? maxGallerySlide : prev - 1))}
+                aria-label="Previous photo"
+                className="absolute left-0 sm:left-1 lg:left-2 top-1/2 -translate-y-1/2 z-30 w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-white shadow-xl border border-slate-200/90 text-slate-700 hover:text-white hover:bg-[#204696] hover:border-[#204696] active:scale-90 transition-all duration-300 flex items-center justify-center cursor-pointer hover:scale-110"
+              >
+                <ChevronLeft className="w-5 h-5 sm:w-6 sm:h-6" />
+              </button>
+            )}
+
+            {/* Right Side Arrow Button */}
+            {csrGallery.length > visibleItemsCount && (
+              <button
+                type="button"
+                onClick={() => setGallerySlide((prev) => (prev >= maxGallerySlide ? 0 : prev + 1))}
+                aria-label="Next photo"
+                className="absolute right-0 sm:right-1 lg:right-2 top-1/2 -translate-y-1/2 z-30 w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-white shadow-xl border border-slate-200/90 text-slate-700 hover:text-white hover:bg-[#204696] hover:border-[#204696] active:scale-90 transition-all duration-300 flex items-center justify-center cursor-pointer hover:scale-110"
+              >
+                <ChevronRight className="w-5 h-5 sm:w-6 sm:h-6" />
+              </button>
+            )}
+
+            <div className="overflow-hidden -mx-3 py-2">
+              <div
+                className="flex transition-transform duration-700 ease-out"
+                style={{
+                  transform: `translateX(-${gallerySlide * (100 / visibleItemsCount)}%)`
+                }}
+              >
+                {csrGallery.map((photo, index) => (
+                  <div
+                    key={photo.id}
+                    className="w-full sm:w-1/2 lg:w-1/3 shrink-0 px-3"
+                  >
+                    <div
+                      onClick={() => {
+                        setCurrentSlide(index);
+                        window.scrollTo({ top: 100, behavior: 'smooth' });
+                      }}
+                      className="group relative h-72 sm:h-80 rounded-2xl sm:rounded-3xl overflow-hidden bg-slate-900 cursor-pointer shadow-xs hover:shadow-xl transition-all duration-300 hover:-translate-y-1"
+                      title={`View photo: ${photo.title}`}
+                    >
+                      <img
+                        src={photo.image}
+                        alt={photo.title}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
+                        loading="lazy"
+                      />
+                      
+                      {/* Swissport Dark Gradient Overlay (Guarantees 100% Crisp Title Contrast) */}
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/75 via-45% to-transparent pointer-events-none" />
+
+                      {/* Top Category Badge */}
+                      <div className="absolute top-3.5 left-3.5 z-10">
+                        <span className="px-3 py-1 rounded-full text-[10px] font-bold bg-[#204696]/90 text-white backdrop-blur-md shadow-xs">
+                          {photo.tag}
+                        </span>
+                      </div>
+
+                      {/* Bottom Title & Action (High Contrast Crisp White Text) */}
+                      <div className="absolute bottom-4 left-4 right-4 sm:bottom-5 sm:left-5 sm:right-5 z-10 space-y-1.5 text-left pointer-events-none">
+                        <h4 className="text-base sm:text-lg font-bold !text-white leading-snug drop-shadow-md">
+                          {photo.title}
+                        </h4>
+                        <p className="text-xs sm:text-[13px] !text-slate-200 line-clamp-2 font-normal leading-relaxed drop-shadow-xs">
+                          {photo.desc}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Modern Numbered Slide Indicator Capsule */}
+            <div className="flex items-center justify-center pt-4">
+              <SlidePagination
+                current={gallerySlide}
+                total={maxGallerySlide + 1}
+                onChange={setGallerySlide}
+              />
+            </div>
           </div>
         </div>
 
         {/* 5. COMMUNITY PARTNERSHIP CALL TO ACTION */}
-        <div className="rounded-3xl border border-slate-200 bg-gradient-to-r from-[#204696] via-[#1A387A] to-[#0E2046] text-white p-8 sm:p-12 text-left relative overflow-hidden shadow-xl">
-          <div className="absolute top-0 right-0 w-96 h-96 bg-[#009EE0]/20 rounded-full blur-3xl pointer-events-none" />
-          <div className="relative z-10 max-w-3xl space-y-5">
-            <span className="px-3 py-1 rounded-full text-xs font-mono font-bold uppercase tracking-wider bg-white/10 text-[#58C1EB] border border-white/20">
+        <div className="pt-12 sm:pt-16 border-t border-slate-200 text-left space-y-5">
+          <div className="max-w-3xl space-y-4">
+            <span className="px-3 py-1 rounded-full text-xs font-mono font-bold uppercase tracking-wider bg-blue-50 text-[#204696] border border-blue-100">
               Community & NGO Collaboration
             </span>
-            <h2 className="text-2xl sm:text-4xl font-extrabold tracking-tight leading-tight">
+            <h2 className="text-2xl sm:text-4xl font-extrabold text-slate-900 tracking-tight leading-tight">
               Partner With Aviance Ghana for Sustainable Social Impact
             </h2>
-            <p className="text-sm sm:text-base text-blue-100/90 leading-relaxed font-normal">
+            <p className="text-sm sm:text-base text-slate-600 leading-relaxed font-normal">
               Are you an airline partner, humanitarian medical team, educational institution, or NGO seeking airside handling collaboration or community sponsorship in Ghana? Our CSR desk welcomes value-driven partnerships.
             </p>
             <div className="pt-2 flex flex-wrap items-center gap-3">
               <button
                 onClick={() => onNavigate('/contact')}
-                className="px-6 py-3.5 rounded-xl bg-white hover:bg-slate-100 text-[#204696] font-bold text-xs shadow-md transition-all cursor-pointer flex items-center gap-2"
+                className="btn-primary group"
               >
                 <span>Contact Our Corporate CSR Desk</span>
-                <ArrowRight className="w-4 h-4" />
+                <ArrowRight className="w-4 h-4 text-[#58C1EB] group-hover:translate-x-1.5 transition-transform duration-300" />
               </button>
               <a
                 href="mailto:info@avianceghana.com?subject=CSR%20Partnership%20Enquiry"
-                className="px-5 py-3.5 rounded-xl border border-white/30 hover:bg-white/10 text-white font-bold text-xs transition-colors cursor-pointer flex items-center gap-2"
+                className="btn-link group sm:pl-3"
               >
-                <Mail className="w-4 h-4" />
-                <span>info@avianceghana.com</span>
+                <Mail className="w-4 h-4 text-[#72BF44]" />
+                <span className="link-label lowercase font-mono">info@avianceghana.com</span>
+                <ArrowRight className="w-4 h-4 text-[#72BF44] group-hover:translate-x-1.5 transition-transform duration-300" />
               </a>
             </div>
           </div>

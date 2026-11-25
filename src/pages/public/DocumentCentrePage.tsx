@@ -44,34 +44,31 @@ export const DocumentCentrePage: React.FC<DocumentCentrePageProps> = ({ onNaviga
   };
 
   return (
-    <div className="py-12 sm:py-16 lg:py-20 pb-24 sm:pb-32 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12 sm:space-y-16 animate-in fade-in duration-150">
-      {/* Hero Header in Official Aviance Blue */}
-      <div className="py-12 sm:py-16 lg:py-20 bg-gradient-to-b from-[#11244C] via-[#0C1933] to-[#08101E] border border-[#204696]/30 rounded-3xl p-6 sm:p-10 text-center space-y-3 relative overflow-hidden shadow-2xl">
-        {/* Subtle Ambient Backing Glow */}
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-3/4 h-36 bg-[#204696]/20 blur-3xl pointer-events-none rounded-full" />
-        <div className="relative z-10 space-y-3">
-          <div className="flex items-center justify-center gap-2.5">
-            <span className="w-1.5 h-6 rounded-full bg-gradient-to-b from-[#204696] via-[#009EE0] to-[#72BF44]" />
-            <h2 className="text-xs sm:text-sm font-extrabold uppercase tracking-widest text-[#58C1EB]">
-              Corporate Governance <span className="text-[#009EE0]">·</span> <span className="text-[#72BF44]">Official Publications</span>
-            </h2>
-          </div>
-          <h1 className="text-3xl sm:text-5xl font-extrabold text-white tracking-tight">
+    <div className="pb-24 sm:pb-32 bg-[#08101E] text-slate-100 min-h-screen">
+      {/* Hero Header in Signature Aviance Blue Grid */}
+      <section className="relative overflow-hidden bg-gradient-to-br from-[#11244C] via-[#1A3670] to-[#204696] text-white py-14 sm:py-20 lg:py-24">
+        <div className="absolute inset-0 opacity-10 pointer-events-none">
+          <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff_1px,transparent_1px),linear-gradient(to_bottom,#ffffff_1px,transparent_1px)] bg-[size:4rem_4rem]" />
+        </div>
+
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-4">
+          <h1 className="text-3xl sm:text-4xl lg:text-[46px] font-bold text-white tracking-[-0.028em] leading-[1.14]">
             Digital Document Centre
           </h1>
-          <p className="text-sm text-slate-300 max-w-2xl mx-auto leading-relaxed">
+          <p className="text-base sm:text-lg text-blue-100/90 max-w-3xl leading-relaxed font-normal">
             Access official corporate policies, IATA ISAGO station audit confirmations, EU Cargo RA3 manuals, and code of conduct publications.
           </p>
         </div>
-      </div>
+      </section>
 
-      {/* Category Pills */}
-      <div className="flex flex-wrap items-center gap-1.5">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-10 sm:pt-14 space-y-10 sm:space-y-14 animate-in fade-in duration-150">
+        {/* Category Pills */}
+      <div className="flex flex-wrap items-center gap-2">
         {categories.map((cat) => (
           <button
             key={cat}
             onClick={() => setSelectedCategory(cat)}
-            className={`px-3 py-1.5 text-xs font-semibold rounded-lg transition-colors ${
+            className={`px-4 py-1.5 text-xs font-bold rounded-full transition-all duration-300 hover:-translate-y-0.5 active:scale-95 cursor-pointer shadow-2xs ${
               selectedCategory === cat
                 ? 'bg-[#204696] text-white border border-[#58C1EB]/40 shadow-sm'
                 : 'bg-[#071120] border border-[#204696]/20 text-slate-400 hover:text-white hover:bg-[#0E2042]'
@@ -83,11 +80,11 @@ export const DocumentCentrePage: React.FC<DocumentCentrePageProps> = ({ onNaviga
       </div>
 
       {/* Document Cards Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
         {filtered.map((doc) => (
           <div
             key={doc.id}
-            className="bg-[#0C1933]/90 border border-[#204696]/25 rounded-2xl p-6 space-y-4 flex flex-col justify-between hover:border-[#58C1EB]/60 hover:bg-[#0E2042]/95 transition-all shadow-lg shadow-[#204696]/5"
+            className="pt-6 border-t border-slate-800 space-y-4 flex flex-col justify-between"
           >
             <div className="space-y-3">
               <div className="flex items-center justify-between">
@@ -130,7 +127,7 @@ export const DocumentCentrePage: React.FC<DocumentCentrePageProps> = ({ onNaviga
               </div>
               <button
                 onClick={() => handleDownload(doc)}
-                className="px-3.5 py-1.5 bg-[#071120] hover:bg-[#204696] hover:text-white text-slate-200 text-xs font-semibold rounded-lg border border-[#204696]/30 transition-colors flex items-center gap-1.5"
+                className="px-4 py-1.5 bg-[#071120] hover:bg-[#204696] hover:text-white text-slate-200 text-xs font-bold uppercase tracking-wider rounded-full border border-[#204696]/30 transition-all duration-300 hover:-translate-y-0.5 active:scale-95 shadow-2xs flex items-center gap-1.5 cursor-pointer"
               >
                 <FolderDown className="w-3.5 h-3.5 text-[#58C1EB]" />
                 <span>Download</span>
@@ -141,7 +138,7 @@ export const DocumentCentrePage: React.FC<DocumentCentrePageProps> = ({ onNaviga
       </div>
 
       {filtered.length === 0 && (
-        <div className="text-center py-16 bg-[#0C1933]/90 border border-[#204696]/30 rounded-2xl text-slate-400 text-xs space-y-2 shadow-xl">
+        <div className="text-center py-16 text-slate-400 text-xs space-y-2">
           <p>No documents matching the selected category.</p>
           <button
             onClick={() => {
@@ -153,6 +150,7 @@ export const DocumentCentrePage: React.FC<DocumentCentrePageProps> = ({ onNaviga
           </button>
         </div>
       )}
+      </div>
     </div>
   );
 };

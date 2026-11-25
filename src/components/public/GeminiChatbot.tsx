@@ -327,6 +327,7 @@ export const GeminiChatbot: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [copiedId, setCopiedId] = useState<string | null>(null);
+  const [isLogoHovered, setIsLogoHovered] = useState(false);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -435,47 +436,59 @@ export const GeminiChatbot: React.FC = () => {
     <>
       {/* Floating Trigger Launcher Button */}
       {!isOpen && (
-        <div className="fixed bottom-6 right-6 z-50 flex items-center gap-3 group select-none">
-          {/* Executive Tooltip on Hover */}
-          <div className="hidden sm:flex items-center gap-2.5 px-3.5 py-2 rounded-full bg-white/95 text-slate-800 border border-slate-200/90 shadow-xl backdrop-blur-md text-xs font-semibold opacity-0 group-hover:opacity-100 transition-all duration-300 translate-x-2 group-hover:translate-x-0 pointer-events-none">
-            <span className="w-2 h-2 rounded-full bg-[#72BF44] animate-pulse shrink-0"></span>
-            <span className="font-semibold text-slate-800">Aviance Concierge</span>
-            <span className="text-[10px] text-[#204696] bg-blue-50 px-2 py-0.5 rounded-full font-bold border border-[#204696]/20">
-              Online 24/7
-            </span>
-          </div>
-
-          {/* Floating Transparent Trigger Launcher Button with Bold Logo */}
-          <button
-            onClick={() => setIsOpen(true)}
-            className="relative w-16 h-16 sm:w-18 sm:h-18 flex items-center justify-center p-0 bg-transparent transition-all duration-300 transform hover:scale-115 active:scale-95 group focus:outline-none cursor-pointer"
-            aria-label="Open Aviance AI Concierge"
-          >
-            {/* Soft ambient aura on hover */}
-            <span className="absolute inset-0 rounded-full bg-[#009EE0]/10 scale-90 group-hover:scale-110 opacity-0 group-hover:opacity-100 blur-md transition-all duration-300 pointer-events-none" />
-
-            {/* Official Aviance Logo Mark - Bold, Vibrant, Crisp with Drop Shadow */}
-            <div className="relative flex items-center justify-center transition-transform duration-300 group-hover:scale-108 drop-shadow-[0_6px_14px_rgba(32,70,150,0.3)]">
-              <AvianceLogo
-                variant="mark-only"
-                size="lg"
-                markSize={54}
-                strokeWidth={4.5}
-                className="w-full h-full object-contain filter drop-shadow-[0_2px_4px_rgba(0,0,0,0.12)]"
-              />
+        <div className="fixed bottom-6 right-6 z-50 select-none">
+          <div className="relative flex items-center justify-center">
+            {/* Executive Tooltip on Hover — strictly revealed when mouse touches the logo */}
+            <div
+              className={`absolute right-full mr-3 whitespace-nowrap hidden sm:flex items-center gap-2.5 px-3.5 py-2 rounded-full bg-white/95 text-slate-800 border border-slate-200/90 shadow-xl backdrop-blur-md text-xs font-semibold transition-all duration-300 pointer-events-none ${
+                isLogoHovered
+                  ? 'opacity-100 translate-x-0'
+                  : 'opacity-0 translate-x-2'
+              }`}
+            >
+              <span className="w-2 h-2 rounded-full bg-[#72BF44] animate-pulse shrink-0"></span>
+              <span className="font-semibold text-slate-800">Aviance Concierge</span>
+              <span className="text-[10px] text-[#204696] bg-blue-50 px-2 py-0.5 rounded-full font-bold border border-[#204696]/20">
+                Online 24/7
+              </span>
             </div>
 
-            {/* Online Status Beacon */}
-            <span className="absolute top-1 right-1 flex h-3.5 w-3.5">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#72BF44] opacity-80"></span>
-              <span className="relative inline-flex rounded-full h-3.5 w-3.5 bg-[#72BF44] border-2 border-white shadow-md"></span>
-            </span>
+            {/* Floating Transparent Trigger Launcher Button with Bold Logo */}
+            <button
+              onClick={() => setIsOpen(true)}
+              onMouseEnter={() => setIsLogoHovered(true)}
+              onMouseLeave={() => setIsLogoHovered(false)}
+              onFocus={() => setIsLogoHovered(true)}
+              onBlur={() => setIsLogoHovered(false)}
+              className="relative w-16 h-16 sm:w-18 sm:h-18 flex items-center justify-center p-0 bg-transparent transition-all duration-300 transform hover:scale-115 active:scale-95 group focus:outline-none cursor-pointer"
+              aria-label="Open Aviance AI Concierge"
+            >
+              {/* Soft ambient aura on hover */}
+              <span className="absolute inset-0 rounded-full bg-[#009EE0]/10 scale-90 group-hover:scale-110 opacity-0 group-hover:opacity-100 blur-md transition-all duration-300 pointer-events-none" />
 
-            {/* AI Pill Badge */}
-            <span className="absolute bottom-0 right-0 px-1.5 py-0.5 rounded-full bg-white text-[9px] font-mono font-black text-[#204696] border border-slate-200 leading-none shadow-md">
-              AI
-            </span>
-          </button>
+              {/* Official Aviance Logo Mark - Bold, Vibrant, Crisp with Drop Shadow */}
+              <div className="relative flex items-center justify-center transition-transform duration-300 group-hover:scale-108 drop-shadow-[0_6px_14px_rgba(32,70,150,0.3)]">
+                <AvianceLogo
+                  variant="mark-only"
+                  size="lg"
+                  markSize={54}
+                  strokeWidth={4.5}
+                  className="w-full h-full object-contain filter drop-shadow-[0_2px_4px_rgba(0,0,0,0.12)]"
+                />
+              </div>
+
+              {/* Online Status Beacon */}
+              <span className="absolute top-1 right-1 flex h-3.5 w-3.5">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#72BF44] opacity-80"></span>
+                <span className="relative inline-flex rounded-full h-3.5 w-3.5 bg-[#72BF44] border-2 border-white shadow-md"></span>
+              </span>
+
+              {/* AI Pill Badge */}
+              <span className="absolute bottom-0 right-0 px-1.5 py-0.5 rounded-full bg-white text-[9px] font-mono font-black text-[#204696] border border-slate-200 leading-none shadow-md">
+                AI
+              </span>
+            </button>
+          </div>
         </div>
       )}
 
