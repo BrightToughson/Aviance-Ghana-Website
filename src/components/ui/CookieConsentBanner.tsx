@@ -99,95 +99,69 @@ export const CookieConsentBanner: React.FC<CookieConsentBannerProps> = ({ onNavi
 
   return (
     <>
-      {/* Modern Executive Floating Cookie Consent Card (Non-blocking, no dark blur backdrop) */}
+      {/* Modern Minimalist Floating Cookie Consent Card */}
       {isVisible && !isModalOpen && (
         <aside
           role="region"
           aria-label="Privacy and Cookie Consent"
-          className="fixed bottom-4 sm:bottom-6 right-4 sm:right-6 z-[950] max-w-[440px] w-[calc(100%-2rem)] animate-in fade-in slide-in-from-bottom-5 duration-500 ease-out"
+          className="fixed bottom-4 sm:bottom-6 right-4 sm:right-6 z-[950] max-w-[360px] w-[calc(100%-2rem)] animate-in fade-in slide-in-from-bottom-5 duration-400 ease-out"
         >
-          <div className="relative overflow-hidden rounded-3xl bg-white/95 dark:bg-slate-900/95 backdrop-blur-2xl border border-slate-200/90 dark:border-slate-800 shadow-[0_20px_60px_-15px_rgba(15,46,83,0.22)] dark:shadow-[0_25px_65px_-15px_rgba(0,0,0,0.65)] transition-all">
+          <div className="relative overflow-hidden rounded-2xl bg-white/95 dark:bg-slate-900/95 backdrop-blur-2xl border border-slate-200/90 dark:border-slate-800 shadow-[0_16px_48px_-12px_rgba(15,46,83,0.18)] dark:shadow-[0_20px_50px_-15px_rgba(0,0,0,0.6)] transition-all">
             {/* Signature Aviance Tri-Color Top Accent Line */}
             <div className="h-1 w-full bg-gradient-to-r from-[#204696] via-[#009EE0] to-[#72BF44]" />
 
-            <div className="p-5 sm:p-6 space-y-4">
-              {/* Header: Icon, Title, Compliance Badge & Close (X) */}
-              <div className="flex items-start justify-between gap-3">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-blue-50 to-blue-100/80 dark:from-blue-950/60 dark:to-blue-900/40 border border-[#204696]/15 dark:border-[#58C1EB]/20 flex items-center justify-center shrink-0 text-[#204696] dark:text-[#58C1EB] shadow-2xs">
-                    <Cookie className="w-5 h-5" />
+            <div className="p-4 sm:p-5 space-y-3">
+              {/* Header: Icon, Title & Dismiss (X) */}
+              <div className="flex items-center justify-between gap-2">
+                <div className="flex items-center gap-2.5">
+                  <div className="w-8 h-8 rounded-xl bg-blue-50 dark:bg-blue-950/60 border border-[#204696]/15 dark:border-[#58C1EB]/20 flex items-center justify-center shrink-0 text-[#204696] dark:text-[#58C1EB]">
+                    <Cookie className="w-4 h-4" />
                   </div>
-                  <div>
-                    <h3 className="text-sm sm:text-base font-bold text-slate-900 dark:text-white tracking-tight leading-snug">
-                      Cookie & Privacy Choices
-                    </h3>
-                    <div className="flex items-center gap-1.5 mt-0.5">
-                      <span className="text-[10px] font-mono font-semibold text-[#204696] dark:text-[#58C1EB] bg-blue-50 dark:bg-blue-950/60 border border-[#204696]/15 px-1.5 py-0.5 rounded">
-                        Ghana Act 843
-                      </span>
-                      <span className="text-[10px] text-slate-300 dark:text-slate-600">·</span>
-                      <span className="text-[10px] font-mono font-medium text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-300/25 px-1.5 py-0.5 rounded">
-                        GDPR Compliant
-                      </span>
-                    </div>
-                  </div>
+                  <h3 className="text-sm font-bold text-slate-900 dark:text-white tracking-tight">
+                    Cookie Preferences
+                  </h3>
                 </div>
 
                 <button
                   type="button"
                   onClick={handleAcceptEssential}
-                  className="p-1.5 rounded-xl text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer shrink-0"
-                  aria-label="Dismiss cookie notice with essential cookies only"
-                  title="Dismiss (Essential only)"
+                  className="p-1 rounded-lg text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer shrink-0"
+                  aria-label="Close cookie banner"
+                  title="Close"
                 >
                   <X className="w-4 h-4" />
                 </button>
               </div>
 
-              {/* Description */}
-              <p className="text-xs sm:text-[13px] text-slate-600 dark:text-slate-300 leading-relaxed font-normal">
-                Aviance Ghana uses essential cookies to ensure secure ground handling operations and station telemetry. Optional cookies help personalize and elevate your digital experience.
+              {/* Simple, natural copy */}
+              <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed font-normal">
+                We use cookies to improve your browsing experience and analyze site traffic.{' '}
+                <button
+                  type="button"
+                  onClick={handleNavigatePolicy}
+                  className="text-[#204696] dark:text-[#58C1EB] hover:underline font-medium cursor-pointer"
+                >
+                  Privacy Policy
+                </button>
               </p>
 
               {/* Action Buttons */}
-              <div className="space-y-2.5 pt-1">
-                <div className="grid grid-cols-2 gap-2">
-                  <button
-                    type="button"
-                    onClick={handleAcceptEssential}
-                    className="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/80 hover:bg-slate-100 dark:bg-slate-800/80 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200 text-xs font-bold transition-all duration-200 cursor-pointer text-center active:scale-95 shadow-2xs"
-                  >
-                    Essential Only
-                  </button>
+              <div className="grid grid-cols-2 gap-2 pt-1">
+                <button
+                  type="button"
+                  onClick={handleAcceptEssential}
+                  className="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white hover:bg-slate-50 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-semibold transition-all cursor-pointer text-center active:scale-95 shadow-2xs"
+                >
+                  Essential Only
+                </button>
 
-                  <button
-                    type="button"
-                    onClick={handleAcceptAll}
-                    className="w-full px-4 py-2.5 rounded-xl bg-gradient-to-r from-[#204696] via-[#1a3d8c] to-[#009EE0] hover:brightness-110 active:scale-95 text-white text-xs font-bold shadow-md shadow-[#204696]/20 transition-all duration-200 cursor-pointer text-center"
-                  >
-                    Accept All
-                  </button>
-                </div>
-
-                {/* Footer Utilities: Customize & Policy Link */}
-                <div className="flex items-center justify-between pt-2 border-t border-slate-100 dark:border-slate-800 text-[11px]">
-                  <button
-                    type="button"
-                    onClick={() => setIsModalOpen(true)}
-                    className="text-slate-500 hover:text-[#204696] dark:hover:text-[#58C1EB] font-semibold flex items-center gap-1.5 transition-colors cursor-pointer"
-                  >
-                    <SlidersHorizontal className="w-3.5 h-3.5 text-[#204696] dark:text-[#58C1EB]" />
-                    <span>Customize preferences</span>
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={handleNavigatePolicy}
-                    className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 underline underline-offset-2 transition-colors cursor-pointer"
-                  >
-                    Cookie Policy
-                  </button>
-                </div>
+                <button
+                  type="button"
+                  onClick={handleAcceptAll}
+                  className="w-full px-3 py-2 rounded-xl bg-[#204696] hover:bg-[#1a3d8c] active:scale-95 text-white text-xs font-semibold shadow-sm shadow-[#204696]/25 transition-all cursor-pointer text-center"
+                >
+                  Accept All
+                </button>
               </div>
             </div>
           </div>
