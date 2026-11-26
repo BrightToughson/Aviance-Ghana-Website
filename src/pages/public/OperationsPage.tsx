@@ -3,6 +3,7 @@ import { Phone, Mail, ArrowRight, CheckCircle2 } from 'lucide-react';
 import { LocationItem } from '../../types';
 import { ScrollReveal } from '../../components/ui/ScrollReveal';
 import { useTheme } from '../../context/ThemeContext';
+import { useLanguage } from '../../context/LanguageContext';
 
 // Authentic Aviance Airside Turnaround & OCC Imagery
 import FLIGHT_OPS_OFFICIAL_IMG from '../../assets/aviance_images/services/flight_ops_official.jpg'; // Official Aviance OCC & Flight Dispatch
@@ -17,8 +18,10 @@ interface OperationsPageProps {
   onOpenCargoModal: () => void;
 }
 
-export const OperationsPage: React.FC<OperationsPageProps> = ({ locations, onNavigate, onOpenCargoModal: _onOpenCargoModal }) => {
+export const OperationsPage: React.FC<OperationsPageProps> = ({ locations: _locations, onNavigate, onOpenCargoModal: _onOpenCargoModal }) => {
   const { isLight } = useTheme();
+  const { language } = useLanguage();
+  const isFr = language === 'fr';
 
   return (
     <div className={`min-h-screen pb-24 sm:pb-32 transition-colors ${
@@ -32,7 +35,7 @@ export const OperationsPage: React.FC<OperationsPageProps> = ({ locations, onNav
               onClick={() => onNavigate('/')}
               className="hover:text-[#204696] font-medium transition-colors cursor-pointer"
             >
-              Home
+              {isFr ? 'Accueil' : 'Home'}
             </button>
             <span>/</span>
             <button
@@ -42,7 +45,7 @@ export const OperationsPage: React.FC<OperationsPageProps> = ({ locations, onNav
               Services
             </button>
             <span>/</span>
-            <span className="text-[#204696] font-semibold">Flight Operations &amp; OCC</span>
+            <span className="text-[#204696] font-semibold">{isFr ? 'Opérations de Vol & OCC' : 'Flight Operations & OCC'}</span>
           </div>
         </div>
       </div>
@@ -57,11 +60,13 @@ export const OperationsPage: React.FC<OperationsPageProps> = ({ locations, onNav
         <ScrollReveal animation="fade-up">
           <div className="relative z-10 max-w-4xl mx-auto px-4 space-y-4">
             <h1 className="text-3xl sm:text-4xl lg:text-[46px] font-bold text-white tracking-[-0.028em] leading-[1.14]">
-              Operational Footprint &amp; Turnaround Engineering
+              {isFr ? 'Dispositif Opérationnel & Ingénierie de Rotation' : 'Operational Footprint & Turnaround Engineering'}
             </h1>
 
             <p className="text-base sm:text-lg text-blue-100/90 max-w-2xl mx-auto leading-relaxed font-normal">
-              Delivering 24/7 ground operations across Ghana's core commercial hubs: Kotoka International Airport Accra (Terminal 3 &amp; Cargo Village), Prempeh I International Kumasi, and Tamale International.
+              {isFr
+                ? 'Opérations au sol 24/7 sur les principaux hubs commerciaux du Ghana : Aéroport International Kotoka d\'Accra (Terminal 3 & Village Fret), Prempeh I International de Kumasi et Aéroport International de Tamale.'
+                : "Delivering 24/7 ground operations across Ghana's core commercial hubs: Kotoka International Airport Accra (Terminal 3 & Cargo Village), Prempeh I International Kumasi, and Tamale International."}
             </p>
           </div>
         </ScrollReveal>
@@ -81,18 +86,20 @@ export const OperationsPage: React.FC<OperationsPageProps> = ({ locations, onNav
                     <span className={`text-xs font-extrabold uppercase tracking-widest ${
                       isLight ? 'text-[#204696]' : 'text-[#58C1EB]'
                     }`}>
-                      Real-Time Airside Coordination
+                      {isFr ? 'Coordination Tarmac en Temps Réel' : 'Real-Time Airside Coordination'}
                     </span>
                   </div>
                   <h2 className={`text-2xl sm:text-3xl lg:text-4xl font-extrabold uppercase tracking-tight ${
                     isLight ? 'text-slate-900' : 'text-white'
                   }`}>
-                    OCC - Flight Operations
+                    {isFr ? 'OCC - Opérations de Vol' : 'OCC - Flight Operations'}
                   </h2>
                   <p className={`mt-4 text-sm sm:text-base leading-relaxed ${
                     isLight ? 'text-slate-600' : 'text-slate-300'
                   }`}>
-                    Aviance Ghana’s Operations Control Centre coordinates flight activities in real time, linking teams, resources, airline partners and airport stakeholders to support safe, efficient and on-time operations.
+                    {isFr
+                      ? 'Le Centre de Contrôle Opérationnel d\'Aviance Ghana coordonne les activités de vol en temps réel, reliant équipes, ressources, partenaires aériens et intervenants aéroportuaires pour garantir des opérations sûres, efficaces et ponctuelles.'
+                      : 'Aviance Ghana’s Operations Control Centre coordinates flight activities in real time, linking teams, resources, airline partners and airport stakeholders to support safe, efficient and on-time operations.'}
                   </p>
                 </div>
 
@@ -100,16 +107,25 @@ export const OperationsPage: React.FC<OperationsPageProps> = ({ locations, onNav
                   <h3 className={`text-base sm:text-lg font-bold mb-3 ${
                     isLight ? 'text-slate-900' : 'text-white'
                   }`}>
-                    Key services
+                    {isFr ? 'Services clés' : 'Key services'}
                   </h3>
                   <ul className="space-y-3 text-sm sm:text-base">
-                    {[
-                      'Operational reporting and performance monitoring.',
-                      'Delay, disruption and incident coordination.',
-                      'Communication with airline partners and operational teams.',
-                      'Resource allocation, turnaround oversight as well as Weight and Balance functions.',
-                      'Flight monitoring and operational coordination.'
-                    ].map((item, idx) => (
+                    {(isFr
+                      ? [
+                          'Rapports opérationnels et suivi de la performance.',
+                          'Coordination des retards, irrégularités et incidents.',
+                          'Communication avec les compagnies aériennes partenaires et les équipes opérationnelles.',
+                          'Allocation des ressources, supervision des rotations et fonctions de devis de masse et centrage (Weight & Balance).',
+                          'Suivi des vols et coordination opérationnelle.'
+                        ]
+                      : [
+                          'Operational reporting and performance monitoring.',
+                          'Delay, disruption and incident coordination.',
+                          'Communication with airline partners and operational teams.',
+                          'Resource allocation, turnaround oversight as well as Weight and Balance functions.',
+                          'Flight monitoring and operational coordination.'
+                        ]
+                    ).map((item, idx) => (
                       <li key={idx} className="flex items-start gap-3">
                         <CheckCircle2 className="w-4 h-4 text-[#204696] dark:text-[#009EE0] shrink-0 mt-1" />
                         <span className={isLight ? 'text-slate-700' : 'text-slate-300'}>{item}</span>
@@ -167,13 +183,13 @@ export const OperationsPage: React.FC<OperationsPageProps> = ({ locations, onNav
                 <span className={`text-xs font-extrabold uppercase tracking-wider ${
                   isLight ? 'text-[#204696]' : 'text-[#58C1EB]'
                 }`}>
-                  Airside Visual Telemetry
+                  {isFr ? 'Télémétrie Visuelle Côté Piste' : 'Airside Visual Telemetry'}
                 </span>
               </div>
               <h2 className={`text-xl sm:text-2xl font-bold ${
                 isLight ? 'text-slate-900' : 'text-white'
               }`}>
-                Live Ramp Turnaround &amp; Flight Dispatch Operations
+                {isFr ? 'Rotations en Piste & Opérations de Dispatch en Direct' : 'Live Ramp Turnaround & Flight Dispatch Operations'}
               </h2>
             </div>
 
@@ -182,7 +198,7 @@ export const OperationsPage: React.FC<OperationsPageProps> = ({ locations, onNav
                 ? 'text-[#204696] bg-blue-50 border-blue-200/60'
                 : 'text-[#58C1EB] bg-[#204696]/30 border-[#58C1EB]/30'
             }`}>
-              ISAGO Safety Standard Compliant
+              {isFr ? 'Conforme aux Normes de Sécurité ISAGO' : 'ISAGO Safety Standard Compliant'}
             </span>
           </div>
 
@@ -205,12 +221,14 @@ export const OperationsPage: React.FC<OperationsPageProps> = ({ locations, onNav
                       ? 'text-slate-900 group-hover:text-[#204696]'
                       : 'text-white group-hover:text-[#58C1EB]'
                   }`}>
-                    Flight Crew Headset Dispatch
+                    {isFr ? 'Dispatch Interphone Équipage' : 'Flight Crew Headset Dispatch'}
                   </h3>
                   <p className={`text-xs leading-relaxed ${
                     isLight ? 'text-slate-600' : 'text-slate-400'
                   }`}>
-                    Certified turnaround coordinator plugged into aircraft nose gear intercom managing pushback clearance and engine starts.
+                    {isFr
+                      ? 'Coordinateur de rotation certifié branché sur l\'interphone du train avant pour gérer l\'autorisation de repoussage et démarrage réacteurs.'
+                      : 'Certified turnaround coordinator plugged into aircraft nose gear intercom managing pushback clearance and engine starts.'}
                   </p>
                 </div>
               </div>
@@ -234,12 +252,14 @@ export const OperationsPage: React.FC<OperationsPageProps> = ({ locations, onNav
                       ? 'text-slate-900 group-hover:text-[#204696]'
                       : 'text-white group-hover:text-[#58C1EB]'
                   }`}>
-                    Heavy Wide-Body Pushback
+                    {isFr ? 'Repoussage Gros-Porteurs' : 'Heavy Wide-Body Pushback'}
                   </h3>
                   <p className={`text-xs leading-relaxed ${
                     isLight ? 'text-slate-600' : 'text-slate-400'
                   }`}>
-                    High-tonnage towbarless tractor executing precision pushbacks on Boeing 787, 777, and Airbus A350 passenger flights.
+                    {isFr
+                      ? 'Tracteur lourd sans barre de remorquage exécutant des repoussages précis pour Boeing 787, 777 et Airbus A350.'
+                      : 'High-tonnage towbarless tractor executing precision pushbacks on Boeing 787, 777, and Airbus A350 passenger flights.'}
                   </p>
                 </div>
               </div>
@@ -263,12 +283,14 @@ export const OperationsPage: React.FC<OperationsPageProps> = ({ locations, onNav
                       ? 'text-slate-900 group-hover:text-[#204696]'
                       : 'text-white group-hover:text-[#58C1EB]'
                   }`}>
-                    Airside Fleet Maneuvering
+                    {isFr ? 'Évolution de la Flotte Côté Piste' : 'Airside Fleet Maneuvering'}
                   </h3>
                   <p className={`text-xs leading-relaxed ${
                     isLight ? 'text-slate-600' : 'text-slate-400'
                   }`}>
-                    Precision equipment driving within dedicated apron safety lanes, delivering baggage trains and GSE under strict safety rules.
+                    {isFr
+                      ? 'Conduite de précision dans les voies de sécurité du tarmac, tractant convois de bagages et matériel GSE selon des règles strictes.'
+                      : 'Precision equipment driving within dedicated apron safety lanes, delivering baggage trains and GSE under strict safety rules.'}
                   </p>
                 </div>
               </div>
@@ -292,12 +314,14 @@ export const OperationsPage: React.FC<OperationsPageProps> = ({ locations, onNav
                       ? 'text-slate-900 group-hover:text-[#204696]'
                       : 'text-white group-hover:text-[#58C1EB]'
                   }`}>
-                    ULD Cargo &amp; Hold Transfers
+                    {isFr ? 'Chargement ULD & Soutes' : 'ULD Cargo & Hold Transfers'}
                   </h3>
                   <p className={`text-xs leading-relaxed ${
                     isLight ? 'text-slate-600' : 'text-slate-400'
                   }`}>
-                    Aviance ramp teams loading containerized freight and passenger baggage into lower-deck holds within target turnaround slots.
+                    {isFr
+                      ? 'Équipes piste Aviance chargeant fret conteneurisé et bagages passagers en soute dans les créneaux cibles de rotation.'
+                      : 'Aviance ramp teams loading containerized freight and passenger baggage into lower-deck holds within target turnaround slots.'}
                   </p>
                 </div>
               </div>
@@ -321,18 +345,20 @@ export const OperationsPage: React.FC<OperationsPageProps> = ({ locations, onNav
                   <h3 className={`text-xs sm:text-sm font-extrabold uppercase tracking-widest ${
                     isLight ? 'text-[#204696]' : 'text-[#58C1EB]'
                   }`}>
-                    GSE Fleet &amp; Heavy Assets
+                    {isFr ? 'Flotte GSE & Équipements Lourds' : 'GSE Fleet & Heavy Assets'}
                   </h3>
                 </div>
                 <h2 className={`text-xl sm:text-2xl font-bold tracking-tight ${
                   isLight ? 'text-slate-900' : 'text-white'
                 }`}>
-                  Airside Equipment Readiness
+                  {isFr ? 'Disponibilité du Matériel Côté Piste' : 'Airside Equipment Readiness'}
                 </h2>
                 <p className={`text-xs sm:text-sm max-w-2xl leading-relaxed ${
                   isLight ? 'text-slate-600' : 'text-slate-400'
                 }`}>
-                  Specialized ground fleet engineered for wide-body turnaround reliability, 400Hz avionics power, and strict IATA AHM 910/913 compliance.
+                  {isFr
+                    ? 'Flotte spécialisée conçue pour la fiabilité des rotations gros-porteurs, alimentation électrique 400Hz et stricte conformité IATA AHM 910/913.'
+                    : 'Specialized ground fleet engineered for wide-body turnaround reliability, 400Hz avionics power, and strict IATA AHM 910/913 compliance.'}
                 </p>
               </div>
 
@@ -344,7 +370,7 @@ export const OperationsPage: React.FC<OperationsPageProps> = ({ locations, onNav
                     : 'bg-[#204696] hover:bg-[#1A3670] text-white border-[#58C1EB]/30'
                 }`}
               >
-                <span>GSE Workshop Engineering</span>
+                <span>{isFr ? 'Atelier & Ingénierie GSE' : 'GSE Workshop Engineering'}</span>
                 <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
               </button>
             </div>

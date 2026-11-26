@@ -67,7 +67,8 @@ interface NavbarProps {
 }
 
 export const Navbar: React.FC<NavbarProps> = ({ currentPath, onNavigate }) => {
-  const { language, setLanguage, currentLanguageOption } = useLanguage();
+  const { language, setLanguage, currentLanguageOption, t } = useLanguage();
+  const isFr = language === 'fr';
   const [langDropdownOpen, setLangDropdownOpen] = useState(false);
   const langDropdownRef = useRef<HTMLDivElement>(null);
 
@@ -192,33 +193,33 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPath, onNavigate }) => {
 
   const servicePillars = [
     {
-      title: 'Passenger & Terminal',
-      kicker: 'Hospitality & Care',
+      title: isFr ? 'Passagers & Terminal' : 'Passenger & Terminal',
+      kicker: isFr ? 'Accueil & Confort' : 'Hospitality & Care',
       dotClass: 'bg-[#204696]',
       items: [
-        { name: 'Passenger Services', path: '/passenger-services', icon: Users, desc: 'DCS check-in, boarding gates & PRM passenger care' },
-        { name: 'Lounge Services', path: '/lounge', icon: Armchair, desc: 'Adinkra Executive Lounge & The U Lounge at T3' },
-        { name: 'Find My Bag', path: '/find-my-bag', icon: Luggage, desc: 'Direct passenger baggage tracking & PIR resolution' },
+        { name: isFr ? 'Services Passagers' : 'Passenger Services', path: '/passenger-services', icon: Users, desc: isFr ? 'Enregistrement DCS, portes d\'embarquement & assistance PMR' : 'DCS check-in, boarding gates & PRM passenger care' },
+        { name: isFr ? 'Salons VIP' : 'Lounge Services', path: '/lounge', icon: Armchair, desc: isFr ? 'Salon Exécutif Adinkra & Salon The U au T3' : 'Adinkra Executive Lounge & The U Lounge at T3' },
+        { name: isFr ? 'Suivi Bagages' : 'Find My Bag', path: '/find-my-bag', icon: Luggage, desc: isFr ? 'Suivi en direct des bagages & résolution PIR' : 'Direct passenger baggage tracking & PIR resolution' },
       ]
     },
     {
-      title: 'Airside & Turnaround',
-      kicker: 'Apron Operations',
+      title: isFr ? 'Piste & Escales' : 'Airside & Turnaround',
+      kicker: isFr ? 'Opérations Tarmac' : 'Apron Operations',
       dotClass: 'bg-[#009EE0]',
       items: [
-        { name: 'Ramp Handling', path: '/ramp-handling', icon: Plane, desc: 'Aircraft turnaround, pushback & GPU servicing' },
-        { name: 'OCC-Flight Operations', path: '/operations', icon: Cpu, desc: '24/7 flight coordination, dispatch & load control' },
-        { name: 'GSE and Fleet Maintenance', path: '/gse-fleet-maintenance', icon: Wrench, desc: 'Ground support equipment maintenance & engineering' },
+        { name: isFr ? 'Assistance en Piste' : 'Ramp Handling', path: '/ramp-handling', icon: Plane, desc: isFr ? 'Rotation d\'aéronefs, repoussage & alimentation GPU' : 'Aircraft turnaround, pushback & GPU servicing' },
+        { name: isFr ? 'OCC - Opérations de Vol' : 'OCC-Flight Operations', path: '/operations', icon: Cpu, desc: isFr ? 'Coordination 24/7, dispatch de vol & devis de masse' : '24/7 flight coordination, dispatch & load control' },
+        { name: isFr ? 'Maintenance GSE & Flotte' : 'GSE and Fleet Maintenance', path: '/gse-fleet-maintenance', icon: Wrench, desc: isFr ? 'Maintenance technique du matériel d\'assistance au sol' : 'Ground support equipment maintenance & engineering' },
       ]
     },
     {
-      title: 'Cargo & Specialized',
-      kicker: 'Logistics & Safety',
+      title: isFr ? 'Fret & Spécialisé' : 'Cargo & Specialized',
+      kicker: isFr ? 'Logistique & Sûreté' : 'Logistics & Safety',
       dotClass: 'bg-[#72BF44]',
       items: [
-        { name: 'Cargo Services', path: '/cargo', icon: PackageCheck, desc: 'EU RA3 certified bonded warehousing & cold-chain' },
-        { name: 'VIP and Charter Services', path: '/vip-charter', icon: Shield, desc: 'Apron escort, private charters & diplomatic protocol' },
-        { name: 'Training Academy', path: '/training', icon: GraduationCap, desc: 'ICAO & IATA safety, SMS courses & training facilities' },
+        { name: isFr ? 'Fret Aérien' : 'Cargo Services', path: '/cargo', icon: PackageCheck, desc: isFr ? 'Entrepôt sous douane certifié UE RA3 & chaîne du froid' : 'EU RA3 certified bonded warehousing & cold-chain' },
+        { name: isFr ? 'Services VIP & Charters' : 'VIP and Charter Services', path: '/vip-charter', icon: Shield, desc: isFr ? 'Escorte sur piste, vols privés & protocole diplomatique' : 'Apron escort, private charters & diplomatic protocol' },
+        { name: isFr ? 'Centre de Formation' : 'Training Academy', path: '/training', icon: GraduationCap, desc: isFr ? 'Sécurité OACI & IATA, cours SGS & installations de pointe' : 'ICAO & IATA safety, SMS courses & training facilities' },
       ]
     }
   ];
@@ -227,21 +228,21 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPath, onNavigate }) => {
 
   const aboutPillars = [
     {
-      title: 'Corporate & Governance',
+      title: isFr ? 'Gouvernance & Entreprise' : 'Corporate & Governance',
       dotClass: 'bg-[#204696]',
       items: [
-        { name: 'About Aviance (Who We Are)', path: '/about', icon: Building2, desc: '30+ year company heritage, vision & mission' },
-        { name: 'Management Team', path: '/management', icon: Users, desc: 'Executive leadership team & station department heads' },
-        { name: 'Code of Conduct', path: '/code-of-conduct', icon: ShieldCheck, desc: 'Corporate governance, ethics & safety compliance' },
+        { name: isFr ? 'À Propos d\'Aviance' : 'About Aviance (Who We Are)', path: '/about', icon: Building2, desc: isFr ? 'Plus de 30 ans d\'histoire, vision & mission' : '30+ year company heritage, vision & mission' },
+        { name: isFr ? 'Équipe de Direction' : 'Management Team', path: '/management', icon: Users, desc: isFr ? 'Direction générale & responsables d\'escale' : 'Executive leadership team & station department heads' },
+        { name: isFr ? 'Code de Conduite' : 'Code of Conduct', path: '/code-of-conduct', icon: ShieldCheck, desc: isFr ? 'Gouvernance d\'entreprise, éthique & conformité sécurité' : 'Corporate governance, ethics & safety compliance' },
       ]
     },
     {
-      title: 'Standards & Partnerships',
+      title: isFr ? 'Normes & Partenariats' : 'Standards & Partnerships',
       dotClass: 'bg-[#009EE0]',
       items: [
-        { name: 'Facts & Figures', path: '/facts-figures', icon: BarChart3, desc: 'Annual flights, cargo volume & passenger metrics' },
-        { name: 'Customer Airlines', path: '/customers', icon: Plane, desc: 'Scheduled long-haul, domestic & cargo carriers' },
-        { name: 'Certifications & Licenses', path: '/certifications', icon: FileCheck2, desc: 'IATA ISAGO registry, EU RA3 & GCAA licence' },
+        { name: isFr ? 'Faits & Chiffres' : 'Facts & Figures', path: '/facts-figures', icon: BarChart3, desc: isFr ? 'Vols annuels, tonnage fret et statistiques passagers' : 'Annual flights, cargo volume & passenger metrics' },
+        { name: isFr ? 'Compagnies Aériennes' : 'Customer Airlines', path: '/customers', icon: Plane, desc: isFr ? 'Compagnies régulières long-courrier, nationales et cargo' : 'Scheduled long-haul, domestic & cargo carriers' },
+        { name: isFr ? 'Certifications & Licences' : 'Certifications & Licenses', path: '/certifications', icon: FileCheck2, desc: isFr ? 'Registre IATA ISAGO, UE RA3 & licence GCAA' : 'IATA ISAGO registry, EU RA3 & GCAA licence' },
       ]
     }
   ];
@@ -249,11 +250,11 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPath, onNavigate }) => {
   const aboutLinks = aboutPillars.flatMap((p) => p.items);
 
   const contactLinks = [
-    { name: 'Station Offices & Headquarters', path: '/contact#stations', icon: MapPin, desc: 'Kotoka International Airport (ACC) Cargo Village' },
-    { name: 'Regional Aerodromes', path: '/contact#regional', icon: Building2, desc: 'Kumasi (KMS) & Tamale (TML) regional operations' },
-    { name: '24/7 Operations Control Centre', path: '/contact#occ', icon: PhoneCall, desc: 'Real-time apron coordination & flight dispatch' },
-    { name: 'Request Handling Proposal (RFP)', path: '/contact#rfp', icon: FileCheck2, desc: 'Formal airline tenders, ad-hoc charters & service quotes' },
-    { name: 'Help & Customer Inquiries', path: '/contact#inquiries', icon: Mail, desc: 'Executive lounge passes, inquiries & customer care' },
+    { name: isFr ? 'Bureaux d\'Escale & Siège' : 'Station Offices & Headquarters', path: '/contact#stations', icon: MapPin, desc: isFr ? 'Village Fret, Aéroport International Kotoka (ACC)' : 'Kotoka International Airport (ACC) Cargo Village' },
+    { name: isFr ? 'Aéroports Régionaux' : 'Regional Aerodromes', path: '/contact#regional', icon: Building2, desc: isFr ? 'Opérations régionales à Kumasi (KMS) & Tamale (TML)' : 'Kumasi (KMS) & Tamale (TML) regional operations' },
+    { name: isFr ? 'Centre OCC Opérations 24/7' : '24/7 Operations Control Centre', path: '/contact#occ', icon: PhoneCall, desc: isFr ? 'Coordination tarmac en temps réel & dispatch vols' : 'Real-time apron coordination & flight dispatch' },
+    { name: isFr ? 'Demande de Proposition (RFP)' : 'Request Handling Proposal (RFP)', path: '/contact#rfp', icon: FileCheck2, desc: isFr ? 'Appels d\'offres compagnies, vols charters & devis' : 'Formal airline tenders, ad-hoc charters & service quotes' },
+    { name: isFr ? 'Assistance & Service Client' : 'Help & Customer Inquiries', path: '/contact#inquiries', icon: Mail, desc: isFr ? 'Accès salons VIP, demandes & service client' : 'Executive lounge passes, inquiries & customer care' },
   ];
 
   const TURNAROUND_IMG = turnaroundImg;
@@ -265,26 +266,26 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPath, onNavigate }) => {
     {
       id: 1,
       image: turnaroundImg,
-      title: 'Airline Ground Handling & Turnaround',
-      desc: 'Precision ramp operations, pushback, and flight servicing at ACC, KMS & TML.'
+      title: isFr ? 'Assistance en Escale & Rotations' : 'Airline Ground Handling & Turnaround',
+      desc: isFr ? 'Opérations de piste de précision, repoussage et assistance à ACC, KMS & TML.' : 'Precision ramp operations, pushback, and flight servicing at ACC, KMS & TML.'
     },
     {
       id: 2,
       image: loungeImg,
-      title: 'Executive Adinkra Lounges',
-      desc: 'World-class hospitality, VIP passenger comforts, and dedicated airport executive facilities.'
+      title: isFr ? 'Salons Exécutifs Adinkra' : 'Executive Adinkra Lounges',
+      desc: isFr ? 'Hospitalité de classe mondiale, confort passagers VIP et salons aéroportuaires dédiés.' : 'World-class hospitality, VIP passenger comforts, and dedicated airport executive facilities.'
     },
     {
       id: 3,
       image: supportImg,
-      title: 'Modern GSE & Fleet Engineering',
-      desc: 'Certified ground support equipment, zero-emission engineering, and airside safety.'
+      title: isFr ? 'GSE Moderne & Ingénierie de Flotte' : 'Modern GSE & Fleet Engineering',
+      desc: isFr ? 'Matériel d\'assistance au sol certifié, ingénierie zéro émission et sécurité côté piste.' : 'Certified ground support equipment, zero-emission engineering, and airside safety.'
     },
     {
       id: 4,
       image: cargoImg,
-      title: 'EU RA3 Bonded Cargo Logistics',
-      desc: 'Secure temperature-controlled cold-chain, pharmaceutical handling, and air freight logistics.'
+      title: isFr ? 'Logistique Fret Sous Douane UE RA3' : 'EU RA3 Bonded Cargo Logistics',
+      desc: isFr ? 'Chaîne du froid sous température dirigée, manutention pharmaceutique et fret aérien.' : 'Secure temperature-controlled cold-chain, pharmaceutical handling, and air freight logistics.'
     }
   ];
 
@@ -302,19 +303,19 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPath, onNavigate }) => {
     {
       id: 'heritage',
       image: loungeImg,
-      title: '30+ Years of Ground Handling Excellence at Kotoka Terminal 3',
+      title: isFr ? 'Plus de 30 ans d\'excellence en assistance au sol au Terminal 3 de Kotoka' : '30+ Years of Ground Handling Excellence at Kotoka Terminal 3',
       path: '/about'
     },
     {
       id: 'partners',
       image: supportImg,
-      title: 'Trusted Ground Handling Partner for 40+ Global Airline Carriers',
+      title: isFr ? 'Partenaire d\'assistance de confiance pour plus de 40 compagnies mondiales' : 'Trusted Ground Handling Partner for 40+ Global Airline Carriers',
       path: '/customers'
     },
     {
       id: 'standards',
       image: turnaroundImg,
-      title: 'IATA ISAGO Registered & Regulated by GCAA Across Ghana',
+      title: isFr ? 'Certifié IATA ISAGO & réglementé par la GCAA à travers tout le Ghana' : 'IATA ISAGO Registered & Regulated by GCAA Across Ghana',
       path: '/certifications'
     }
   ];
@@ -323,19 +324,19 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPath, onNavigate }) => {
     {
       id: 'ramp',
       image: turnaroundImg,
-      title: 'ISAGO-Accredited Apron Turnaround & Pushback Operations',
+      title: isFr ? 'Opérations de rotation en piste et repoussage accréditées ISAGO' : 'ISAGO-Accredited Apron Turnaround & Pushback Operations',
       path: '/ramp-handling'
     },
     {
       id: 'cargo',
       image: cargoImg,
-      title: 'EU RA3-Validated Cold-Chain & Bonded Air Cargo Logistics',
+      title: isFr ? 'Logistique de fret aérien sous douane et chaîne du froid validée UE RA3' : 'EU RA3-Validated Cold-Chain & Bonded Air Cargo Logistics',
       path: '/cargo'
     },
     {
       id: 'hospitality',
       image: loungeImg,
-      title: 'Executive Adinkra Lounges & VIP Passenger Hospitality',
+      title: isFr ? 'Salons exécutifs Adinkra & accueil passagers VIP' : 'Executive Adinkra Lounges & VIP Passenger Hospitality',
       path: '/lounge'
     }
   ];
@@ -395,7 +396,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPath, onNavigate }) => {
                     : 'text-slate-700 hover:text-[#204696] hover:bg-slate-50 hover:scale-[1.02]'
                 }`}
               >
-                Home
+                {isFr ? 'Accueil' : 'Home'}
               </button>
 
               {/* About Us Aramex-Style Mega Dropdown */}
@@ -420,7 +421,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPath, onNavigate }) => {
                       : 'text-slate-700 hover:text-[#204696] hover:bg-slate-50 hover:scale-[1.02]'
                   }`}
                 >
-                  <span>About Us</span>
+                  <span>{isFr ? 'À Propos' : 'About Us'}</span>
                   <ChevronDown className={`w-4 h-4 transition-transform duration-300 ease-out ${aboutDropdownOpen ? 'rotate-180 text-[#204696]' : 'text-slate-400'}`} />
                 </button>
 
@@ -453,15 +454,17 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPath, onNavigate }) => {
                             {/* Section Header & Descriptive Intro (Swissport Style) */}
                             <div className="space-y-2 mb-6">
                               <h3 className="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900">
-                                About Aviance
+                                {isFr ? 'À Propos d\'Aviance' : 'About Aviance'}
                               </h3>
                               <p className="text-sm sm:text-[15px] text-slate-600 leading-relaxed font-normal max-w-xl">
-                                Explore our 30+ year aviation heritage, executive leadership, certified ground handling standards, and customer airline partnerships across Ghana.{' '}
+                                {isFr
+                                  ? 'Découvrez plus de 30 ans d\'héritage aéronautique, notre direction exécutive, nos normes d\'assistance certifiées et nos partenariats avec les compagnies aériennes au Ghana. '
+                                  : 'Explore our 30+ year aviation heritage, executive leadership, certified ground handling standards, and customer airline partnerships across Ghana. '}
                                 <button
                                   onClick={() => handleNav('/about')}
                                   className="font-bold text-[#204696] hover:text-[#153170] hover:underline cursor-pointer inline-flex items-center gap-1 ml-0.5"
                                 >
-                                  <span>Learn more</span>
+                                  <span>{isFr ? 'En savoir plus' : 'Learn more'}</span>
                                   <ArrowRight className="w-3.5 h-3.5" />
                                 </button>
                               </p>
@@ -502,7 +505,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPath, onNavigate }) => {
                           >
                             <div className="flex items-center justify-between mb-3.5">
                               <h4 className="text-base sm:text-lg font-bold text-slate-900">
-                                Highlights
+                                {isFr ? 'Points Forts' : 'Highlights'}
                               </h4>
                               {/* Slide Progress Dots */}
                               <div className="flex items-center gap-1.5">
@@ -599,7 +602,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPath, onNavigate }) => {
                       : 'text-slate-700 hover:text-[#204696] hover:bg-slate-50 hover:scale-[1.02]'
                   }`}
                 >
-                  <span>Services</span>
+                  <span>{isFr ? 'Services' : 'Services'}</span>
                   <ChevronDown className={`w-4 h-4 transition-transform duration-300 ease-out ${servicesDropdownOpen ? 'rotate-180 text-[#204696]' : 'text-slate-400'}`} />
                 </button>
 
@@ -632,15 +635,17 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPath, onNavigate }) => {
                             {/* Section Header & Descriptive Intro (Swissport Style) */}
                             <div className="space-y-2 mb-6">
                               <h3 className="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900">
-                                Core Services
+                                {isFr ? 'Nos Services' : 'Core Services'}
                               </h3>
                               <p className="text-sm sm:text-[15px] text-slate-600 leading-relaxed font-normal max-w-xl">
-                                Delivering ISAGO-certified ground turnaround, EU RA3 cold-chain cargo logistics, executive lounge hospitality, and GSE fleet maintenance across Ghana.{' '}
+                                {isFr
+                                  ? 'Prestations de rotation au sol certifiées ISAGO, logistique fret chaîne du froid UE RA3, salons VIP et maintenance de flotte GSE au Ghana. '
+                                  : 'Delivering ISAGO-certified ground turnaround, EU RA3 cold-chain cargo logistics, executive lounge hospitality, and GSE fleet maintenance across Ghana. '}
                                 <button
                                   onClick={() => handleNav('/services')}
                                   className="font-bold text-[#204696] hover:text-[#153170] hover:underline cursor-pointer inline-flex items-center gap-1 ml-0.5"
                                 >
-                                  <span>Learn more</span>
+                                  <span>{isFr ? 'En savoir plus' : 'Learn more'}</span>
                                   <ArrowRight className="w-3.5 h-3.5" />
                                 </button>
                               </p>
@@ -704,7 +709,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPath, onNavigate }) => {
                           >
                             <div className="flex items-center justify-between mb-3.5">
                               <h4 className="text-base sm:text-lg font-bold text-slate-900">
-                                Highlights
+                                {isFr ? 'Points Forts' : 'Highlights'}
                               </h4>
                               {/* Slide Progress Dots */}
                               <div className="flex items-center gap-1.5">
@@ -778,7 +783,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPath, onNavigate }) => {
                     : 'text-slate-700 hover:text-[#204696] hover:bg-slate-50 hover:scale-[1.02]'
                 }`}
               >
-                CSR
+                {isFr ? 'RSE' : 'CSR'}
               </button>
 
               <button
@@ -789,7 +794,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPath, onNavigate }) => {
                     : 'text-slate-700 hover:text-[#204696] hover:bg-slate-50 hover:scale-[1.02]'
                 }`}
               >
-                News
+                {isFr ? 'Actualités' : 'News'}
               </button>
 
               <button
@@ -800,7 +805,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPath, onNavigate }) => {
                     : 'text-slate-700 hover:text-[#204696] hover:bg-slate-50 hover:scale-[1.02]'
                 }`}
               >
-                Careers
+                {isFr ? 'Carrières' : 'Careers'}
               </button>
 
               {/* Contact Direct Link */}
@@ -812,7 +817,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPath, onNavigate }) => {
                     : 'text-slate-700 hover:text-[#204696] hover:bg-slate-50 hover:scale-[1.02]'
                 }`}
               >
-                Contact
+                {isFr ? 'Contact' : 'Contact'}
               </button>
             </nav>
 
@@ -954,7 +959,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPath, onNavigate }) => {
                             ? 'text-[#204696]'
                             : 'text-slate-900 group-hover:text-[#204696]'
                         }`}>
-                          Aviation Services
+                          {isFr ? 'Services Aéronautiques' : 'Aviation Services'}
                         </span>
                         <span className="text-xs font-semibold text-slate-400 group-hover:text-slate-600 font-mono">
                           (9)
@@ -1005,7 +1010,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPath, onNavigate }) => {
                             onClick={() => handleNav('/services')}
                             className="text-xs font-bold text-[#204696] hover:underline flex items-center gap-1 cursor-pointer"
                           >
-                            <span>Explore all 9 aviation capabilities hub</span>
+                            <span>{isFr ? 'Explorer nos 9 compétences aéronautiques' : 'Explore all 9 aviation capabilities hub'}</span>
                             <ArrowRight className="w-3 h-3" />
                           </button>
                         </div>
@@ -1026,7 +1031,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPath, onNavigate }) => {
                             ? 'text-[#204696]'
                             : 'text-slate-900 group-hover:text-[#204696]'
                         }`}>
-                          About Aviance Ghana
+                          {isFr ? 'À Propos d\'Aviance Ghana' : 'About Aviance Ghana'}
                         </span>
                         <span className="text-xs font-semibold text-slate-400 group-hover:text-slate-600 font-mono">
                           (6)
@@ -1073,7 +1078,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPath, onNavigate }) => {
                             onClick={() => handleNav('/about')}
                             className="text-xs font-bold text-[#204696] hover:underline flex items-center gap-1 cursor-pointer"
                           >
-                            <span>Explore full corporate profile & heritage</span>
+                            <span>{isFr ? 'Découvrir le profil et l\'histoire de l\'entreprise' : 'Explore full corporate profile & heritage'}</span>
                             <ArrowRight className="w-3 h-3" />
                           </button>
                         </div>
@@ -1091,7 +1096,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPath, onNavigate }) => {
                       <span className={`text-lg sm:text-xl font-bold tracking-tight transition-colors ${
                         currentPath === '/csr' ? 'text-[#204696]' : 'text-slate-900 group-hover:text-[#204696]'
                       }`}>
-                        CSR & Community
+                        {isFr ? 'RSE & Communauté' : 'CSR & Community'}
                       </span>
                       <ArrowRight className="w-4 h-4 text-slate-300 group-hover:text-[#204696] group-hover:translate-x-1 transition-all" />
                     </button>
@@ -1106,7 +1111,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPath, onNavigate }) => {
                       <span className={`text-lg sm:text-xl font-bold tracking-tight transition-colors ${
                         currentPath.startsWith('/news') ? 'text-[#204696]' : 'text-slate-900 group-hover:text-[#204696]'
                       }`}>
-                        News & Media
+                        {isFr ? 'Actualités & Médias' : 'News & Media'}
                       </span>
                       <ArrowRight className="w-4 h-4 text-slate-300 group-hover:text-[#204696] group-hover:translate-x-1 transition-all" />
                     </button>
@@ -1121,7 +1126,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPath, onNavigate }) => {
                       <span className={`text-lg sm:text-xl font-bold tracking-tight transition-colors ${
                         currentPath === '/careers' ? 'text-[#204696]' : 'text-slate-900 group-hover:text-[#204696]'
                       }`}>
-                        Careers
+                        {isFr ? 'Carrières' : 'Careers'}
                       </span>
                       <ArrowRight className="w-4 h-4 text-slate-300 group-hover:text-[#204696] group-hover:translate-x-1 transition-all" />
                     </button>
@@ -1136,7 +1141,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPath, onNavigate }) => {
                       <span className={`text-lg sm:text-xl font-bold tracking-tight transition-colors ${
                         currentPath.startsWith('/contact') ? 'text-[#204696]' : 'text-slate-900 group-hover:text-[#204696]'
                       }`}>
-                        Contact & Station Offices
+                        {isFr ? 'Contact & Bureaux d\'Escale' : 'Contact & Station Offices'}
                       </span>
                       <ArrowRight className="w-4 h-4 text-slate-300 group-hover:text-[#204696] group-hover:translate-x-1 transition-all" />
                     </button>
@@ -1148,7 +1153,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPath, onNavigate }) => {
                 <div className="mt-8 pt-6 border-t border-slate-200/80 space-y-4">
                   {/* Mobile Language Selector */}
                   <div className="flex items-center justify-between p-3 rounded-2xl bg-slate-50 border border-slate-200/70">
-                    <span className="text-xs font-bold text-slate-700">Language:</span>
+                    <span className="text-xs font-bold text-slate-700">{isFr ? 'Langue :' : 'Language:'}</span>
                     <div className="flex items-center gap-1.5 bg-white p-1 rounded-xl border border-slate-200/80 shadow-2xs">
                       {SUPPORTED_LANGUAGES.map((lang) => {
                         const isSelected = language === lang.code;
@@ -1180,7 +1185,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPath, onNavigate }) => {
                         <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#72BF44] opacity-75"></span>
                         <span className="relative inline-flex rounded-full h-2 w-2 bg-[#72BF44]"></span>
                       </span>
-                      <span className="text-slate-500 font-medium">24/7 Flight Operations Dispatch:</span>
+                      <span className="text-slate-500 font-medium">{isFr ? 'Dispatch Opérations de Vol 24/7 :' : '24/7 Flight Operations Dispatch:'}</span>
                       <a href="tel:+233244333133" className="font-semibold text-slate-900 hover:text-[#204696] font-mono">
                         +233 (0) 244 333 133
                       </a>
@@ -1192,7 +1197,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPath, onNavigate }) => {
                         onClick={() => handleNav('/partner-portal')}
                         className="hover:text-[#204696] transition-colors flex items-center gap-1 font-medium cursor-pointer"
                       >
-                        <span>Airline Extranet</span>
+                        <span>{isFr ? 'Extranet Compagnies' : 'Airline Extranet'}</span>
                         <ExternalLink className="w-3 h-3" />
                       </button>
                       <span>·</span>
@@ -1201,8 +1206,8 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPath, onNavigate }) => {
                   </div>
 
                   <div className="pt-3 border-t border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-[11px] text-slate-400">
-                    <span>Ghana Civil Aviation Authority (GCAA) Licensed · IATA ISAGO Registered Ground Handler</span>
-                    <span>Kotoka International Airport · Terminal 3 & Cargo Village</span>
+                    <span>{isFr ? 'Agréé par la Ghana Civil Aviation Authority (GCAA) · Prestataire d\'assistance en escale certifié IATA ISAGO' : 'Ghana Civil Aviation Authority (GCAA) Licensed · IATA ISAGO Registered Ground Handler'}</span>
+                    <span>{isFr ? 'Aéroport International Kotoka · Terminal 3 & Village Fret' : 'Kotoka International Airport · Terminal 3 & Cargo Village'}</span>
                   </div>
                 </div>
 

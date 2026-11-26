@@ -16,6 +16,7 @@ import {
   UserCheck
 } from 'lucide-react';
 import { useTheme } from '../../context/ThemeContext';
+import { useLanguage } from '../../context/LanguageContext';
 
 // Authentic Aviance Passenger Operations Photography
 import PASSENGER_OFFICIAL_IMG from '../../assets/aviance_images/services/passenger_official.jpg';
@@ -31,64 +32,57 @@ interface PassengerServicesPageProps {
 
 export const PassengerServicesPage: React.FC<PassengerServicesPageProps> = ({ onNavigate }) => {
   const { isLight } = useTheme();
+  const { language } = useLanguage();
+  const isFr = language === 'fr';
 
   const capabilities = [
     {
-      title: 'DCS Check-in & Electronic Tagging',
-      desc: 'Certified front-of-house agents operating SITA, Amadeus Altéa, Sabre, and Navitaire systems. Dedicated First/Business Class priority desks and rapid bag drop.',
+      title: isFr ? 'Enregistrement DCS & Étiquetage Électronique' : 'DCS Check-in & Electronic Tagging',
+      desc: isFr
+        ? 'Agents d\'accueil certifiés opérant sur les systèmes SITA, Amadeus Altéa, Sabre et Navitaire. Comptoirs prioritaires dédiés Première/Affaires et dépose rapide des bagages.'
+        : 'Certified front-of-house agents operating SITA, Amadeus Altéa, Sabre, and Navitaire systems. Dedicated First/Business Class priority desks and rapid bag drop.',
       icon: UserCheck,
-      badge: 'Certified DCS Handling'
+      badge: isFr ? 'Gestion DCS Certifiée' : 'Certified DCS Handling'
     },
     {
-      title: 'Gate Management & Boarding',
-      desc: 'Precision boarding gate management, automated barcode scanning, standby reconciliation, and cabin baggage compliance under tight turnaround schedules.',
+      title: isFr ? 'Gestion des Portes & Embarquement' : 'Gate Management & Boarding',
+      desc: isFr
+        ? 'Gestion rigoureuse des portes d\'embarquement, lecture automatisée des codes-barres, réconciliation des passagers en attente et conformité des bagages cabine sous horaires stricts.'
+        : 'Precision boarding gate management, automated barcode scanning, standby reconciliation, and cabin baggage compliance under tight turnaround schedules.',
       icon: PlaneTakeoff,
-      badge: 'ISAGO Standardized'
+      badge: isFr ? 'Norme ISAGO' : 'ISAGO Standardized'
     },
     {
-      title: 'PRM Dedicated Mobility Assistance',
-      desc: 'Specialized wheelchair assistants and modern ambulift high-loaders facilitating seamless, respectful transit for Persons with Reduced Mobility from check-in to aircraft seat.',
+      title: isFr ? 'Assistance Dédiée à la Mobilité PMR' : 'PRM Dedicated Mobility Assistance',
+      desc: isFr
+        ? 'Assistants spécialisés pour fauteuils roulants et chargeurs ambulift modernes assurant un transit fluide et respectueux pour les Personnes à Mobilité Réduite jusqu\'au siège de l\'aéronef.'
+        : 'Specialized wheelchair assistants and modern ambulift high-loaders facilitating seamless, respectful transit for Persons with Reduced Mobility from check-in to aircraft seat.',
       icon: HeartHandshake,
-      badge: 'Dedicated PRM Care'
+      badge: isFr ? 'Prise en Charge PMR' : 'Dedicated PRM Care'
     },
     {
-      title: 'Unaccompanied Minors (UMNR)',
-      desc: 'Continuous dedicated escort and guardian custody for young travellers and elderly passengers, ensuring complete safety, comfort, and direct handover.',
+      title: isFr ? 'Mineurs Non Accompagnés (UMNR)' : 'Unaccompanied Minors (UMNR)',
+      desc: isFr
+        ? 'Escorte dédiée et garde continue pour jeunes voyageurs et passagers âgés, garantissant sécurité totale, confort et remise directe aux accompagnateurs autorisés.'
+        : 'Continuous dedicated escort and guardian custody for young travellers and elderly passengers, ensuring complete safety, comfort, and direct handover.',
       icon: Users,
-      badge: 'Complete Custody'
+      badge: isFr ? 'Garde Complète' : 'Complete Custody'
     },
     {
-      title: 'Document & Visa Verification',
-      desc: 'Strict document, visa, and entry requirement verification against IATA Timatic and Ghana Immigration Service protocols, eliminating airline carrier penalties.',
+      title: isFr ? 'Vérification des Documents & Visas' : 'Document & Visa Verification',
+      desc: isFr
+        ? 'Contrôle minutieux des documents de voyage et exigences de visa selon IATA Timatic et le Service d\'Immigration du Ghana, évitant toute pénalité aux transporteurs.'
+        : 'Strict document, visa, and entry requirement verification against IATA Timatic and Ghana Immigration Service protocols, eliminating airline carrier penalties.',
       icon: FileCheck2,
-      badge: 'Timatic Compliance'
+      badge: isFr ? 'Conformité Timatic' : 'Timatic Compliance'
     },
     {
-      title: 'Flight Crew & Partner Facilitation',
-      desc: 'Dedicated flight crew concourse transport, general declaration customs dispatch, briefing pack coordination, and apron security escorts.',
+      title: isFr ? 'Facilitation Équipages & Partenaires' : 'Flight Crew & Partner Facilitation',
+      desc: isFr
+        ? 'Transport dédié des équipages vers le hall, dédouanement de déclaration générale, préparation des dossiers de vol et escorte de sécurité sur le tarmac.'
+        : 'Dedicated flight crew concourse transport, general declaration customs dispatch, briefing pack coordination, and apron security escorts.',
       icon: ShieldCheck,
-      badge: '24/7 Operations'
-    }
-  ];
-
-  const stations = [
-    {
-      code: 'ACC · Kotoka Terminal 3',
-      city: 'Accra, Greater Accra',
-      scope: 'Wide-body international flag carriers, regional inter-African services, and 24/7 passenger handling across 42 dedicated check-in counters and 10 departure gates.',
-      status: '24/7 Active Watch'
-    },
-    {
-      code: 'KMS · Prempeh I International',
-      city: 'Kumasi, Ashanti Region',
-      scope: 'High-frequency domestic trunk routes linking Kumasi to Accra, with dedicated local check-in counters and rapid turnarounds.',
-      status: 'Daily Operations'
-    },
-    {
-      code: 'TML · Tamale International',
-      city: 'Tamale, Northern Region',
-      scope: 'Northern Ghana hub supporting scheduled domestic services, special regional charters, and annual international Hajj passenger operations.',
-      status: 'Operational Support'
+      badge: isFr ? 'Opérations 24/7' : '24/7 Operations'
     }
   ];
 
@@ -103,7 +97,7 @@ export const PassengerServicesPage: React.FC<PassengerServicesPageProps> = ({ on
               onClick={() => onNavigate('/')}
               className="hover:text-[#204696] font-medium transition-colors cursor-pointer"
             >
-              Home
+              {isFr ? 'Accueil' : 'Home'}
             </button>
             <span>/</span>
             <button
@@ -113,7 +107,7 @@ export const PassengerServicesPage: React.FC<PassengerServicesPageProps> = ({ on
               Services
             </button>
             <span>/</span>
-            <span className="text-[#204696] font-semibold">Passenger Services</span>
+            <span className="text-[#204696] font-semibold">{isFr ? 'Services Passagers' : 'Passenger Services'}</span>
           </div>
         </div>
       </div>
@@ -127,11 +121,13 @@ export const PassengerServicesPage: React.FC<PassengerServicesPageProps> = ({ on
 
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
           <h1 className="text-3xl sm:text-4xl lg:text-[46px] font-bold tracking-[-0.028em] text-white leading-[1.14]">
-            Passenger Services &amp; Terminal Operations
+            {isFr ? 'Services Passagers & Opérations de Terminal' : 'Passenger Services & Terminal Operations'}
           </h1>
 
           <p className="text-base sm:text-lg text-blue-100/90 font-normal leading-relaxed max-w-3xl">
-            Aviance Ghana delivers seamless, hospitable front-of-house passenger operations for over 40 global airlines. From precision DCS check-in and boarding gate reconciliation to specialized PRM mobility care and flight crew liaison, our certified teams represent your brand with distinction.
+            {isFr
+              ? 'Aviance Ghana assure des services d\'accueil passagers fluides et chaleureux pour plus de 40 compagnies aériennes mondiales. De l\'enregistrement DCS de haute précision à l\'assistance mobilité PMR et la coordination des équipages, nos équipes certifiées incarnent votre marque avec distinction.'
+              : 'Aviance Ghana delivers seamless, hospitable front-of-house passenger operations for over 40 global airlines. From precision DCS check-in and boarding gate reconciliation to specialized PRM mobility care and flight crew liaison, our certified teams represent your brand with distinction.'}
           </p>
 
           <div className="pt-2 flex flex-wrap items-center gap-3">
@@ -139,7 +135,7 @@ export const PassengerServicesPage: React.FC<PassengerServicesPageProps> = ({ on
               onClick={() => onNavigate('/contact')}
               className="px-6 py-3 rounded-xl bg-[#009EE0] hover:bg-[#008bc5] text-white text-xs sm:text-sm font-bold shadow-lg shadow-[#009EE0]/20 transition-all flex items-center gap-2 cursor-pointer"
             >
-              <span>Partner Ground Handling Inquiry</span>
+              <span>{isFr ? 'Demande de Partenariat d\'Assistance' : 'Partner Ground Handling Inquiry'}</span>
               <ArrowRight className="w-4 h-4" />
             </button>
             <a
@@ -147,14 +143,14 @@ export const PassengerServicesPage: React.FC<PassengerServicesPageProps> = ({ on
               className="px-5 py-3 border border-white/20 bg-white/10 hover:bg-white/15 text-white text-xs sm:text-sm font-semibold rounded-xl backdrop-blur-md transition-all flex items-center gap-2"
             >
               <Phone className="w-4 h-4 text-[#72BF44]" />
-              <span>Duty Manager (+233 (0) 244 342 526)</span>
+              <span>{isFr ? 'Chef d\'Escale (+233 (0) 244 342 526)' : 'Duty Manager (+233 (0) 244 342 526)'}</span>
             </a>
             <button
               onClick={() => onNavigate('/find-my-bag')}
               className="px-5 py-3 border border-white/20 bg-white/10 hover:bg-white/15 text-white text-xs sm:text-sm font-semibold rounded-xl backdrop-blur-md transition-all flex items-center gap-2 cursor-pointer"
             >
               <Luggage className="w-4 h-4 text-[#58C1EB]" />
-              <span>Find My Bag Tracing</span>
+              <span>{isFr ? 'Suivi Bagages' : 'Find My Bag Tracing'}</span>
             </button>
           </div>
         </div>
@@ -166,19 +162,27 @@ export const PassengerServicesPage: React.FC<PassengerServicesPageProps> = ({ on
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
             <div className="space-y-1">
               <div className="text-2xl sm:text-3xl font-extrabold text-[#204696] dark:text-[#58C1EB]">1.5M+</div>
-              <div className="text-xs uppercase font-bold tracking-wider text-slate-500">Annual Passengers Handled</div>
+              <div className="text-xs uppercase font-bold tracking-wider text-slate-500">
+                {isFr ? 'Passagers Annuels Traités' : 'Annual Passengers Handled'}
+              </div>
             </div>
             <div className="space-y-1">
               <div className="text-2xl sm:text-3xl font-extrabold text-[#009EE0]">40+</div>
-              <div className="text-xs uppercase font-bold tracking-wider text-slate-500">Global Airline Partners</div>
+              <div className="text-xs uppercase font-bold tracking-wider text-slate-500">
+                {isFr ? 'Compagnies Partenaires' : 'Global Airline Partners'}
+              </div>
             </div>
             <div className="space-y-1">
               <div className="text-2xl sm:text-3xl font-extrabold text-[#72BF44]">99.2%</div>
-              <div className="text-xs uppercase font-bold tracking-wider text-slate-500">On-Time Boarding Dispatch</div>
+              <div className="text-xs uppercase font-bold tracking-wider text-slate-500">
+                {isFr ? 'Ponctualité à l\'Embarquement' : 'On-Time Boarding Dispatch'}
+              </div>
             </div>
             <div className="space-y-1">
               <div className="text-2xl sm:text-3xl font-extrabold text-amber-500">100%</div>
-              <div className="text-xs uppercase font-bold tracking-wider text-slate-500">PRM Care Compliance</div>
+              <div className="text-xs uppercase font-bold tracking-wider text-slate-500">
+                {isFr ? 'Conformité Assistance PMR' : 'PRM Care Compliance'}
+              </div>
             </div>
           </div>
         </div>
@@ -196,16 +200,20 @@ export const PassengerServicesPage: React.FC<PassengerServicesPageProps> = ({ on
                 <h2 className={`text-2xl sm:text-3xl lg:text-4xl font-extrabold uppercase tracking-tight ${
                   isLight ? 'text-slate-900' : 'text-white'
                 }`}>
-                  Passenger Services
+                  {isFr ? 'Services Passagers' : 'Passenger Services'}
                 </h2>
                 <div className={`mt-4 space-y-3 text-sm sm:text-base leading-relaxed ${
                   isLight ? 'text-slate-700' : 'text-slate-200'
                 }`}>
                   <p>
-                    Aviance Ghana provides professional passenger handling services designed to support a smooth journey from check-in to boarding and arrival.
+                    {isFr
+                      ? 'Aviance Ghana fournit des services professionnels d\'assistance aux passagers, conçus pour assurer un voyage sans encombre de l\'enregistrement à l\'embarquement et à l\'arrivée.'
+                      : 'Aviance Ghana provides professional passenger handling services designed to support a smooth journey from check-in to boarding and arrival.'}
                   </p>
                   <p>
-                    Our trained teams work closely with airline partners to deliver efficient, courteous and reliable service while meeting applicable operational, safety and security requirements.
+                    {isFr
+                      ? 'Nos équipes qualifiées travaillent en étroite collaboration avec nos partenaires aériens pour offrir un service efficace, courtois et fiable tout en respectant l\'ensemble des exigences opérationnelles, de sûreté et de sécurité.'
+                      : 'Our trained teams work closely with airline partners to deliver efficient, courteous and reliable service while meeting applicable operational, safety and security requirements.'}
                   </p>
                 </div>
               </div>
@@ -214,19 +222,29 @@ export const PassengerServicesPage: React.FC<PassengerServicesPageProps> = ({ on
                 <h3 className={`text-base sm:text-lg font-bold mb-3 ${
                   isLight ? 'text-slate-900' : 'text-white'
                 }`}>
-                  Key services
+                  {isFr ? 'Services clés' : 'Key services'}
                 </h3>
                 <ul className={`space-y-2.5 text-sm sm:text-base ${
                   isLight ? 'text-slate-700' : 'text-slate-200'
                 }`}>
-                  {[
-                    'Check-in and travel-document support.',
-                    'Boarding and gate services.',
-                    'Arrival and transfer assistance.',
-                    'Baggage service support.',
-                    'Special assistance for passengers with reduced mobility.',
-                    'Passenger disruption support.'
-                  ].map((item, idx) => (
+                  {(isFr
+                    ? [
+                        'Assistance à l\'enregistrement et vérification des documents de voyage.',
+                        'Services d\'embarquement et de gestion des portes.',
+                        'Assistance aux arrivées et transferts de passagers.',
+                        'Support et traitement des litiges bagages.',
+                        'Assistance spéciale pour les passagers à mobilité réduite (PMR).',
+                        'Prise en charge des passagers en cas d\'irrégularité de vol.'
+                      ]
+                    : [
+                        'Check-in and travel-document support.',
+                        'Boarding and gate services.',
+                        'Arrival and transfer assistance.',
+                        'Baggage service support.',
+                        'Special assistance for passengers with reduced mobility.',
+                        'Passenger disruption support.'
+                      ]
+                  ).map((item, idx) => (
                     <li key={idx} className="flex items-start gap-2.5">
                       <span className="text-slate-400 dark:text-slate-500 font-bold select-none">•</span>
                       <span>{item}</span>
@@ -266,14 +284,16 @@ export const PassengerServicesPage: React.FC<PassengerServicesPageProps> = ({ on
             <div className="flex items-center gap-2">
               <span className="w-1.5 h-4 rounded-full bg-[#204696]" />
               <span className={`text-xs font-bold uppercase tracking-wider ${isLight ? 'text-[#204696]' : 'text-[#58C1EB]'}`}>
-                Front-of-House Capabilities
+                {isFr ? 'Capacités Opérationnelles' : 'Front-of-House Capabilities'}
               </span>
             </div>
             <h2 className={`text-2xl sm:text-3xl font-extrabold tracking-tight ${isLight ? 'text-slate-900' : 'text-white'}`}>
-              End-to-End Terminal Handling & Passenger Care
+              {isFr ? 'Prise en Charge Terminal & Soin aux Passagers' : 'End-to-End Terminal Handling & Passenger Care'}
             </h2>
             <p className={`text-sm sm:text-base leading-relaxed ${isLight ? 'text-slate-600' : 'text-slate-300'}`}>
-              Every flight touchpoint is staffed by IATA-certified customer service agents trained in passenger psychology, de-escalation, airline-specific DCS systems, and international safety protocols.
+              {isFr
+                ? 'Chaque étape du parcours passager est assurée par des agents formés et certifiés IATA, formés aux systèmes DCS spécifiques des compagnies aériennes et aux protocoles internationaux de sécurité.'
+                : 'Every flight touchpoint is staffed by IATA-certified customer service agents trained in passenger psychology, de-escalation, airline-specific DCS systems, and international safety protocols.'}
             </p>
           </div>
 
@@ -316,11 +336,11 @@ export const PassengerServicesPage: React.FC<PassengerServicesPageProps> = ({ on
               <div className="flex items-center gap-2 mb-1">
                 <span className="w-1.5 h-4 rounded-full bg-[#72BF44]" />
                 <span className={`text-xs font-bold uppercase tracking-wider ${isLight ? 'text-[#3B7A1C]' : 'text-[#72BF44]'}`}>
-                  Authentic Concourse Operations
+                  {isFr ? 'Opérations d\'Accueil Réelles' : 'Authentic Concourse Operations'}
                 </span>
               </div>
               <h2 className={`text-2xl sm:text-3xl font-extrabold ${isLight ? 'text-slate-900' : 'text-white'}`}>
-                Airside & Terminal Operations in Action
+                {isFr ? 'Opérations Côté Piste & Terminal en Action' : 'Airside & Terminal Operations in Action'}
               </h2>
             </div>
           </div>
@@ -333,8 +353,12 @@ export const PassengerServicesPage: React.FC<PassengerServicesPageProps> = ({ on
                 className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent p-5 flex flex-col justify-end">
-                <p className="text-white font-bold text-base">Terminal 3 DCS Check-In Counters</p>
-                <p className="text-xs text-slate-300">Fast-track electronic baggage induction and passenger processing.</p>
+                <p className="text-white font-bold text-base">
+                  {isFr ? 'Comptoirs d\'Enregistrement DCS Terminal 3' : 'Terminal 3 DCS Check-In Counters'}
+                </p>
+                <p className="text-xs text-slate-300">
+                  {isFr ? 'Traitement électronique rapide des bagages et enregistrement passagers.' : 'Fast-track electronic baggage induction and passenger processing.'}
+                </p>
               </div>
             </div>
 
@@ -345,8 +369,12 @@ export const PassengerServicesPage: React.FC<PassengerServicesPageProps> = ({ on
                 className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent p-5 flex flex-col justify-end">
-                <p className="text-white font-bold text-base">Customer Service Concourse Team</p>
-                <p className="text-xs text-slate-300">Dedicated passenger care, boarding supervisors & PRM ambassadors.</p>
+                <p className="text-white font-bold text-base">
+                  {isFr ? 'Équipe Service Client du Hall' : 'Customer Service Concourse Team'}
+                </p>
+                <p className="text-xs text-slate-300">
+                  {isFr ? 'Prise en charge dédiée, superviseurs d\'embarquement & ambassadeurs PMR.' : 'Dedicated passenger care, boarding supervisors & PRM ambassadors.'}
+                </p>
               </div>
             </div>
 
@@ -357,8 +385,12 @@ export const PassengerServicesPage: React.FC<PassengerServicesPageProps> = ({ on
                 className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent p-5 flex flex-col justify-end">
-                <p className="text-white font-bold text-base">Partner Airline Crew Liaison</p>
-                <p className="text-xs text-slate-300">Close coordination with international flight crews and station managers.</p>
+                <p className="text-white font-bold text-base">
+                  {isFr ? 'Liaison avec les Équipages Partenaires' : 'Partner Airline Crew Liaison'}
+                </p>
+                <p className="text-xs text-slate-300">
+                  {isFr ? 'Coordination étroite avec les équipages internationaux et chefs d\'escale.' : 'Close coordination with international flight crews and station managers.'}
+                </p>
               </div>
             </div>
           </div>

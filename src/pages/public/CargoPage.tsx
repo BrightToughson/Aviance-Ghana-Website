@@ -25,7 +25,8 @@ interface CargoPageProps {
 
 export const CargoPage: React.FC<CargoPageProps> = ({ onNavigate, onOpenCargoModal }) => {
   const { isLight } = useTheme();
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
+  const isFr = language === 'fr';
 
   return (
     <div className={`min-h-screen pb-24 sm:pb-32 transition-colors ${isLight ? 'bg-white text-slate-800' : 'bg-[#0B1528] text-slate-100'}`}>
@@ -37,7 +38,7 @@ export const CargoPage: React.FC<CargoPageProps> = ({ onNavigate, onOpenCargoMod
               onClick={() => onNavigate('/')}
               className="hover:text-[#204696] font-medium transition-colors cursor-pointer"
             >
-              Home
+              {isFr ? 'Accueil' : 'Home'}
             </button>
             <span>/</span>
             <button
@@ -47,7 +48,7 @@ export const CargoPage: React.FC<CargoPageProps> = ({ onNavigate, onOpenCargoMod
               Services
             </button>
             <span>/</span>
-            <span className="text-[#204696] font-semibold">Cargo Services</span>
+            <span className="text-[#204696] font-semibold">{isFr ? 'Services de Fret Aérien' : 'Cargo Services'}</span>
           </div>
         </div>
       </div>
@@ -61,11 +62,13 @@ export const CargoPage: React.FC<CargoPageProps> = ({ onNavigate, onOpenCargoMod
 
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-5">
           <h1 className="text-3xl sm:text-4xl lg:text-[46px] font-bold tracking-[-0.028em] text-white leading-[1.14]">
-            {t('pages.cargo.title', 'Air Cargo Logistics & Cold Chain Infrastructure')}
+            {t('pages.cargo.title', isFr ? 'Logistique de Fret Aérien & Chaîne du Froid' : 'Air Cargo Logistics & Cold Chain Infrastructure')}
           </h1>
 
           <p className="text-base sm:text-lg text-blue-100/90 font-normal leading-relaxed max-w-3xl">
-            {t('pages.cargo.desc', 'Ghana’s premier EU RA3-certified air freight handling terminal. Providing continuous cold-chain perishable vaults, pharmaceutical Good Distribution Practice (GDP) handling, dangerous goods staging, and direct customs integration.')}
+            {t('pages.cargo.desc', isFr
+              ? 'Premier terminal de traitement de fret aérien certifié UE RA3 au Ghana. Chambres froides dédiées aux denrées périssables, manutention pharmaceutique BPDG, zone marchandises dangereuses et intégration douanière directe.'
+              : 'Ghana’s premier EU RA3-certified air freight handling terminal. Providing continuous cold-chain perishable vaults, pharmaceutical Good Distribution Practice (GDP) handling, dangerous goods staging, and direct customs integration.')}
           </p>
 
           <div className="pt-2 flex flex-wrap items-center gap-3">
@@ -74,13 +77,13 @@ export const CargoPage: React.FC<CargoPageProps> = ({ onNavigate, onOpenCargoMod
               className="px-5 py-3 border border-white/20 bg-white/10 hover:bg-white/15 text-white text-xs sm:text-sm font-semibold rounded-xl backdrop-blur-md transition-all flex items-center gap-2"
             >
               <Phone className="w-3.5 h-3.5 text-[#72BF44]" />
-              <span>{t('pages.cargo.hotline', 'Cargo Operations Desk (+233 (0) 59 381 6076)')}</span>
+              <span>{t('pages.cargo.hotline', isFr ? 'Bureau des Opérations Fret (+233 (0) 59 381 6076)' : 'Cargo Operations Desk (+233 (0) 59 381 6076)')}</span>
             </a>
             <button
               onClick={onOpenCargoModal}
               className="px-6 py-3 rounded-xl bg-[#009EE0] hover:bg-[#008bc5] text-white text-xs sm:text-sm font-bold shadow-lg shadow-[#009EE0]/20 transition-all flex items-center gap-2 cursor-pointer"
             >
-              <span>Submit Cargo Rate Inquiry</span>
+              <span>{isFr ? 'Demande de Cotation Fret' : 'Submit Cargo Rate Inquiry'}</span>
               <ArrowRight className="w-4 h-4" />
             </button>
           </div>
@@ -99,16 +102,20 @@ export const CargoPage: React.FC<CargoPageProps> = ({ onNavigate, onOpenCargoMod
                 <h2 className={`text-2xl sm:text-3xl lg:text-4xl font-extrabold uppercase tracking-tight ${
                   isLight ? 'text-slate-900' : 'text-white'
                 }`}>
-                  Cargo Services
+                  {isFr ? 'Services de Fret' : 'Cargo Services'}
                 </h2>
                 <div className={`mt-4 space-y-3 text-sm sm:text-base leading-relaxed ${
                   isLight ? 'text-slate-700' : 'text-slate-200'
                 }`}>
                   <p>
-                    Aviance Ghana provides secure and efficient import and export cargo handling services supported by experienced teams, established procedures and modern cargo systems.
+                    {isFr
+                      ? 'Aviance Ghana fournit des services d\'assistance au fret import et export sécurisés et performants, soutenus par des équipes chevronnées, des procédures établies et des systèmes fret de pointe.'
+                      : 'Aviance Ghana provides secure and efficient import and export cargo handling services supported by experienced teams, established procedures and modern cargo systems.'}
                   </p>
                   <p>
-                    With a current market share of approximately <strong className={isLight ? 'text-slate-900 font-bold' : 'text-white font-bold'}>60% in 2025</strong>, our cargo operations support airline customers, freight partners and authorised clearing agents while maintaining a strong focus on safety, security, accuracy and service delivery.
+                    {isFr
+                      ? <>Avec une part de marché d&apos;environ <strong className={isLight ? 'text-slate-900 font-bold' : 'text-white font-bold'}>60% en 2025</strong>, nos opérations fret accompagnent les compagnies aériennes clientes, transitaires et déclarants en douane agréés dans le respect strict des exigences de sécurité, de sûreté et de ponctualité.</>
+                      : <>With a current market share of approximately <strong className={isLight ? 'text-slate-900 font-bold' : 'text-white font-bold'}>60% in 2025</strong>, our cargo operations support airline customers, freight partners and authorised clearing agents while maintaining a strong focus on safety, security, accuracy and service delivery.</>}
                   </p>
                 </div>
               </div>
@@ -117,19 +124,29 @@ export const CargoPage: React.FC<CargoPageProps> = ({ onNavigate, onOpenCargoMod
                 <h3 className={`text-base sm:text-lg font-bold mb-3 ${
                   isLight ? 'text-slate-900' : 'text-white'
                 }`}>
-                  Key services
+                  {isFr ? 'Services clés' : 'Key services'}
                 </h3>
                 <ul className={`space-y-2.5 text-sm sm:text-base ${
                   isLight ? 'text-slate-700' : 'text-slate-200'
                 }`}>
-                  {[
-                    'Import and export cargo handling.',
-                    'Cargo acceptance and documentation support.',
-                    'Warehouse handling and storage.',
-                    'Special cargo handling, subject to applicable requirements.',
-                    'Cargo messaging and tracking support.',
-                    'Coordination with airlines and authorised clearing agents.'
-                  ].map((item, idx) => (
+                  {(isFr
+                    ? [
+                        'Manutention du fret à l\'importation et à l\'exportation.',
+                        'Réception du fret et traitement documentaire.',
+                        'Gestion et stockage en entrepôt sous douane.',
+                        'Traitement des cargaisons spéciales sous réserve des exigences applicables.',
+                        'Messagerie fret et suivi des expéditions.',
+                        'Coordination avec les compagnies aériennes et agents en douane agréés.'
+                      ]
+                    : [
+                        'Import and export cargo handling.',
+                        'Cargo acceptance and documentation support.',
+                        'Warehouse handling and storage.',
+                        'Special cargo handling, subject to applicable requirements.',
+                        'Cargo messaging and tracking support.',
+                        'Coordination with airlines and authorised clearing agents.'
+                      ]
+                  ).map((item, idx) => (
                     <li key={idx} className="flex items-start gap-2.5">
                       <span className="text-slate-400 dark:text-slate-500 font-bold select-none">•</span>
                       <span>{item}</span>
@@ -174,15 +191,15 @@ export const CargoPage: React.FC<CargoPageProps> = ({ onNavigate, onOpenCargoMod
                 <span className={`text-[11px] sm:text-xs font-bold uppercase tracking-[0.12em] ${
                   isLight ? 'text-[#204696]' : 'text-[#58C1EB]'
                 }`}>
-                  Authentic Facility Showcase
+                  {isFr ? 'Infrastructures Authentiques' : 'Authentic Facility Showcase'}
                 </span>
               </div>
               <h2 className={`text-2xl sm:text-3xl font-bold tracking-[-0.025em] leading-snug ${isLight ? 'text-slate-900' : 'text-white'}`}>
-                Aviance Cargo Hub Infrastructure & Ramp Handling
+                {isFr ? 'Infrastructures du Hub Fret & Manutention Piste' : 'Aviance Cargo Hub Infrastructure & Ramp Handling'}
               </h2>
             </div>
             <span className="text-xs font-mono font-semibold text-emerald-500 bg-emerald-500/10 px-3 py-1 rounded-full border border-emerald-500/20 self-start sm:self-auto">
-              RA3 Validated Facility
+              {isFr ? 'Installation Validée RA3' : 'RA3 Validated Facility'}
             </span>
           </div>
 
@@ -199,10 +216,12 @@ export const CargoPage: React.FC<CargoPageProps> = ({ onNavigate, onOpenCargoMod
               <div className="space-y-1">
                 <div>
                   <h3 className={`text-sm font-bold ${isLight ? 'text-slate-900' : 'text-white'}`}>
-                    Cold Storage & Screening Hub
+                    {isFr ? 'Pôle Chambres Froides & Filtrage' : 'Cold Storage & Screening Hub'}
                   </h3>
                   <p className={`text-xs mt-1.5 leading-relaxed ${isLight ? 'text-slate-600' : 'text-slate-400'}`}>
-                    Temperature-controlled pharmaceutical vaults, fresh fruits, vegetables, and specialized perishable cargo staging.
+                    {isFr
+                      ? 'Chambres froides à température dirigée pour produits pharmaceutiques, fruits frais, légumes et denrées périssables.'
+                      : 'Temperature-controlled pharmaceutical vaults, fresh fruits, vegetables, and specialized perishable cargo staging.'}
                   </p>
                 </div>
               </div>
@@ -220,10 +239,12 @@ export const CargoPage: React.FC<CargoPageProps> = ({ onNavigate, onOpenCargoMod
               <div className="space-y-1">
                 <div>
                   <h3 className={`text-sm font-bold ${isLight ? 'text-slate-900' : 'text-white'}`}>
-                    Bonded Warehouse Staging
+                    {isFr ? 'Entreposage Sous Douane' : 'Bonded Warehouse Staging'}
                   </h3>
                   <p className={`text-xs mt-1.5 leading-relaxed ${isLight ? 'text-slate-600' : 'text-slate-400'}`}>
-                    Physical cargo examination, customs clearance seal verification, and high-density racking under 24/7 CCTV surveillance.
+                    {isFr
+                      ? 'Examen physique des cargaisons, vérification des scellés de dédouanement et rayonnage haute densité sous vidéosurveillance 24/7.'
+                      : 'Physical cargo examination, customs clearance seal verification, and high-density racking under 24/7 CCTV surveillance.'}
                   </p>
                 </div>
               </div>
@@ -241,10 +262,12 @@ export const CargoPage: React.FC<CargoPageProps> = ({ onNavigate, onOpenCargoMod
               <div className="space-y-1">
                 <div>
                   <h3 className={`text-sm font-bold ${isLight ? 'text-slate-900' : 'text-white'}`}>
-                    Heavy Forklift Fleet Staging
+                    {isFr ? 'Flotte de Chariots Élévateurs Lourds' : 'Heavy Forklift Fleet Staging'}
                   </h3>
                   <p className={`text-xs mt-1.5 leading-relaxed ${isLight ? 'text-slate-600' : 'text-slate-400'}`}>
-                    Direct airside access tarmac ramps, heavy-duty forklift fleet handling outsized freight, machinery, and project shipments.
+                    {isFr
+                      ? 'Accès direct tarmac, flotte de chariots élévateurs haute capacité pour fret hors gabarit, machinerie et colis lourds.'
+                      : 'Direct airside access tarmac ramps, heavy-duty forklift fleet handling outsized freight, machinery, and project shipments.'}
                   </p>
                 </div>
               </div>
@@ -262,10 +285,12 @@ export const CargoPage: React.FC<CargoPageProps> = ({ onNavigate, onOpenCargoMod
               <div className="space-y-1">
                 <div>
                   <h3 className={`text-sm font-bold ${isLight ? 'text-slate-900' : 'text-white'}`}>
-                    Airside ULD Ramp Delivery
+                    {isFr ? 'Livraison ULD sur Tarmac' : 'Airside ULD Ramp Delivery'}
                   </h3>
                   <p className={`text-xs mt-1.5 leading-relaxed ${isLight ? 'text-slate-600' : 'text-slate-400'}`}>
-                    Aviance tug tractors pulling containerized ULD dollies directly to aircraft belly and main-deck cargo loaders on time.
+                    {isFr
+                      ? 'Tracteurs Aviance acheminant les conteneurs ULD directement aux pieds des chargeurs de soute et pont principal dans les temps.'
+                      : 'Aviance tug tractors pulling containerized ULD dollies directly to aircraft belly and main-deck cargo loaders on time.'}
                   </p>
                 </div>
               </div>
@@ -284,10 +309,12 @@ export const CargoPage: React.FC<CargoPageProps> = ({ onNavigate, onOpenCargoMod
               <Thermometer className="w-5 h-5" />
             </div>
             <h3 className={`text-lg font-bold ${isLight ? 'text-slate-900' : 'text-white'}`}>
-              {t('pages.cargo.coldChainTitle', 'Cold Chain & Perishables')}
+              {t('pages.cargo.coldChainTitle', isFr ? 'Chaîne du Froid & Denrées Périssables' : 'Cold Chain & Perishables')}
             </h3>
             <p className={`text-xs leading-relaxed ${isLight ? 'text-slate-600' : 'text-slate-400'}`}>
-              {t('pages.cargo.coldChainDesc', '450m³ dual-redundant cold storage maintaining +2°C to +8°C for pharmaceuticals, fresh fruits, vegetables, and -20°C deep freeze for sea produce and specialized cargo.')}
+              {t('pages.cargo.coldChainDesc', isFr
+                ? '450m³ de stockage frigorifique maintenant +2°C à +8°C pour produits pharmaceutiques, fruits frais, légumes, et surgélation à -20°C pour produits de la mer.'
+                : '450m³ dual-redundant cold storage maintaining +2°C to +8°C for pharmaceuticals, fresh fruits, vegetables, and -20°C deep freeze for sea produce and specialized cargo.')}
             </p>
           </div>
 
@@ -300,10 +327,12 @@ export const CargoPage: React.FC<CargoPageProps> = ({ onNavigate, onOpenCargoMod
               <ShieldCheck className="w-5 h-5" />
             </div>
             <h3 className={`text-lg font-bold ${isLight ? 'text-slate-900' : 'text-white'}`}>
-              {t('pages.cargo.ra3Title', 'EU RA3 Security Screening')}
+              {t('pages.cargo.ra3Title', isFr ? 'Sûreté & Filtrage UE RA3' : 'EU RA3 Security Screening')}
             </h3>
             <p className={`text-xs leading-relaxed ${isLight ? 'text-slate-600' : 'text-slate-400'}`}>
-              {t('pages.cargo.ra3Desc', 'Regulated Agent Third Country (RA3) accredited security infrastructure. High-penetration dual-view X-ray inspection, explosive trace detection, and bonded physical escort.')}
+              {t('pages.cargo.ra3Desc', isFr
+                ? 'Infrastructures de sûreté accréditées Agent Habilité Pays Tiers (RA3). Rayons X double vue à haute pénétration, détection de traces d\'explosifs et escorte sécurisée.'
+                : 'Regulated Agent Third Country (RA3) accredited security infrastructure. High-penetration dual-view X-ray inspection, explosive trace detection, and bonded physical escort.')}
             </p>
           </div>
 
@@ -316,10 +345,12 @@ export const CargoPage: React.FC<CargoPageProps> = ({ onNavigate, onOpenCargoMod
               <Scale className="w-5 h-5" />
             </div>
             <h3 className={`text-lg font-bold ${isLight ? 'text-slate-900' : 'text-white'}`}>
-              {t('pages.cargo.dgTitle', 'ULD Build-up & Breakdown')}
+              {t('pages.cargo.dgTitle', isFr ? 'Montage & Démontage ULD' : 'ULD Build-up & Breakdown')}
             </h3>
             <p className={`text-xs leading-relaxed ${isLight ? 'text-slate-600' : 'text-slate-400'}`}>
-              {t('pages.cargo.dgDesc', 'Specialized roller-bed staging areas for wide-body freighter pallets (PMC, PAG, AMF, AKE). Precision calibrated digital weigh bridges and tie-down net securing under IATA AHM.')}
+              {t('pages.cargo.dgDesc', isFr
+                ? 'Aires de stockage à rouleaux dédiées pour palettes avions-cargos gros porteurs (PMC, PAG, AMF, AKE). Ponts-bascules numériques étalonnés et arrimage conforme IATA AHM.'
+                : 'Specialized roller-bed staging areas for wide-body freighter pallets (PMC, PAG, AMF, AKE). Precision calibrated digital weigh bridges and tie-down net securing under IATA AHM.')}
             </p>
           </div>
         </div>

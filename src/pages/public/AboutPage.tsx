@@ -17,6 +17,7 @@ import {
   Mail
 } from 'lucide-react';
 import { useTheme } from '../../context/ThemeContext';
+import { useLanguage } from '../../context/LanguageContext';
 import { ScrollReveal } from '../../components/ui/ScrollReveal';
 import careersTeamImg from '../../assets/aviance_images/careers_team.jpg';
 import isagoCertImg from '../../assets/aviance_images/certificates/f52640_e678c4204cbd4ff1ae9a7afb634acf02~mv2.jpg';
@@ -27,6 +28,8 @@ interface AboutPageProps {
 
 export const AboutPage: React.FC<AboutPageProps> = ({ onNavigate }) => {
   const { isLight } = useTheme();
+  const { language } = useLanguage();
+  const isFr = language === 'fr';
 
   useEffect(() => {
     if (window.location.pathname === '/csr' || window.location.hash === '#csr') {
@@ -49,10 +52,10 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onNavigate }) => {
               onClick={() => onNavigate('/')}
               className="hover:text-[#204696] font-medium transition-colors cursor-pointer"
             >
-              Home
+              {isFr ? 'Accueil' : 'Home'}
             </button>
             <span>/</span>
-            <span className="text-[#204696] font-semibold">About Us</span>
+            <span className="text-[#204696] font-semibold">{isFr ? 'À Propos' : 'About Us'}</span>
           </div>
         </div>
       </div>
@@ -65,11 +68,13 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onNavigate }) => {
         
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-4">
           <h1 className="text-3xl sm:text-4xl lg:text-[46px] font-bold tracking-[-0.028em] text-white leading-[1.14]">
-            About Aviance Ghana
+            {isFr ? 'À Propos d\'Aviance Ghana' : 'About Aviance Ghana'}
           </h1>
 
           <p className="text-base sm:text-lg text-blue-100/90 font-normal leading-relaxed max-w-3xl">
-            Ghana's premier aviation ground handling agent, delivering certified passenger services, ramp turnaround, cold-chain cargo logistics, and executive lounge hospitality across Accra, Kumasi, and Tamale.
+            {isFr
+              ? 'Premier agent d\'assistance en escale au Ghana, assurant des services passagers certifiés, des rotations en piste, une logistique de fret sous chaîne du froid et des salons aéroportuaires de direction à Accra, Kumasi et Tamale.'
+              : "Ghana's premier aviation ground handling agent, delivering certified passenger services, ramp turnaround, cold-chain cargo logistics, and executive lounge hospitality across Accra, Kumasi, and Tamale."}
           </p>
         </div>
       </section>

@@ -31,6 +31,7 @@ import {
 } from 'lucide-react';
 import { Service, LocationItem, Certification, NewsArticle, CustomerPartner } from '../../types';
 import { useTheme } from '../../context/ThemeContext';
+import { useLanguage } from '../../context/LanguageContext';
 import { PARTNERS_DATA } from '../../data/partnersData';
 
 // Airport images
@@ -97,6 +98,8 @@ export const HomePage: React.FC<HomePageProps> = ({
   onOpenVipModal: _onOpenVipModal,
 }) => {
   const { isLight } = useTheme();
+  const { language } = useLanguage();
+  const isFr = language === 'fr';
 
   // Complete 10 authentic photography collection from image_show folder
   const heroSlides = [
@@ -733,13 +736,17 @@ export const HomePage: React.FC<HomePageProps> = ({
 
               {/* Main Display Headline: Confident, Big & Impactful on Mobile */}
               <h1 className="animate-blur-reveal animation-delay-100 text-[28px] xs:text-[32px] sm:text-4xl md:text-5xl lg:text-[46px] xl:text-[54px] font-bold tracking-[-0.028em] text-white leading-[1.14] drop-shadow-[0_2px_12px_rgba(0,0,0,0.7)]">
-                Ground Handling & Cargo Operations <br className="hidden sm:inline" />
-                <span className="text-[#72BF44] drop-shadow-[0_2px_12px_rgba(0,0,0,0.7)] block sm:inline mt-1 sm:mt-0">Across Ghana's Premier Airports.</span>
+                {isFr ? 'Assistance en Escale & Fret Aérien' : 'Ground Handling & Cargo Operations'} <br className="hidden sm:inline" />
+                <span className="text-[#72BF44] drop-shadow-[0_2px_12px_rgba(0,0,0,0.7)] block sm:inline mt-1 sm:mt-0">
+                  {isFr ? 'Sur les Principaux Aéroports du Ghana.' : "Across Ghana's Premier Airports."}
+                </span>
               </h1>
 
               {/* Executive Subtitle: Crisp & Highly Legible on Mobile Devices */}
               <p className="animate-blur-reveal animation-delay-250 text-sm sm:text-base md:text-lg text-white/95 leading-relaxed font-normal max-w-lg mx-auto lg:mx-0 drop-shadow-[0_1px_6px_rgba(0,0,0,0.65)]">
-                Connecting Ghana to the world with ISAGO-certified ground operations, cold-chain cargo logistics, and executive airport hospitality across Accra, Kumasi, and Tamale.
+                {isFr
+                  ? 'Connecter le Ghana au monde avec des opérations au sol certifiées ISAGO, une logistique de fret sous chaîne du froid et des salons aéroportuaires de prestige à Accra, Kumasi et Tamale.'
+                  : 'Connecting Ghana to the world with ISAGO-certified ground operations, cold-chain cargo logistics, and executive airport hospitality across Accra, Kumasi, and Tamale.'}
               </p>
 
               {/* Action Buttons */}
@@ -748,14 +755,14 @@ export const HomePage: React.FC<HomePageProps> = ({
                   onClick={() => onNavigate('/services')}
                   className="px-6 sm:px-8 py-3.5 sm:py-4 rounded-full bg-[#009EE0] hover:bg-[#0089C4] text-white font-bold text-xs sm:text-sm uppercase tracking-wider shadow-md shadow-[#009EE0]/30 transition-all duration-300 hover:-translate-y-0.5 active:scale-95 flex items-center justify-center gap-2 cursor-pointer group"
                 >
-                  <span>Explore Services</span>
+                  <span>{isFr ? 'Explorer les Services' : 'Explore Services'}</span>
                   <ArrowRight className="w-4 h-4 group-hover:translate-x-1.5 transition-transform duration-300" />
                 </button>
                 <button
                   onClick={() => onNavigate('/about')}
                   className="px-5 sm:px-7 py-3.5 sm:py-4 rounded-full bg-white/12 hover:bg-white/20 text-white font-bold text-xs sm:text-sm uppercase tracking-wider border border-white/25 transition-all duration-300 backdrop-blur-md hover:-translate-y-0.5 active:scale-95 flex items-center justify-center cursor-pointer text-center"
                 >
-                  About Aviance
+                  {isFr ? 'À Propos d\'Aviance' : 'About Aviance'}
                 </button>
               </div>
             </div>
@@ -777,10 +784,12 @@ export const HomePage: React.FC<HomePageProps> = ({
             <ScrollReveal animation="fade-up">
               <div className="space-y-3.5">
                 <h2 className="text-3xl sm:text-4xl lg:text-[42px] font-bold tracking-tight text-slate-900 leading-[1.14]">
-                  Core Aviation Services
+                  {isFr ? 'Nos Services Aéronautiques' : 'Core Aviation Services'}
                 </h2>
                 <p className="text-base sm:text-lg text-slate-600 leading-relaxed font-normal">
-                  Aviance Ghana delivers safe, certified ground handling across terminal, apron, cargo, and hospitality operations. Slide through each service below to view authentic operations, key capabilities, and direct access.
+                  {isFr
+                    ? 'Aviance Ghana assure une assistance au sol sûre et certifiée pour le terminal, le tarmac, le fret et les salons VIP. Parcourez chaque service ci-dessous pour découvrir nos opérations et capacités.'
+                    : 'Aviance Ghana delivers safe, certified ground handling across terminal, apron, cargo, and hospitality operations. Slide through each service below to view authentic operations, key capabilities, and direct access.'}
                 </p>
               </div>
 
@@ -790,7 +799,7 @@ export const HomePage: React.FC<HomePageProps> = ({
                   onClick={() => onNavigate('/services')}
                   className="btn-primary group"
                 >
-                  <span>View All Services</span>
+                  <span>{isFr ? 'Voir Tous les Services' : 'View All Services'}</span>
                   <ArrowRight className="w-4 h-4 text-[#58C1EB] group-hover:translate-x-1.5 transition-transform duration-300" />
                 </button>
               </div>

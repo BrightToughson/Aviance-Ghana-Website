@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Crown, Wifi, Coffee, ShowerHead, ShieldCheck, ArrowRight, Phone, Mail, MapPin, CheckCircle2, Armchair } from 'lucide-react';
 import { useTheme } from '../../context/ThemeContext';
+import { useLanguage } from '../../context/LanguageContext';
 
 // Authentic Aviance Lounge Hospitality Photography
 import LOUNGE_OFFICIAL_IMG from '../../assets/aviance_images/services/lounge_official.jpg'; // Official Aviance Lounge Interior
@@ -14,8 +15,10 @@ interface VipLoungePageProps {
   onOpenVipModal?: () => void;
 }
 
-export const VipLoungePage: React.FC<VipLoungePageProps> = ({ onNavigate, onOpenVipModal }) => {
+export const VipLoungePage: React.FC<VipLoungePageProps> = ({ onNavigate, onOpenVipModal: _onOpenVipModal }) => {
   const { isLight } = useTheme();
+  const { language } = useLanguage();
+  const isFr = language === 'fr';
   const [passCount, setPassCount] = useState(1);
   const [_selectedLounge, _setSelectedLounge] = useState('u-lounge');
 
@@ -99,7 +102,7 @@ export const VipLoungePage: React.FC<VipLoungePageProps> = ({ onNavigate, onOpen
               onClick={() => onNavigate('/')}
               className="hover:text-[#204696] font-medium transition-colors cursor-pointer"
             >
-              Home
+              {isFr ? 'Accueil' : 'Home'}
             </button>
             <span>/</span>
             <button
@@ -109,7 +112,7 @@ export const VipLoungePage: React.FC<VipLoungePageProps> = ({ onNavigate, onOpen
               Services
             </button>
             <span>/</span>
-            <span className="text-[#204696] font-semibold">Lounge Services</span>
+            <span className="text-[#204696] font-semibold">{isFr ? 'Salons VIP' : 'Lounge Services'}</span>
           </div>
         </div>
       </div>
@@ -123,11 +126,13 @@ export const VipLoungePage: React.FC<VipLoungePageProps> = ({ onNavigate, onOpen
 
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-5">
           <h1 className="text-3xl sm:text-4xl lg:text-[46px] font-bold tracking-[-0.028em] text-white leading-[1.14]">
-            Adinkra &amp; U Lounge Hospitality
+            {isFr ? 'Hospitalité des Salons Adinkra & The U' : 'Adinkra & U Lounge Hospitality'}
           </h1>
 
           <p className="text-base sm:text-lg text-blue-100/90 font-normal leading-relaxed max-w-3xl">
-            Aviance Ghana provides comfortable airport lounge experiences for First and Business Class passengers, premium travellers, lounge programme members, and walk-in guests across Accra, Kumasi, and Tamale.
+            {isFr
+              ? 'Aviance Ghana propose une expérience haut de gamme en salon d\'aéroport pour les passagers de Première et Classe Affaires, voyageurs fréquents éligibles et passagers sans réservation à Accra, Kumasi et Tamale.'
+              : 'Aviance Ghana provides comfortable airport lounge experiences for First and Business Class passengers, premium travellers, lounge programme members, and walk-in guests across Accra, Kumasi, and Tamale.'}
           </p>
 
           <div className="pt-2 flex flex-wrap gap-3">
