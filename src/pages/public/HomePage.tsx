@@ -98,7 +98,7 @@ export const HomePage: React.FC<HomePageProps> = ({
   onOpenVipModal: _onOpenVipModal,
 }) => {
   const { isLight } = useTheme();
-  const { language } = useLanguage();
+  const { language, t } = useLanguage();
   const isFr = language === 'fr';
 
   // Complete 10 authentic photography collection from image_show folder
@@ -363,7 +363,13 @@ export const HomePage: React.FC<HomePageProps> = ({
       code: 'ACC',
       icao: 'DGAA',
       city: 'Accra, Greater Accra',
-      name: 'Kotoka International Airport',
+      name: language === 'fr' ? 'Aéroport International de Kotoka' :
+            language === 'es' ? 'Aeropuerto Internacional Kotoka' :
+            language === 'de' ? 'Kotoka International Airport' :
+            language === 'pt' ? 'Aeroporto Internacional de Kotoka' :
+            language === 'zh' ? '科托卡国际机场' :
+            language === 'ar' ? 'مطار كوتوكا الدولي' :
+            'Kotoka International Airport',
       role: 'Corporate Headquarters & Primary Hub',
       highlight: 'Terminal 3 & 2 passenger handling, 24/7 OCC nerve centre, EU RA3 bonded cargo terminal, and Adinkra lounges.',
       image: accraAirportImg,
@@ -373,7 +379,13 @@ export const HomePage: React.FC<HomePageProps> = ({
       code: 'KMS',
       icao: 'DGSI',
       city: 'Kumasi, Ashanti Region',
-      name: 'Prempeh I International Airport',
+      name: language === 'fr' ? 'Aéroport International Prempeh I' :
+            language === 'es' ? 'Aeropuerto Internacional Prempeh I' :
+            language === 'de' ? 'Prempeh I International Airport' :
+            language === 'pt' ? 'Aeroporto Internacional Prempeh I' :
+            language === 'zh' ? '普伦佩一世国际机场' :
+            language === 'ar' ? 'مطار بريمبيه الأول الدولي' :
+            'Prempeh I International Airport',
       role: 'Ashanti Commercial & VIP Gateway',
       highlight: 'Full ramp turnaround, scheduled domestic flight facilitation, VIP delegations, and Adinkra CIP lounge services.',
       image: kumasiAirportImg,
@@ -383,7 +395,13 @@ export const HomePage: React.FC<HomePageProps> = ({
       code: 'TML',
       icao: 'DGLN',
       city: 'Tamale, Northern Region',
-      name: 'Tamale International Airport',
+      name: language === 'fr' ? 'Aéroport International de Tamale' :
+            language === 'es' ? 'Aeropuerto Internacional de Tamale' :
+            language === 'de' ? 'Tamale International Airport' :
+            language === 'pt' ? 'Aeroporto Internacional de Tamale' :
+            language === 'zh' ? '塔马利国际机场' :
+            language === 'ar' ? 'مطار تامالي الدولي' :
+            'Tamale International Airport',
       role: 'Northern Strategic Gateway',
       highlight: 'Commercial passenger turnarounds, agro-cargo freighters, and annual wide-body Hajj pilgrimage flight staging.',
       image: tamaleAirportImg,
@@ -395,21 +413,39 @@ export const HomePage: React.FC<HomePageProps> = ({
   const csrHighlights = [
     {
       id: 'autism',
-      title: 'Autism Flight Travel Rehearsal',
+      title: language === 'fr' ? 'Répétition de Voyage Aérien pour Personnes Autistes' :
+             language === 'es' ? 'Simulacro de Viaje Aéreo para Personas con Autismo' :
+             language === 'de' ? 'Flugreise-Training für Menschen mit Autismus' :
+             language === 'pt' ? 'Ensaio de Viagem Aérea para Pessoas com Autismo' :
+             language === 'zh' ? '自闭症群体飞行出行无障碍模拟演练' :
+             language === 'ar' ? 'برنامج محاكاة السفر الجوي لذوي التوحد' :
+             'Autism Flight Travel Rehearsal',
       image: csrVolunteerImg,
       path: '/csr',
       imagePosition: 'object-[center_25%]'
     },
     {
       id: 'orbis',
-      title: 'Orbis Flying Eye Hospital',
+      title: language === 'fr' ? 'Hôpital Ophtalmique Volant Orbis' :
+             language === 'es' ? 'Hospital Ocular Volador Orbis' :
+             language === 'de' ? 'Fliegende Augenklinik Orbis' :
+             language === 'pt' ? 'Hospital Oftalmológico Voador Orbis' :
+             language === 'zh' ? '奥比斯眼科飞机医院保障' :
+             language === 'ar' ? 'مستشفى العيون الطائر أوربيس' :
+             'Orbis Flying Eye Hospital',
       image: csrChildLiftImg,
       path: '/csr',
       imagePosition: 'object-[center_35%]'
     },
     {
       id: 'education',
-      title: 'Education & Future Stars',
+      title: language === 'fr' ? 'Éducation & Étoiles de Demain' :
+             language === 'es' ? 'Educación y Estrellas del Futuro' :
+             language === 'de' ? 'Bildung & Zukunftssterne' :
+             language === 'pt' ? 'Educação e Futuras Estrelas' :
+             language === 'zh' ? '青少年教育与未来之星扶助' :
+             language === 'ar' ? 'التعليم ودعم نجوم المستقبل' :
+             'Education & Future Stars',
       image: csrClassroomArtImg,
       path: '/csr',
       imagePosition: 'object-center'
@@ -886,10 +922,10 @@ export const HomePage: React.FC<HomePageProps> = ({
           <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-6 mb-10 sm:mb-14 text-left">
             <div className="space-y-2.5 max-w-3xl">
               <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight text-slate-900">
-                Operating Across Ghana's Key Commercial Air Gateways
+                {t('stations.title', "Operating Across Ghana's Key Commercial Air Gateways")}
               </h2>
               <p className="text-base sm:text-lg text-slate-600 leading-relaxed font-normal">
-                Aviance Ghana maintains certified ground handling stations, ramp equipment fleets, and passenger operations across 3 premier airports.
+                {t('stations.subtitle', 'Aviance Ghana maintains certified ground handling stations, ramp equipment fleets, and passenger operations across 3 premier airports.')}
               </p>
             </div>
 
@@ -898,7 +934,7 @@ export const HomePage: React.FC<HomePageProps> = ({
                 onClick={() => onNavigate('/operations')}
                 className="btn-link group"
               >
-                <span className="link-label">View Full Operations & Map</span>
+                <span className="link-label">{t('stations.viewAll', 'View Full Operations & Map')}</span>
                 <ArrowRight className="w-4 h-4 text-[#72BF44] group-hover:translate-x-1.5 transition-transform duration-300" />
               </button>
             </div>
@@ -931,7 +967,7 @@ export const HomePage: React.FC<HomePageProps> = ({
 
                   {/* "Learn more" revealed on hover (Swissport style) */}
                   <div className="pt-1.5 flex items-center gap-2 text-sm sm:text-base font-semibold text-white transition-all duration-300 opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0">
-                    <span className="underline underline-offset-4 decoration-2 decoration-[#72BF44]">Learn more</span>
+                    <span className="underline underline-offset-4 decoration-2 decoration-[#72BF44]">{t('stations.learnMore', 'Learn more')}</span>
                     <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 text-[#72BF44] group-hover:translate-x-1.5 transition-transform" />
                   </div>
                 </div>
@@ -952,13 +988,13 @@ export const HomePage: React.FC<HomePageProps> = ({
               
               <div className="space-y-2.5 md:col-span-2">
                 <span className="text-xs font-bold uppercase tracking-wider text-[#204696]">
-                  Quality, Safety & Regulatory Accreditation
+                  {t('certBanner.eyebrow', 'Quality, Safety & Regulatory Accreditation')}
                 </span>
                 <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-900 tracking-tight">
-                  IATA ISAGO Accredited · Certificate ISAGO-ACC-24-2419
+                  {t('certBanner.title', 'IATA ISAGO Accredited · Certificate ISAGO-ACC-24-2419')}
                 </h2>
                 <p className="text-base sm:text-lg text-slate-600 leading-relaxed font-normal">
-                  Accredited under the IATA Safety Audit for Ground Operations (ISAGO) at Kotoka International Airport (ACC) through <strong>January 21, 2027</strong>. Supported by European Union Cargo RA3 security validation and Ghana Civil Aviation Authority operating licenses.
+                  {t('certBanner.desc', 'Accredited under the IATA Safety Audit for Ground Operations (ISAGO) at Kotoka International Airport (ACC) through January 21, 2027. Supported by European Union Cargo RA3 security validation and Ghana Civil Aviation Authority operating licenses.')}
                 </p>
               </div>
 
@@ -967,14 +1003,14 @@ export const HomePage: React.FC<HomePageProps> = ({
                   onClick={() => onNavigate('/certifications')}
                   className="btn-primary group"
                 >
-                  <span>View Certifications & Audits</span>
+                  <span>{t('certBanner.viewCerts', 'View Certifications & Audits')}</span>
                   <ArrowRight className="w-4 h-4 text-[#58C1EB] group-hover:translate-x-1.5 transition-transform duration-300" />
                 </button>
                 <button
                   onClick={() => onNavigate('/code-of-conduct')}
                   className="btn-secondary group"
                 >
-                  <span>Code of Conduct & Governance</span>
+                  <span>{t('certBanner.codeOfConduct', 'Code of Conduct & Governance')}</span>
                 </button>
               </div>
 
@@ -988,13 +1024,13 @@ export const HomePage: React.FC<HomePageProps> = ({
         <ScrollReveal animation="fade-up">
           <div className="text-center max-w-2xl mx-auto mb-10 sm:mb-14 space-y-2">
             <p className="eyebrow text-[#204696]">
-              Sustainability & Community Engagement
+              {t('csr.eyebrow', 'Sustainability & Community Engagement')}
             </p>
             <h2 className="text-3xl sm:text-4xl lg:text-[40px] font-bold text-slate-900 tracking-[-0.025em] leading-[1.18]">
-              Community Impact & Sustainability
+              {t('csr.title', 'Community Impact & Sustainability')}
             </h2>
             <p className="text-base text-slate-600 leading-relaxed font-normal">
-              Winner of the <strong>Excellence in CSR Award</strong> at the 2025 Ghana Shippers’ Authority Awards.
+              {t('csr.subtitle', 'Winner of the Excellence in CSR Award at the 2025 Ghana Shippers’ Authority Awards.')}
             </p>
           </div>
         </ScrollReveal>
@@ -1025,7 +1061,7 @@ export const HomePage: React.FC<HomePageProps> = ({
 
                   {/* "Read Story" revealed on hover (matching Airport card style) */}
                   <div className="pt-1.5 flex items-center gap-2 text-sm sm:text-base font-semibold text-white transition-all duration-300 opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0">
-                    <span className="underline underline-offset-4 decoration-2 decoration-[#72BF44]">Read Story</span>
+                    <span className="underline underline-offset-4 decoration-2 decoration-[#72BF44]">{t('csr.readStory', 'Read Story')}</span>
                     <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 text-[#72BF44] group-hover:translate-x-1.5 transition-transform" />
                   </div>
                 </div>
@@ -1039,7 +1075,7 @@ export const HomePage: React.FC<HomePageProps> = ({
             onClick={() => onNavigate('/csr')}
             className="btn-link group text-xs sm:text-sm"
           >
-            <span className="link-label">Explore All CSR Programs & Impact Reports</span>
+            <span className="link-label">{t('csr.exploreAll', 'Explore All CSR Programs & Impact Reports')}</span>
             <ArrowRight className="w-4 h-4 text-[#72BF44] group-hover:translate-x-2 transition-transform duration-300" />
           </button>
         </div>
@@ -1051,16 +1087,16 @@ export const HomePage: React.FC<HomePageProps> = ({
         <ScrollReveal animation="fade-up">
           <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-8 sm:mb-10 text-left">
             <div className="space-y-1.5">
-              <p className="eyebrow text-[#204696]">Corporate News & Announcements</p>
+              <p className="eyebrow text-[#204696]">{t('news.eyebrow', 'Corporate News & Announcements')}</p>
               <h2 className="text-2xl sm:text-3xl lg:text-[36px] font-bold text-slate-900 tracking-[-0.025em] leading-[1.2]">
-                Latest Updates from Aviance Ghana
+                {t('news.title', 'Latest Updates from Aviance Ghana')}
               </h2>
             </div>
             <button
               onClick={() => onNavigate('/news')}
               className="btn-link group"
             >
-              <span className="link-label">All Articles & Press Releases</span>
+              <span className="link-label">{t('news.allPress', 'All Articles & Press Releases')}</span>
               <ArrowRight className="w-4 h-4 text-[#72BF44] group-hover:translate-x-1.5 transition-transform duration-300" />
             </button>
           </div>
@@ -1151,7 +1187,7 @@ export const HomePage: React.FC<HomePageProps> = ({
                             })}
                           </span>
                           <span className="font-bold text-[#204696] tracking-wide text-[11px] uppercase">
-                            Media Release
+                            {t('news.mediaRelease', 'Media Release')}
                           </span>
                         </div>
 
@@ -1165,13 +1201,13 @@ export const HomePage: React.FC<HomePageProps> = ({
                       <div className="pt-4 border-t border-slate-100 flex items-center justify-between text-xs font-bold text-[#204696]">
                         <span className="inline-flex items-center gap-1.5 group-hover:text-[#0C1E4A] transition-colors">
                           <span className="underline underline-offset-4 decoration-2 decoration-[#72BF44]">
-                            Read Full Article
+                            {t('news.readFull', 'Read Full Article')}
                           </span>
                           <ArrowRight className="w-4 h-4 text-[#72BF44] group-hover:translate-x-1.5 transition-transform duration-300" />
                         </span>
                         <span className="text-[11px] font-medium text-slate-400 flex items-center gap-1">
                           <Clock className="w-3.5 h-3.5 text-slate-400" />
-                          <span>{item.readTimeMinutes || 2} min read</span>
+                          <span>{item.readTimeMinutes || 2} {t('news.minRead', 'min read')}</span>
                         </span>
                       </div>
                     </div>

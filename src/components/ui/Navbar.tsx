@@ -49,6 +49,56 @@ export const FlagIcon: React.FC<{ code: LanguageCode | string; className?: strin
       </svg>
     );
   }
+  if (code === 'es') {
+    return (
+      <svg viewBox="0 0 640 480" className={`${className} rounded-[2px] shadow-2xs border border-slate-200/90 inline-block shrink-0`} aria-hidden="true">
+        <path fill="#c60b1e" d="M0 0h640v480H0z"/>
+        <path fill="#ffc400" d="M0 120h640v240H0z"/>
+        <circle cx="160" cy="240" r="32" fill="#c60b1e"/>
+      </svg>
+    );
+  }
+  if (code === 'de') {
+    return (
+      <svg viewBox="0 0 640 480" className={`${className} rounded-[2px] shadow-2xs border border-slate-200/90 inline-block shrink-0`} aria-hidden="true">
+        <path fill="#000" d="M0 0h640v160H0z"/>
+        <path fill="#dd0000" d="M0 160h640v160H0z"/>
+        <path fill="#ffce00" d="M0 320h640v160H0z"/>
+      </svg>
+    );
+  }
+  if (code === 'pt') {
+    return (
+      <svg viewBox="0 0 640 480" className={`${className} rounded-[2px] shadow-2xs border border-slate-200/90 inline-block shrink-0`} aria-hidden="true">
+        <path fill="#006600" d="M0 0h256v480H0z"/>
+        <path fill="#ff0000" d="M256 0h384v480H256z"/>
+        <circle cx="256" cy="240" r="64" fill="#ffcc00"/>
+        <path fill="#fff" d="M244 216h24v48h-24z"/>
+        <path fill="#002b7f" d="M248 224h16v32h-16z"/>
+      </svg>
+    );
+  }
+  if (code === 'zh') {
+    return (
+      <svg viewBox="0 0 640 480" className={`${className} rounded-[2px] shadow-2xs border border-slate-200/90 inline-block shrink-0`} aria-hidden="true">
+        <path fill="#de2910" d="M0 0h640v480H0z"/>
+        <polygon fill="#ffde00" points="100,50 115,95 160,95 125,122 138,165 100,138 62,165 75,122 40,95 85,95"/>
+        <polygon fill="#ffde00" points="180,40 185,55 200,55 188,64 192,78 180,69 168,78 172,64 160,55 175,55"/>
+        <polygon fill="#ffde00" points="215,80 220,95 235,95 223,104 227,118 215,109 203,118 207,104 195,95 210,95"/>
+        <polygon fill="#ffde00" points="215,140 220,155 235,155 223,164 227,178 215,169 203,178 207,164 195,155 210,155"/>
+        <polygon fill="#ffde00" points="180,180 185,195 200,195 188,204 192,218 180,209 168,218 172,204 160,195 175,195"/>
+      </svg>
+    );
+  }
+  if (code === 'ar') {
+    return (
+      <svg viewBox="0 0 640 480" className={`${className} rounded-[2px] shadow-2xs border border-slate-200/90 inline-block shrink-0`} aria-hidden="true">
+        <path fill="#006c35" d="M0 0h640v480H0z"/>
+        <path fill="#fff" d="M190 280h260v16H190zM420 270l30 18-30 18v-36z"/>
+        <text x="320" y="240" fill="#fff" fontSize="56" fontWeight="bold" textAnchor="middle" fontFamily="sans-serif">العربية</text>
+      </svg>
+    );
+  }
   // Default UK Flag for English
   return (
     <svg viewBox="0 0 640 480" className={`${className} rounded-[2px] shadow-2xs border border-slate-200/90 inline-block shrink-0`} aria-hidden="true">
@@ -193,33 +243,222 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPath, onNavigate }) => {
 
   const servicePillars = [
     {
-      title: isFr ? 'Passagers & Terminal' : 'Passenger & Terminal',
-      kicker: isFr ? 'Accueil & Confort' : 'Hospitality & Care',
+      title: language === 'fr' ? 'Passagers & Terminal' :
+             language === 'es' ? 'Pasajeros y Terminal' :
+             language === 'de' ? 'Passagiere & Terminal' :
+             language === 'pt' ? 'Passageiros e Terminal' :
+             language === 'zh' ? '旅客与航站楼服务' :
+             language === 'ar' ? 'المسافرين والصالة' :
+             'Passenger & Terminal',
+      kicker: language === 'fr' ? 'Accueil & Confort' :
+              language === 'es' ? 'Hospitalidad y Cuidado' :
+              language === 'de' ? 'Gastfreundschaft & Betreuung' :
+              language === 'pt' ? 'Hospitalidade e Cuidado' :
+              language === 'zh' ? '礼宾接待与关怀' :
+              language === 'ar' ? 'الضيافة والرعاية' :
+              'Hospitality & Care',
       dotClass: 'bg-[#204696]',
       items: [
-        { name: isFr ? 'Services Passagers' : 'Passenger Services', path: '/passenger-services', icon: Users, desc: isFr ? 'Enregistrement DCS, portes d\'embarquement & assistance PMR' : 'DCS check-in, boarding gates & PRM passenger care' },
-        { name: isFr ? 'Salons VIP' : 'Lounge Services', path: '/lounge', icon: Armchair, desc: isFr ? 'Salon Exécutif Adinkra & Salon The U au T3' : 'Adinkra Executive Lounge & The U Lounge at T3' },
-        { name: isFr ? 'Suivi Bagages' : 'Find My Bag', path: '/find-my-bag', icon: Luggage, desc: isFr ? 'Suivi en direct des bagages & résolution PIR' : 'Direct passenger baggage tracking & PIR resolution' },
+        {
+          name: language === 'fr' ? 'Services Passagers' :
+                language === 'es' ? 'Servicios de Pasajeros' :
+                language === 'de' ? 'Passagierdienste' :
+                language === 'pt' ? 'Serviços de Passageiros' :
+                language === 'zh' ? '旅客地面服务' :
+                language === 'ar' ? 'خدمات المسافرين' :
+                'Passenger Services',
+          path: '/passenger-services',
+          icon: Users,
+          desc: language === 'fr' ? 'Enregistrement DCS, embarquement & assistance PMR' :
+                language === 'es' ? 'Check-in DCS, puertas de embarque y atención PRM' :
+                language === 'de' ? 'DCS Check-in, Boarding & PRM-Betreuung' :
+                language === 'pt' ? 'Check-in DCS, portas de embarque e apoio PRM' :
+                language === 'zh' ? 'DCS 值机、登机口保障及特殊旅客服务' :
+                language === 'ar' ? 'إنهاء إجراءات السفر، بوابات الصعود ورعاية ذوي الاحتياجات' :
+                'DCS check-in, boarding gates & PRM passenger care'
+        },
+        {
+          name: language === 'fr' ? 'Salons VIP Adinkra' :
+                language === 'es' ? 'Salas VIP Adinkra' :
+                language === 'de' ? 'Adinkra VIP-Lounges' :
+                language === 'pt' ? 'Salas VIP Adinkra' :
+                language === 'zh' ? '阿丁克拉贵宾室' :
+                language === 'ar' ? 'صالات أدينكرا التنفيذية' :
+                'Lounge Services',
+          path: '/lounge',
+          icon: Armchair,
+          desc: language === 'fr' ? 'Salon Exécutif Adinkra & Salon The U au T3' :
+                language === 'es' ? 'Salas ejecutivas Adinkra y The U en T3' :
+                language === 'de' ? 'Adinkra Executive Lounge & The U Lounge am T3' :
+                language === 'pt' ? 'Lounge Executivo Adinkra e The U no T3' :
+                language === 'zh' ? '3号航站楼阿丁克拉行政贵宾室与 U 贵宾室' :
+                language === 'ar' ? 'صالة أدينكرا وصالة The U في مبنى 3' :
+                'Adinkra Executive Lounge & The U Lounge at T3'
+        },
+        {
+          name: language === 'fr' ? 'Suivi Bagages' :
+                language === 'es' ? 'Rastreo de Equipaje' :
+                language === 'de' ? 'Gepäckverfolgung' :
+                language === 'pt' ? 'Rastreio de Bagagem' :
+                language === 'zh' ? '行李追踪查询' :
+                language === 'ar' ? 'تتبع الأمتعة' :
+                'Find My Bag',
+          path: '/find-my-bag',
+          icon: Luggage,
+          desc: language === 'fr' ? 'Suivi en direct des bagages & résolution PIR' :
+                language === 'es' ? 'Rastreo directo de equipaje y resolución PIR' :
+                language === 'de' ? 'Direkte Gepäckverfolgung & PIR-Klärung' :
+                language === 'pt' ? 'Rastreio em tempo real de bagagens e resolução PIR' :
+                language === 'zh' ? '实时行李条码追踪与 PIR 遗失申报' :
+                language === 'ar' ? 'تتبع مباشر للأمتعة ومعالجة تقارير الفقدان' :
+                'Direct passenger baggage tracking & PIR resolution'
+        },
       ]
     },
     {
-      title: isFr ? 'Piste & Escales' : 'Airside & Turnaround',
-      kicker: isFr ? 'Opérations Tarmac' : 'Apron Operations',
+      title: language === 'fr' ? 'Piste & Escales' :
+             language === 'es' ? 'Rampa y Turnaround' :
+             language === 'de' ? 'Vorfeld & Turnaround' :
+             language === 'pt' ? 'Placa e Turnaround' :
+             language === 'zh' ? '机坪特种与过站保障' :
+             language === 'ar' ? 'الساحة والعمليات' :
+             'Airside & Turnaround',
+      kicker: language === 'fr' ? 'Opérations Tarmac' :
+              language === 'es' ? 'Operaciones en Pista' :
+              language === 'de' ? 'Vorfeldbetrieb' :
+              language === 'pt' ? 'Operações de Pista' :
+              language === 'zh' ? '机坪停机位作业' :
+              language === 'ar' ? 'عمليات المهبط' :
+              'Apron Operations',
       dotClass: 'bg-[#009EE0]',
       items: [
-        { name: isFr ? 'Assistance en Piste' : 'Ramp Handling', path: '/ramp-handling', icon: Plane, desc: isFr ? 'Rotation d\'aéronefs, repoussage & alimentation GPU' : 'Aircraft turnaround, pushback & GPU servicing' },
-        { name: isFr ? 'OCC - Opérations de Vol' : 'OCC-Flight Operations', path: '/operations', icon: Cpu, desc: isFr ? 'Coordination 24/7, dispatch de vol & devis de masse' : '24/7 flight coordination, dispatch & load control' },
-        { name: isFr ? 'Maintenance GSE & Flotte' : 'GSE and Fleet Maintenance', path: '/gse-fleet-maintenance', icon: Wrench, desc: isFr ? 'Maintenance technique du matériel d\'assistance au sol' : 'Ground support equipment maintenance & engineering' },
+        {
+          name: language === 'fr' ? 'Assistance en Piste' :
+                language === 'es' ? 'Servicio de Rampa' :
+                language === 'de' ? 'Vorfeldabfertigung' :
+                language === 'pt' ? 'Assistência em Placa' :
+                language === 'zh' ? '机坪过站服务' :
+                language === 'ar' ? 'مناولة الساحة' :
+                'Ramp Handling',
+          path: '/ramp-handling',
+          icon: Plane,
+          desc: language === 'fr' ? 'Rotation d\'aéronefs, repoussage & alimentation GPU' :
+                language === 'es' ? 'Turnaround de aeronaves, remolque y GPU' :
+                language === 'de' ? 'Flugzeug-Turnaround, Pushback & GPU-Versorgung' :
+                language === 'pt' ? 'Turnaround de aeronaves, pushback e GPU' :
+                language === 'zh' ? '飞机快速过站、推杆牵引与400Hz电源供电' :
+                language === 'ar' ? 'دوران الطائرات، الدفع للخلف وتزويد الطاقة' :
+                'Aircraft turnaround, pushback & GPU servicing'
+        },
+        {
+          name: language === 'fr' ? 'OCC - Opérations de Vol' :
+                language === 'es' ? 'CCO - Operaciones de Vuelo' :
+                language === 'de' ? 'OCC - Flugbetriebsleitung' :
+                language === 'pt' ? 'CCO - Operações de Voo' :
+                language === 'zh' ? 'OCC 运行控制中心' :
+                language === 'ar' ? 'مركز العمليات الجوية' :
+                'OCC-Flight Operations',
+          path: '/operations',
+          icon: Cpu,
+          desc: language === 'fr' ? 'Coordination 24/7, dispatch de vol & devis de masse' :
+                language === 'es' ? 'Coordinación 24/7, despacho de vuelos y control de carga' :
+                language === 'de' ? '24/7 Flugkoordination, Dispatch & Lastkontrolle' :
+                language === 'pt' ? 'Coordenação 24/7, despacho de voos e balanceamento' :
+                language === 'zh' ? '24/7 航班运行协调、签派放行与载重平衡' :
+                language === 'ar' ? 'تنسيق الرحلات 24/7 ومراقبة الحمولة' :
+                '24/7 flight coordination, dispatch & load control'
+        },
+        {
+          name: language === 'fr' ? 'Maintenance GSE & Flotte' :
+                language === 'es' ? 'Mantenimiento GSE y Flota' :
+                language === 'de' ? 'GSE & Flotteninstandhaltung' :
+                language === 'pt' ? 'Manutenção GSE e Frota' :
+                language === 'zh' ? 'GSE 设备与车队维护' :
+                language === 'ar' ? 'صيانة معدات الدعم الأرضي' :
+                'GSE and Fleet Maintenance',
+          path: '/gse-fleet-maintenance',
+          icon: Wrench,
+          desc: language === 'fr' ? 'Maintenance technique du matériel d\'assistance au sol' :
+                language === 'es' ? 'Mantenimiento técnico de equipos terrestres' :
+                language === 'de' ? 'Wartung von Bodenabfertigungsgeräten & Technik' :
+                language === 'pt' ? 'Manutenção preventiva e corretiva de equipamentos' :
+                language === 'zh' ? '机坪特种设备大修车间与机械工程保障' :
+                language === 'ar' ? 'الصيانة الهندسية والفنية لمعدات المهبط' :
+                'Ground support equipment maintenance & engineering'
+        },
       ]
     },
     {
-      title: isFr ? 'Fret & Spécialisé' : 'Cargo & Specialized',
-      kicker: isFr ? 'Logistique & Sûreté' : 'Logistics & Safety',
+      title: language === 'fr' ? 'Fret & Spécialisé' :
+             language === 'es' ? 'Carga y Especializado' :
+             language === 'de' ? 'Fracht & Spezialdienste' :
+             language === 'pt' ? 'Carga e Especializado' :
+             language === 'zh' ? '货运与特殊保障' :
+             language === 'ar' ? 'الشحن والخدمات الخاصة' :
+             'Cargo & Specialized',
+      kicker: language === 'fr' ? 'Logistique & Sûreté' :
+              language === 'es' ? 'Logística y Seguridad' :
+              language === 'de' ? 'Logistik & Sicherheit' :
+              language === 'pt' ? 'Logística e Segurança' :
+              language === 'zh' ? '特种物流与安全' :
+              language === 'ar' ? 'اللوجستيات والأمان' :
+              'Logistics & Safety',
       dotClass: 'bg-[#72BF44]',
       items: [
-        { name: isFr ? 'Fret Aérien' : 'Cargo Services', path: '/cargo', icon: PackageCheck, desc: isFr ? 'Entrepôt sous douane certifié UE RA3 & chaîne du froid' : 'EU RA3 certified bonded warehousing & cold-chain' },
-        { name: isFr ? 'Services VIP & Charters' : 'VIP and Charter Services', path: '/vip-charter', icon: Shield, desc: isFr ? 'Escorte sur piste, vols privés & protocole diplomatique' : 'Apron escort, private charters & diplomatic protocol' },
-        { name: isFr ? 'Centre de Formation' : 'Training Academy', path: '/training', icon: GraduationCap, desc: isFr ? 'Sécurité OACI & IATA, cours SGS & installations de pointe' : 'ICAO & IATA safety, SMS courses & training facilities' },
+        {
+          name: language === 'fr' ? 'Fret Aérien' :
+                language === 'es' ? 'Carga Aérea' :
+                language === 'de' ? 'Luftfrachtterminal' :
+                language === 'pt' ? 'Carga Aérea' :
+                language === 'zh' ? '航空货运服务' :
+                language === 'ar' ? 'خدمات الشحن الجوي' :
+                'Cargo Services',
+          path: '/cargo',
+          icon: PackageCheck,
+          desc: language === 'fr' ? 'Entrepôt sous douane certifié UE RA3 & chaîne du froid' :
+                language === 'es' ? 'Almacén aduanero certificado UE RA3 y cadena de frío' :
+                language === 'de' ? 'EU RA3 zertifiziertes Zolllager & Kühlkette' :
+                language === 'pt' ? 'Entreposto aduaneiro certificado UE RA3 e cadeia de frio' :
+                language === 'zh' ? '欧盟 RA3 认证保税货运仓库与冷链恒温存储' :
+                language === 'ar' ? 'مستودع جمركي معتمد من الاتحاد الأوروبي RA3' :
+                'EU RA3 certified bonded warehousing & cold-chain'
+        },
+        {
+          name: language === 'fr' ? 'Services VIP & Charters' :
+                language === 'es' ? 'Servicios VIP y Chárter' :
+                language === 'de' ? 'VIP & Charter-Flüge' :
+                language === 'pt' ? 'Serviços VIP e Charter' :
+                language === 'zh' ? '贵宾礼宾与私人包机' :
+                language === 'ar' ? 'خدمات كبار الشخصيات والشارتر' :
+                'VIP and Charter Services',
+          path: '/vip-charter',
+          icon: Shield,
+          desc: language === 'fr' ? 'Escorte sur piste, vols privés & protocole diplomatique' :
+                language === 'es' ? 'Acompañamiento en pista, vuelos privados y protocolo' :
+                language === 'de' ? 'Vorfeldeskortierung, Privatflüge & Diplomatenprotokoll' :
+                language === 'pt' ? 'Escolta em pista, voos privados e protocolo' :
+                language === 'zh' ? '停机坪专车护送、商务包机与外交礼遇' :
+                language === 'ar' ? 'مرافقة خاصة في الساحة وبروتوكول دبلوماسي' :
+                'Apron escort, private charters & diplomatic protocol'
+        },
+        {
+          name: language === 'fr' ? 'Centre de Formation' :
+                language === 'es' ? 'Centro de Capacitación' :
+                language === 'de' ? 'Ausbildungsakademie' :
+                language === 'pt' ? 'Academia de Formação' :
+                language === 'zh' ? '民航培训学院' :
+                language === 'ar' ? 'أكاديمية التدريب' :
+                'Training Academy',
+          path: '/training',
+          icon: GraduationCap,
+          desc: language === 'fr' ? 'Sécurité OACI & IATA, cours SGS & installations de pointe' :
+                language === 'es' ? 'Seguridad OACI e IATA, cursos SMS e instalaciones modernas' :
+                language === 'de' ? 'ICAO & IATA Sicherheit, SMS-Kurse & moderne Einrichtungen' :
+                language === 'pt' ? 'Segurança ICAO e IATA, cursos SMS e salas modernas' :
+                language === 'zh' ? 'ICAO 与 IATA 民航安全资质培训与 SMS 模拟教室' :
+                language === 'ar' ? 'دورات سلامة الإيكاو وإياتا وإدارة السلامة' :
+                'ICAO & IATA safety, SMS courses & training facilities'
+        },
       ]
     }
   ];
@@ -228,21 +467,135 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPath, onNavigate }) => {
 
   const aboutPillars = [
     {
-      title: isFr ? 'Gouvernance & Entreprise' : 'Corporate & Governance',
+      title: language === 'fr' ? 'Gouvernance & Entreprise' :
+             language === 'es' ? 'Corporativo y Gobernanza' :
+             language === 'de' ? 'Unternehmen & Governance' :
+             language === 'pt' ? 'Empresa e Governança' :
+             language === 'zh' ? '企业管理与公司治理' :
+             language === 'ar' ? 'الشركة والحوكمة' :
+             'Corporate & Governance',
       dotClass: 'bg-[#204696]',
       items: [
-        { name: isFr ? 'À Propos d\'Aviance' : 'About Aviance (Who We Are)', path: '/about', icon: Building2, desc: isFr ? 'Plus de 30 ans d\'histoire, vision & mission' : '30+ year company heritage, vision & mission' },
-        { name: isFr ? 'Équipe de Direction' : 'Management Team', path: '/management', icon: Users, desc: isFr ? 'Direction générale & responsables d\'escale' : 'Executive leadership team & station department heads' },
-        { name: isFr ? 'Code de Conduite' : 'Code of Conduct', path: '/code-of-conduct', icon: ShieldCheck, desc: isFr ? 'Gouvernance d\'entreprise, éthique & conformité sécurité' : 'Corporate governance, ethics & safety compliance' },
+        {
+          name: language === 'fr' ? 'À Propos d\'Aviance' :
+                language === 'es' ? 'Sobre Aviance (Quiénes Somos)' :
+                language === 'de' ? 'Über Aviance (Wer wir sind)' :
+                language === 'pt' ? 'Sobre a Aviance' :
+                language === 'zh' ? '关于 Aviance Ghana' :
+                language === 'ar' ? 'عن أفيانس غانا' :
+                'About Aviance (Who We Are)',
+          path: '/about',
+          icon: Building2,
+          desc: language === 'fr' ? 'Plus de 30 ans d\'histoire, vision & mission' :
+                language === 'es' ? 'Más de 30 años de legado, visión y misión' :
+                language === 'de' ? 'Über 30 Jahre Unternehmensgeschichte, Vision & Mission' :
+                language === 'pt' ? 'Mais de 30 anos de história, visão e missão' :
+                language === 'zh' ? '深耕西非30载历史沉淀、发展愿景与核心使命' :
+                language === 'ar' ? 'أكثر من 30 عاماً من الريادة والرؤية والرسالة' :
+                '30+ year company heritage, vision & mission'
+        },
+        {
+          name: language === 'fr' ? 'Équipe de Direction' :
+                language === 'es' ? 'Equipo Directivo' :
+                language === 'de' ? 'Führungsteam' :
+                language === 'pt' ? 'Equipa de Gestão' :
+                language === 'zh' ? '高级执行管理团队' :
+                language === 'ar' ? 'فريق الإدارة التنفيذية' :
+                'Management Team',
+          path: '/management',
+          icon: Users,
+          desc: language === 'fr' ? 'Direction générale & responsables d\'escale' :
+                language === 'es' ? 'Liderazgo ejecutivo y directores de estación' :
+                language === 'de' ? 'Geschäftsleitung & Stationsleiter' :
+                language === 'pt' ? 'Diretoria executiva e chefes de escala' :
+                language === 'zh' ? '执行总裁及各机场航站运营总监' :
+                language === 'ar' ? 'القيادة التنفيذية ورؤساء المحطات' :
+                'Executive leadership team & station department heads'
+        },
+        {
+          name: language === 'fr' ? 'Code de Conduite' :
+                language === 'es' ? 'Código de Conducta' :
+                language === 'de' ? 'Verhaltenskodex' :
+                language === 'pt' ? 'Código de Conduta' :
+                language === 'zh' ? '商业行为与道德准则' :
+                language === 'ar' ? 'مدونة السلوك والامتثال' :
+                'Code of Conduct',
+          path: '/code-of-conduct',
+          icon: ShieldCheck,
+          desc: language === 'fr' ? 'Gouvernance d\'entreprise, éthique & conformité sécurité' :
+                language === 'es' ? 'Gobernanza corporativa, ética y cumplimiento de seguridad' :
+                language === 'de' ? 'Unternehmensführung, Ethik & Sicherheits-Compliance' :
+                language === 'pt' ? 'Governança corporativa, ética e conformidade' :
+                language === 'zh' ? '企业合规管治、反腐倡廉与安全责任承诺' :
+                language === 'ar' ? 'حوكمة الشركات، الأخلاقيات والامتثال لمعايير السلامة' :
+                'Corporate governance, ethics & safety compliance'
+        },
       ]
     },
     {
-      title: isFr ? 'Normes & Partenariats' : 'Standards & Partnerships',
+      title: language === 'fr' ? 'Normes & Partenariats' :
+             language === 'es' ? 'Estándares y Alianzas' :
+             language === 'de' ? 'Standards & Partnerschaften' :
+             language === 'pt' ? 'Padrões e Parcerias' :
+             language === 'zh' ? '国际标准与航司合作' :
+             language === 'ar' ? 'المعايير والشراكات' :
+             'Standards & Partnerships',
       dotClass: 'bg-[#009EE0]',
       items: [
-        { name: isFr ? 'Faits & Chiffres' : 'Facts & Figures', path: '/facts-figures', icon: BarChart3, desc: isFr ? 'Vols annuels, tonnage fret et statistiques passagers' : 'Annual flights, cargo volume & passenger metrics' },
-        { name: isFr ? 'Compagnies Aériennes' : 'Customer Airlines', path: '/customers', icon: Plane, desc: isFr ? 'Compagnies régulières long-courrier, nationales et cargo' : 'Scheduled long-haul, domestic & cargo carriers' },
-        { name: isFr ? 'Certifications & Licences' : 'Certifications & Licenses', path: '/certifications', icon: FileCheck2, desc: isFr ? 'Registre IATA ISAGO, UE RA3 & licence GCAA' : 'IATA ISAGO registry, EU RA3 & GCAA licence' },
+        {
+          name: language === 'fr' ? 'Faits & Chiffres' :
+                language === 'es' ? 'Datos y Cifras' :
+                language === 'de' ? 'Fakten & Zahlen' :
+                language === 'pt' ? 'Factos e Números' :
+                language === 'zh' ? '运营数据与业务成果' :
+                language === 'ar' ? 'حقائق وأرقام' :
+                'Facts & Figures',
+          path: '/facts-figures',
+          icon: BarChart3,
+          desc: language === 'fr' ? 'Vols annuels, tonnage fret et statistiques passagers' :
+                language === 'es' ? 'Vuelos anuales, volumen de carga y métricas de pasajeros' :
+                language === 'de' ? 'Jährliche Flüge, Frachtvolumen & Passagierzahlen' :
+                language === 'pt' ? 'Voos anuais, volume de carga e passageiros' :
+                language === 'zh' ? '历年保障架次、航空货邮吞吐量与旅客保障统计' :
+                language === 'ar' ? 'الرحلات السنوية، حجم الشحن وإحصاءات المسافرين' :
+                'Annual flights, cargo volume & passenger metrics'
+        },
+        {
+          name: language === 'fr' ? 'Compagnies Aériennes' :
+                language === 'es' ? 'Aerolíneas Clientes' :
+                language === 'de' ? 'Kunden-Fluggesellschaften' :
+                language === 'pt' ? 'Companhias Clientes' :
+                language === 'zh' ? '航司客户名录' :
+                language === 'ar' ? 'شركات الطيران الشريكة' :
+                'Customer Airlines',
+          path: '/customers',
+          icon: Plane,
+          desc: language === 'fr' ? 'Compagnies régulières long-courrier, nationales et cargo' :
+                language === 'es' ? 'Aerolíneas regulares de largo radio, nacionales y de carga' :
+                language === 'de' ? 'Langstrecken-, Inlands- und Frachtfluggesellschaften' :
+                language === 'pt' ? 'Companhias de longo curso, domésticas e de carga' :
+                language === 'zh' ? '全球40余家定期宽体长途、区域国内及全货机合作伙伴' :
+                language === 'ar' ? 'الناقلات الدولية للرحلات الطويلة، الإقليمية والشحن' :
+                'Scheduled long-haul, domestic & cargo carriers'
+        },
+        {
+          name: language === 'fr' ? 'Certifications & Licences' :
+                language === 'es' ? 'Certificaciones y Licencias' :
+                language === 'de' ? 'Zertifikate & Lizenzen' :
+                language === 'pt' ? 'Certificações e Licenças' :
+                language === 'zh' ? '法定牌照与安全认证' :
+                language === 'ar' ? 'الشهادات والتراخيص' :
+                'Certifications & Licenses',
+          path: '/certifications',
+          icon: FileCheck2,
+          desc: language === 'fr' ? 'Registre IATA ISAGO, UE RA3 & licence GCAA' :
+                language === 'es' ? 'Registro IATA ISAGO, UE RA3 y licencias GCAA' :
+                language === 'de' ? 'IATA ISAGO Register, EU RA3 & GCAA-Lizenzen' :
+                language === 'pt' ? 'Registo IATA ISAGO, UE RA3 e licença GCAA' :
+                language === 'zh' ? '国际航协 ISAGO 注册名录、欧盟 RA3 及民航局许可证' :
+                language === 'ar' ? 'سجل إياتا ISAGO، أمن الشحن RA3 وتراخيص الطيران المدني' :
+                'IATA ISAGO registry, EU RA3 & GCAA licence'
+        },
       ]
     }
   ];
@@ -396,7 +749,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPath, onNavigate }) => {
                     : 'text-slate-700 hover:text-[#204696] hover:bg-slate-50 hover:scale-[1.02]'
                 }`}
               >
-                {isFr ? 'Accueil' : 'Home'}
+                {t('nav.home', 'Home')}
               </button>
 
               {/* About Us Aramex-Style Mega Dropdown */}
@@ -421,7 +774,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPath, onNavigate }) => {
                       : 'text-slate-700 hover:text-[#204696] hover:bg-slate-50 hover:scale-[1.02]'
                   }`}
                 >
-                  <span>{isFr ? 'À Propos' : 'About Us'}</span>
+                  <span>{t('nav.about', 'About Us')}</span>
                   <ChevronDown className={`w-4 h-4 transition-transform duration-300 ease-out ${aboutDropdownOpen ? 'rotate-180 text-[#204696]' : 'text-slate-400'}`} />
                 </button>
 
@@ -602,7 +955,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPath, onNavigate }) => {
                       : 'text-slate-700 hover:text-[#204696] hover:bg-slate-50 hover:scale-[1.02]'
                   }`}
                 >
-                  <span>{isFr ? 'Services' : 'Services'}</span>
+                  <span>{t('nav.services', 'Services')}</span>
                   <ChevronDown className={`w-4 h-4 transition-transform duration-300 ease-out ${servicesDropdownOpen ? 'rotate-180 text-[#204696]' : 'text-slate-400'}`} />
                 </button>
 
@@ -783,7 +1136,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPath, onNavigate }) => {
                     : 'text-slate-700 hover:text-[#204696] hover:bg-slate-50 hover:scale-[1.02]'
                 }`}
               >
-                {isFr ? 'RSE' : 'CSR'}
+                {t('nav.csr', 'CSR')}
               </button>
 
               <button
@@ -794,7 +1147,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPath, onNavigate }) => {
                     : 'text-slate-700 hover:text-[#204696] hover:bg-slate-50 hover:scale-[1.02]'
                 }`}
               >
-                {isFr ? 'Actualités' : 'News'}
+                {t('nav.news', 'News')}
               </button>
 
               <button
@@ -805,7 +1158,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPath, onNavigate }) => {
                     : 'text-slate-700 hover:text-[#204696] hover:bg-slate-50 hover:scale-[1.02]'
                 }`}
               >
-                {isFr ? 'Carrières' : 'Careers'}
+                {t('nav.careers', 'Careers')}
               </button>
 
               {/* Contact Direct Link */}
@@ -817,7 +1170,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPath, onNavigate }) => {
                     : 'text-slate-700 hover:text-[#204696] hover:bg-slate-50 hover:scale-[1.02]'
                 }`}
               >
-                {isFr ? 'Contact' : 'Contact'}
+                {t('nav.contact', 'Contact')}
               </button>
             </nav>
 
@@ -1096,7 +1449,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPath, onNavigate }) => {
                       <span className={`text-lg sm:text-xl font-bold tracking-tight transition-colors ${
                         currentPath === '/csr' ? 'text-[#204696]' : 'text-slate-900 group-hover:text-[#204696]'
                       }`}>
-                        {isFr ? 'RSE & Communauté' : 'CSR & Community'}
+                        {t('nav.csr', 'CSR & Community')}
                       </span>
                       <ArrowRight className="w-4 h-4 text-slate-300 group-hover:text-[#204696] group-hover:translate-x-1 transition-all" />
                     </button>
@@ -1111,7 +1464,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPath, onNavigate }) => {
                       <span className={`text-lg sm:text-xl font-bold tracking-tight transition-colors ${
                         currentPath.startsWith('/news') ? 'text-[#204696]' : 'text-slate-900 group-hover:text-[#204696]'
                       }`}>
-                        {isFr ? 'Actualités & Médias' : 'News & Media'}
+                        {t('nav.news', 'News & Media')}
                       </span>
                       <ArrowRight className="w-4 h-4 text-slate-300 group-hover:text-[#204696] group-hover:translate-x-1 transition-all" />
                     </button>
@@ -1126,7 +1479,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPath, onNavigate }) => {
                       <span className={`text-lg sm:text-xl font-bold tracking-tight transition-colors ${
                         currentPath === '/careers' ? 'text-[#204696]' : 'text-slate-900 group-hover:text-[#204696]'
                       }`}>
-                        {isFr ? 'Carrières' : 'Careers'}
+                        {t('nav.careers', 'Careers')}
                       </span>
                       <ArrowRight className="w-4 h-4 text-slate-300 group-hover:text-[#204696] group-hover:translate-x-1 transition-all" />
                     </button>
@@ -1141,7 +1494,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPath, onNavigate }) => {
                       <span className={`text-lg sm:text-xl font-bold tracking-tight transition-colors ${
                         currentPath.startsWith('/contact') ? 'text-[#204696]' : 'text-slate-900 group-hover:text-[#204696]'
                       }`}>
-                        {isFr ? 'Contact & Bureaux d\'Escale' : 'Contact & Station Offices'}
+                        {t('nav.contact', 'Contact & Station Offices')}
                       </span>
                       <ArrowRight className="w-4 h-4 text-slate-300 group-hover:text-[#204696] group-hover:translate-x-1 transition-all" />
                     </button>
@@ -1152,9 +1505,11 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPath, onNavigate }) => {
                 {/* Ground Operations & Utilities Bar */}
                 <div className="mt-8 pt-6 border-t border-slate-200/80 space-y-4">
                   {/* Mobile Language Selector */}
-                  <div className="flex items-center justify-between p-3 rounded-2xl bg-slate-50 border border-slate-200/70">
-                    <span className="text-xs font-bold text-slate-700">{isFr ? 'Langue :' : 'Language:'}</span>
-                    <div className="flex items-center gap-1.5 bg-white p-1 rounded-xl border border-slate-200/80 shadow-2xs">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between p-3 rounded-2xl bg-slate-50 border border-slate-200/70 gap-2.5">
+                    <span className="text-xs font-bold text-slate-700">
+                      {language === 'fr' ? 'Langue :' : language === 'es' ? 'Idioma:' : language === 'de' ? 'Sprache:' : language === 'pt' ? 'Idioma:' : language === 'zh' ? '语言:' : language === 'ar' ? 'اللغة:' : 'Language:'}
+                    </span>
+                    <div className="flex items-center gap-1.5 bg-white p-1 rounded-xl border border-slate-200/80 shadow-2xs overflow-x-auto max-w-full scrollbar-none">
                       {SUPPORTED_LANGUAGES.map((lang) => {
                         const isSelected = language === lang.code;
                         return (
@@ -1164,14 +1519,14 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPath, onNavigate }) => {
                               setLanguage(lang.code as LanguageCode);
                               setMobileMenuOpen(false);
                             }}
-                            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                            className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer whitespace-nowrap shrink-0 ${
                               isSelected
                                 ? 'bg-[#204696] text-white shadow-2xs'
                                 : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
                             }`}
                           >
                             <FlagIcon code={lang.code} className="w-4 h-3" />
-                            <span>{lang.label}</span>
+                            <span>{lang.nativeLabel}</span>
                           </button>
                         );
                       })}

@@ -42,7 +42,7 @@ import { dataService, subscribeToDataChanges } from './services/dataService';
 import { analyticsService } from './services/analyticsService';
 import { Service, LocationItem, Certification, NewsArticle, CustomerPartner } from './types';
 
-const LANG_CODES: string[] = ['en', 'fr'];
+const LANG_CODES: string[] = ['en', 'fr', 'es', 'de', 'pt', 'zh', 'ar'];
 
 /**
  * Normalizes any route string or window.location URL into:
@@ -123,8 +123,8 @@ function MainApp() {
     const handlePopState = () => {
       const { cleanPath, hash, detectedLang } = parseUrl(window.location.pathname + window.location.hash);
       setCurrentPath(cleanPath);
-      if (detectedLang && (detectedLang === 'en' || detectedLang === 'fr') && detectedLang !== language) {
-        setLanguage(detectedLang as 'en' | 'fr');
+      if (detectedLang && LANG_CODES.includes(detectedLang) && detectedLang !== language) {
+        setLanguage(detectedLang as any);
       }
       if (hash) {
         setTimeout(() => {

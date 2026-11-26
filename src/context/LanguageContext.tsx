@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 
-export type LanguageCode = 'en' | 'fr';
+export type LanguageCode = 'en' | 'fr' | 'es' | 'de' | 'pt' | 'zh' | 'ar';
 
 export interface LanguageOption {
   code: LanguageCode;
@@ -12,9 +12,19 @@ export interface LanguageOption {
 export const SUPPORTED_LANGUAGES: LanguageOption[] = [
   { code: 'en', label: 'English', nativeLabel: 'English', flag: '🇬🇧' },
   { code: 'fr', label: 'French', nativeLabel: 'Français', flag: '🇫🇷' },
+  { code: 'es', label: 'Spanish', nativeLabel: 'Español', flag: '🇪🇸' },
+  { code: 'de', label: 'German', nativeLabel: 'Deutsch', flag: '🇩🇪' },
+  { code: 'pt', label: 'Portuguese', nativeLabel: 'Português', flag: '🇵🇹' },
+  { code: 'zh', label: 'Chinese', nativeLabel: '中文', flag: '🇨🇳' },
+  { code: 'ar', label: 'Arabic', nativeLabel: 'العربية', flag: '🇸🇦' },
 ];
 
-const TRANSLATIONS: Record<string, Record<string, string>> = {
+export const LANG_CODES: LanguageCode[] = ['en', 'fr', 'es', 'de', 'pt', 'zh', 'ar'];
+
+const TRANSLATIONS: Record<LanguageCode, Record<string, string>> = {
+  // ==========================================
+  // ENGLISH (DEFAULT)
+  // ==========================================
   en: {
     // Top Telemetry Bar
     'telemetry.station': "ACC · Kotoka Int'l",
@@ -26,19 +36,22 @@ const TRANSLATIONS: Record<string, Record<string, string>> = {
     'telemetry.tracing': 'Baggage Tracing',
 
     // Navigation
+    'nav.home': 'Home',
     'nav.services': 'Services',
     'nav.flightOps': 'Flight Ops',
     'nav.cargo': 'Cargo',
     'nav.findMyBag': 'Find My Bag',
     'nav.lounge': 'Adinkra Lounge',
     'nav.safety': 'Safety & Standards',
+    'nav.csr': 'CSR',
+    'nav.news': 'News',
     'nav.careers': 'Careers',
+    'nav.contact': 'Contact',
     'nav.more': 'More',
-    'nav.about': 'About Aviance Ghana',
+    'nav.about': 'About Us',
     'nav.management': 'Executive Leadership',
     'nav.documents': 'Document Centre',
     'nav.faqs': 'Operational FAQs',
-    'nav.contact': 'Contact & Station Info',
     'nav.requestHandling': 'Request Handling',
     'nav.admin': 'Admin',
     'nav.search': 'Search',
@@ -62,6 +75,50 @@ const TRANSLATIONS: Record<string, Record<string, string>> = {
     'hero.exploreBtn': 'Explore Aviation Services',
     'hero.baggageBtn': 'Track Inbound Bag',
     'hero.cargoBtn': 'Cargo Village (RA3)',
+
+    // Partner Radar Section
+    'partners.title': 'Trusted Ground Handling Partner to Over 40 Global Airlines',
+    'partners.subtitle':
+      'From scheduled daily wide-body passenger services to international cold-chain cargo freighters, Aviance Ghana is the certified handling agent of choice across Accra, Kumasi, and Tamale.',
+    'partners.viewAll': 'View All 42 Partners',
+    'partners.tabAll': 'All Partners (42)',
+    'partners.tabIntl': 'International Commercial',
+    'partners.tabRegional': 'Regional & African',
+    'partners.tabCargo': 'Cargo & Freighters',
+    'partners.tabVip': 'VIP & Charter',
+
+    // Airport Stations Section
+    'stations.title': "Operating Across Ghana's Key Commercial Air Gateways",
+    'stations.subtitle':
+      'Aviance Ghana maintains certified ground handling stations, ramp equipment fleets, and passenger operations across 3 premier airports.',
+    'stations.viewAll': 'View Full Operations & Map',
+    'stations.learnMore': 'Learn more',
+    'stations.accName': "Kotoka International Airport (ACC / DGAA) · Terminal 3 & Cargo Village",
+    'stations.kmsName': "Prempeh I International Airport (KMS / DGSI) · Kumasi Hub",
+    'stations.tmlName': "Tamale International Airport (TML / DGLE) · Northern Gateway",
+
+    // Certifications Banner
+    'certBanner.eyebrow': 'Quality, Safety & Regulatory Accreditation',
+    'certBanner.title': 'IATA ISAGO Accredited · Certificate ISAGO-ACC-24-2419',
+    'certBanner.desc':
+      'Accredited under the IATA Safety Audit for Ground Operations (ISAGO) at Kotoka International Airport (ACC) through January 21, 2027. Supported by European Union Cargo RA3 security validation and Ghana Civil Aviation Authority operating licenses.',
+    'certBanner.viewCerts': 'View Certifications & Audits',
+    'certBanner.codeOfConduct': 'Code of Conduct & Governance',
+
+    // CSR Section
+    'csr.eyebrow': 'Sustainability & Community Engagement',
+    'csr.title': 'Community Impact & Sustainability',
+    'csr.subtitle': 'Winner of the Excellence in CSR Award at the 2025 Ghana Shippers’ Authority Awards.',
+    'csr.readStory': 'Read Story',
+    'csr.exploreAll': 'Explore All CSR Programs & Impact Reports',
+
+    // News Section
+    'news.eyebrow': 'Corporate News & Announcements',
+    'news.title': 'Latest Updates from Aviance Ghana',
+    'news.allPress': 'All Articles & Press Releases',
+    'news.readFull': 'Read Full Article',
+    'news.mediaRelease': 'Media Release',
+    'news.minRead': 'min read',
 
     // Services Mega Menu
     'services.passenger.title': 'Passenger Services',
@@ -93,20 +150,6 @@ const TRANSLATIONS: Record<string, Record<string, string>> = {
     'stats.established': 'Years of Operational Excellence',
     'stats.establishedSub': 'Serving Ghana aviation since 1994',
 
-    // Core Features
-    'features.turnaroundTitle': 'The 50-Minute Aircraft Turnaround Journey',
-    'features.turnaroundSubtitle':
-      'From touchdown to departure, every second is choreographed under rigorous IATA ISAGO safety standards by Aviance ground crews.',
-    'features.finderTitle': 'Find the Exact Aviation Solution for Your Flight Operation',
-    'features.finderSubtitle':
-      'Select your flight category and station to view tailored ground handling capabilities, SLAs, and technical equipment.',
-    'features.baggageTitle': 'Find My Bag · Automated Baggage Tracing',
-    'features.baggageSubtitle':
-      'Real-time baggage reconciliation desk located at Kotoka Terminal 3 Arrivals Hall.',
-    'features.mapTitle': 'Aviance Station Network Across Ghana',
-    'features.mapSubtitle':
-      'Three certified commercial stations providing standardized ramp, passenger, and cargo handling services.',
-
     // Footer
     'footer.companyDesc':
       'Established in 1994, Aviance Ghana is a full-service aviation ground handling provider operating at Kotoka International Airport (Accra), Kumasi, and Tamale. Delivering IATA ISAGO-certified ramp handling, Cargo RA3 security, passenger services, executive lounge hospitality, and VIP/charter assistance.',
@@ -122,781 +165,11 @@ const TRANSLATIONS: Record<string, Record<string, string>> = {
     'common.contactUs': 'Contact OCC',
     'common.switchLanguage': 'Select Language',
     'common.close': 'Close',
-
-    // Station Trust Markers
-    'hero.trustAcc': 'ACC · Kotoka T3 & Cargo Village',
-    'hero.trustKms': 'KMS · Prempeh I Airport Kumasi',
-    'hero.trustTml': 'TML · Tamale International Airport',
-
-    // Stats Section
-    'stats.keyFactsTitle': 'Operational Strengths & Station Benchmarks',
-    'stats.verified': 'VERIFIED OFFICIAL',
-    'stats.stationsLabel': 'International Stations',
-    'stats.stationsDesc': 'Accra (Kotoka T3), Kumasi & Tamale',
-    'stats.auditLabel': 'ISAGO Audit Compliance',
-    'stats.auditDesc': 'IATA Ground Operations Manual standard',
-    'stats.workforceLabel': 'Aviation Professionals',
-    'stats.workforceDesc': 'Ramp, passenger, cargo & technical workforce',
-    'stats.watchLabel': 'Active Airside Watch',
-    'stats.watchDesc': 'Continuous turnaround & cargo clearance',
-
-    // Core Bento Services
-    'bento.kicker': 'End-to-End Capabilities',
-    'bento.title': 'Aviation Ground Handling Solutions',
-    'bento.viewAll': 'View All Operational Services',
-    'bento.rampPill': '01 · Ramp & Turnaround',
-    'bento.rampCert': 'Wide & Narrow-Body Certified',
-    'bento.rampTitle': 'Aircraft Ramp Turnaround & GSE Pushback',
-    'bento.rampDesc': 'Full-service airside turnaround under IATA ISAGO. Towbarless pushback tractors, Ground Power Units (GPU 400Hz), air start units, baggage conveyors, and potable water/toilet sanitization servicing.',
-    'bento.rampAction': 'View Ramp Protocol',
-    'bento.cargoPill': '02 · Air Freight',
-    'bento.cargoTitle': 'Aviance Cargo Village & Cold Chain',
-    'bento.cargoDesc': 'EU RA3 certified air freight logistics with temperature-monitored pharmaceutical and perishable cold vaults (+2°C to +8°C).',
-    'bento.cargoSpecs': 'Cargo Specifications',
-    'bento.cargoQuote': 'Quote Rates',
-    'bento.vipPill': '03 · VIP Hospitality',
-    'bento.vipTitle': 'Adinkra Executive Lounge',
-    'bento.vipDesc': 'Ghana’s premier departure lounge at Kotoka Terminal 3. High-speed Wi-Fi, chef-curated dining, private showers, and quiet business pods.',
-    'bento.vipAmenities': 'Lounge Amenities',
-    'bento.vipBook': 'Book Access',
-    'bento.paxPill': '04 · Front-of-House',
-    'bento.paxTitle': 'Passenger Check-in, Boarding & PRM Care',
-    'bento.paxDesc': 'Certified DCS agents operating check-in, biometric gate verification, transit connection desks, and specialized PRM assistance with high-lift ambulifts.',
-    'bento.paxDetails': 'Passenger Handling Details',
-
-    // National Map
-    'map.kicker': 'National Network',
-    'map.title': 'Strategic Presence Across Ghanaian Aerodromes',
-    'map.desc': 'Click any station to review handling capacities, operating hours, and local dispatch contacts.',
-
-    // Safety & Governance
-    'certs.kicker': 'Safety Governance',
-    'certs.title': 'Internationally Audited Operational Standards',
-    'certs.viewAll': 'View All Certificates',
-    'certs.active': 'Active',
-
-    // Customer Airlines
-    'customers.kicker': 'Official Customer Airline Operations',
-    'customers.title': 'Carriers Handled in Ghana',
-    'customers.desc': 'Airlines and alliance networks with verified ground and cargo handling operations managed by Aviance Ghana.',
-
-    // Latest News
-    'news.kicker': 'Corporate Bulletins',
-    'news.title': 'Latest News & Operational Updates',
-    'news.allPress': 'All Press Releases',
-    'news.read': 'Read Article',
-    'news.minRead': 'min read',
-
-    // Final CTA
-    'cta.title': "Partner with Ghana's Aviation Ground Handling Leader",
-    'cta.desc': "Whether you are an international airline scheduling new routes into Kotoka Terminal 3, an air freight charter, or an executive jet operator, Aviance Ghana delivers certified operational excellence.",
-    'cta.contact': 'Contact Head Office',
-    'cta.vip': 'Request VIP / Charter Service',
-
-    // Quick Actions Menu
-    'qa.badge': 'Instant Self-Service Portal',
-    'qa.badgeSub': 'Context-Aware Rapid Actions',
-    'qa.title': 'Airport Quick Actions',
-    'qa.desc': 'Instantly file lost luggage queries, track air cargo airway bills, book VIP hospitality, or contact airside dispatch in seconds.',
-    'qa.searchPlaceholder': 'Search task (e.g. luggage, cargo)...',
-    'qa.whoAmI': 'I am a:',
-    'qa.tabAll': 'All Tasks',
-    'qa.tabPassenger': 'Passenger / Traveler',
-    'qa.tabCargo': 'Cargo Shipper / Forwarder',
-    'qa.tabAirline': 'Airline / Charter Operator',
-    'qa.tabCareers': 'Job Seeker / NSS Scheme',
-    'qa.liveStatus': '24/7 ACTIVE',
-    'qa.lostLuggage.title': 'Report Lost Luggage',
-    'qa.lostLuggage.badge': 'URGENT TRACE',
-    'qa.lostLuggage.desc': 'Submit an immediate delayed or lost bag claim directly to the 24/7 Kotoka T3 Baggage Services Office.',
-    'qa.cargoStatus.title': 'Check Cargo Status',
-    'qa.cargoStatus.badge': 'AWB LIVE LOOKUP',
-    'qa.cargoStatus.desc': 'Trace air freight airway bills, check cold chain vault temperatures, and verify customs clearance.',
-    'qa.findMyBag.title': 'Find My Bag (Tag Status)',
-    'qa.findMyBag.badge': 'LIVE BRS',
-    'qa.findMyBag.desc': 'Query your bag tag barcode against the simulated BRS ground handling checkpoint telemetry.',
-    'qa.reserveLounge.title': 'Adinkra Lounge Booking',
-    'qa.reserveLounge.badge': 'VIP COMFORT',
-    'qa.reserveLounge.desc': 'Reserve walk-in hospitality, shower suites, high-speed Wi-Fi, and refreshments at Kotoka T3 airside.',
-    'qa.cargoEnquiry.title': 'Cargo Tariff & Cold Chain',
-    'qa.cargoEnquiry.badge': 'EU RA3',
-    'qa.cargoEnquiry.desc': 'Request perishable cold vault space (+2°C to +8°C) or dangerous goods handling tariffs.',
-    'qa.rampTurnaround.title': 'Airline SGHA & Ramp Turnaround',
-    'qa.rampTurnaround.badge': 'ISAGO CERTIFIED',
-    'qa.rampTurnaround.desc': 'Request IATA Standard Ground Handling Agreement (SGHA) support or towbarless pushback dispatch.',
-    'qa.careersNss.title': 'Apply for Careers & NSS Scheme',
-    'qa.careersNss.badge': 'GRADUATE INTAKE',
-    'qa.careersNss.desc': 'Submit an application for open airside operations positions or the Ghana National Service Scheme (NSS).',
-    'qa.dutyHotline.title': '24/7 Operations Duty Manager',
-    'qa.dutyHotline.badge': 'AIRSIDE OCC',
-    'qa.dutyHotline.desc': 'Immediate airside coordinator hotline for ramp dispatch, diversion coordination, and urgent station escalations.',
-    'qa.act.claim': 'File Urgent Claim',
-    'qa.act.track': 'Track Waybill',
-    'qa.act.openPortal': 'Open Portal',
-    'qa.act.quote': 'Request Quote',
-    'qa.act.reserve': 'Reserve Pass',
-    'qa.act.call': 'Call Hotline',
-    'qa.resetSearch': 'Reset Search & Filters',
-    'qa.noMatch': 'No tasks matched your search',
-    'qa.noMatchDesc': 'Try searching for "luggage", "cargo", "lounge", or reset your filters.',
-
-    // Turnaround Timeline
-    'timeline.kicker': 'Operational Precision & Turnaround Efficiency',
-    'timeline.title': 'The 50-Minute Aircraft Turnaround Journey',
-    'timeline.subtitle': 'From touchdown to departure, every second is choreographed under rigorous IATA ISAGO safety standards by Aviance ground crews.',
-    'timeline.safetyVerif': 'Mandatory Safety Verification',
-    'timeline.seqControls': 'Sequence Controls',
-    'timeline.prev': 'Previous Phase',
-    'timeline.next': 'Next Phase',
-    'timeline.directive': 'Complies with IATA AHM 900 & GCAA Ground Handling Directives',
-    'timeline.phase': 'Phase',
-    'timeline.step1.title': 'Aircraft Inbound & Apron Marshalling',
-    'timeline.step1.desc': 'Aircraft touches down at Kotoka International Airport. Certified ground marshaller guides the airliner to stand with lighted wands. Chocks inserted, safety cones positioned around wings and engines.',
-    'timeline.step2.title': 'GPU Connection & Passenger Disembarkation',
-    'timeline.step2.desc': 'Ground Power Unit (GPU 400Hz) connected. Passenger boarding bridge or motorized stairs positioned. Cabin doors opened; passengers disembark with PRM ambulift support.',
-    'timeline.step3.title': 'Baggage & Cargo Hold Offloading',
-    'timeline.step3.desc': 'High-speed belt loaders interface with aircraft cargo holds. ULD containers and bulk baggage systematically offloaded onto tug trains for immediate transit to baggage sortation.',
-    'timeline.step4.title': 'Cabin Servicing, Water & Fuel Liaison',
-    'timeline.step4.desc': 'Potable water servicing and lavatory hygiene servicing completed under strict sanitation protocols. Inflight catering restocked and fuel hydrants liaised under fire guard safety watch.',
-    'timeline.step5.title': 'Outbound DCS Boarding & Baggage Loading',
-    'timeline.step5.desc': 'Departure Control System (DCS) boarding processed at Terminal 3 gates. Automated Baggage Reconciliation System (BRS) verifies every bag. Final loadsheet signed by captain.',
-    'timeline.step6.title': 'Towbarless Pushback & Engine Start',
-    'timeline.step6.desc': 'Headset technician connects directly to flight deck. Aviance heavy towbarless pushback tractor connects to nose gear. Clear ATC clearance received, pushback executed smoothly.',
-
-    // Smart Service Finder
-    'finder.kicker': 'Smart Service Discovery · Website Navigation',
-    'finder.title': 'How can Aviance Ghana assist you today?',
-    'finder.desc': 'Select your traveler or business role below to instantly view tailored services, contact liaison desks, and ground handling solutions.',
-    'finder.step1': 'Step 1: Choose Your Profile',
-    'finder.pax': 'Passenger',
-    'finder.paxDesc': 'Traveling through Kotoka Terminal 3',
-    'finder.airline': 'Airline Operator',
-    'finder.airlineDesc': 'Scheduled carrier or charter dispatch',
-    'finder.cargo': 'Cargo Customer',
-    'finder.cargoDesc': 'Air freight, cold chain, or perishables',
-    'finder.corp': 'Corporate & VIP',
-    'finder.corpDesc': 'Executive aviation, protocol & lounge',
-    'finder.jobs': 'Job Seeker / NSS',
-    'finder.jobsDesc': 'Aviation careers & internships',
-    'finder.agency': 'Travel & Agency',
-    'finder.agencyDesc': 'GSA, freight forwarder, or agency',
-
-    // Baggage Tracker
-    'baggage.badge': 'Kotoka International Airport Terminal 3 · SITA BRS',
-    'baggage.title': 'Find My Bag · Automated Baggage Tracing',
-    'baggage.deskInfo': 'Baggage Services Office Desk located beside Carousel 2 Arrivals Hall · Direct Line: +233 (0) 544 33 4022',
-    'baggage.inputPlaceholder': 'e.g. ACC-782910 or EK-451902',
-    'baggage.trackBtn': 'Track Bag',
-    'baggage.samplePrompt': 'Try sample bag tag barcode numbers:',
-    'baggage.fileClaimBtn': 'File Baggage Claim',
-    'baggage.notFoundTitle': 'No Baggage Record Found',
-    'baggage.notFoundDesc': 'The bag tag entered does not match active arrivals records. Please visit the Aviance Baggage Services Office in Terminal 3.',
-
-    // Search Modal
-    'search.placeholder': 'Search services, documentation, stations, staff, or flights...',
-    'search.categoriesAll': 'All',
-    'search.categoriesServices': 'Services',
-    'search.categoriesDocs': 'Documents',
-    'search.categoriesCareers': 'Careers',
-    'search.categoriesFaqs': 'FAQs',
-    'search.categoriesStations': 'Stations',
-    'search.categoriesTeam': 'Leadership',
-    'search.recent': 'Recent Searches',
-    'search.noResults': 'No results found for',
-    'search.esc': 'ESC to close',
-
-    // Station Network
-    'map.operationalCoverage': 'Operational Coverage Across Ghana',
-    'map.stationProfile': 'Station Profile & Capabilities',
-    'map.operatingHours': 'Operating Hours',
-    'map.runway': 'Runway Specifications',
-    'map.handlingCap': 'Handling Capabilities',
-    'map.contactDispatch': 'Contact Station Dispatch',
-
-    // Footer Extra
-    'footer.paxHandling': 'Passenger Handling & PRM',
-    'footer.rampTurnaround': 'Aircraft Ramp Turnaround',
-    'footer.cargoVillage': 'Air Cargo Village Terminal',
-    'footer.vipCharter': 'Aviance VIP & Charter',
-    'footer.adinkraLounge': 'Adinkra Executive Lounge',
-    'footer.baggageDesk': 'Baggage & WorldTracer',
-    'footer.findMyBag': 'Find My Bag Portal',
-    'footer.aboutAviance': 'About Aviance Ghana',
-    'footer.opHubs': 'Operational Hubs (ACC·KMS·TML)',
-    'footer.leadership': 'Executive Leadership',
-    'footer.safetyCerts': 'Safety, Licences & Compliance',
-    'footer.newsPress': 'News & Press Releases',
-    'footer.careersNss': 'Careers & National Service',
-    'footer.codeOfConduct': 'Corporate Code of Conduct',
-    'footer.docCentre': 'Digital Document Centre',
-    'footer.airlinePortal': 'Airline Portal Concept',
-    'footer.helpFaqs': 'Help & FAQs',
-    'footer.headOffice': 'Head Office Contact',
-    'footer.hours': 'Office: Mon–Fri 08:00–17:00 · Flight Ops 24/7',
-    'footer.privacy': 'Privacy Policy',
-    'footer.terms': 'Terms of Use',
-
-    // Mobile Drawer Extra
-    'drawer.operationsHubs': 'Operations & Hubs',
-    'drawer.companyResources': 'Company & Resources',
-    'drawer.leadership': 'Leadership',
-    'drawer.allNews': 'News',
-    'drawer.adminPortal': 'Admin Portal & CMS',
-
-    // Pages - Services Directory
-    'pages.services.kicker': 'Aviation Services Directory',
-    'pages.services.title': 'Comprehensive Aviation Ground Handling',
-    'pages.services.desc': 'Operating across Kotoka International Airport (ACC), Prempeh I International Kumasi (KMS), and Tamale International (TML), Aviance delivers world-class safety, turnaround efficiency, and passenger hospitality.',
-    'pages.services.filterPlaceholder': 'Filter services...',
-    'pages.services.all': 'All',
-
-    // Pages - About Us
-    'pages.about.kicker': 'Corporate Overview',
-    'pages.about.title': 'About Aviance Ghana Limited',
-    'pages.about.desc': 'The foundation of Ghana\'s aviation ground handling infrastructure. Connecting West Africa with global destinations through certified safety, operational reliability, and Ghanaian hospitality.',
-    'pages.about.heritageKicker': 'Our Heritage & Mandate',
-    'pages.about.heritageTitle': 'Pioneering Ground Handling Standards in West Africa',
-    'pages.about.heritageP1': 'Aviance Ghana Limited is an authorized Ground Handling Organization (GHO) licensed by the Ghana Civil Aviation Authority (GCAA). Based at Kotoka International Airport in Accra, with active stations at Prempeh I International Airport Kumasi and Tamale International Airport, Aviance is the trusted ground handling partner for international scheduled carriers, cargo freighter operators, and executive aviation.',
-    'pages.about.heritageP2': 'With a relentless focus on IATA ISAGO safety compliance, continuous staff development at our Aviation Training Academy, and investment in modern Ground Support Equipment, we ensure that aircraft turnarounds occur on schedule with zero compromise on safety or security.',
-    'pages.about.meetLeadership': 'Meet Executive Leadership',
-    'pages.about.pillarsTitle': 'Core Strategic Pillars',
-
-    // Pages - Contact Us
-    'pages.contact.kicker': 'Station Directory & Enquiries',
-    'pages.contact.title': 'Contact Aviance Ghana',
-    'pages.contact.desc': 'Connect with station managers, cargo sales desks, flight operations dispatchers, and corporate leadership across Accra, Kumasi, and Tamale.',
-    'pages.contact.formTitle': 'Submit an Operational or Business Enquiry',
-    'pages.contact.formSubtitle': 'Direct routing to station managers, cargo sales, and flight operations dispatchers.',
-    'pages.contact.name': 'Full Name',
-    'pages.contact.email': 'Official Work Email',
-    'pages.contact.phone': 'Phone Number',
-    'pages.contact.org': 'Airline / Organization',
-    'pages.contact.category': 'Enquiry Category',
-    'pages.contact.subject': 'Subject / Flight Call Sign',
-    'pages.contact.message': 'Detailed Operational Message',
-    'pages.contact.sendBtn': 'Send Official Enquiry',
-    'pages.contact.successTitle': 'Enquiry Transmitted Successfully',
-    'pages.contact.successMsg': 'Your enquiry has been logged into our operations system. An operations manager will reply promptly.',
-    'pages.contact.submitAnother': 'Submit Another Request',
-
-    // Pages - Cargo Terminal
-    'pages.cargo.kicker': 'EU RA3 Certified Cold Chain Terminal',
-    'pages.cargo.title': 'Aviance Air Cargo Village',
-    'pages.cargo.desc': 'Secure, temperature-regulated air freight processing at Kotoka International Airport. Dedicated pharmaceutical vault and fresh perishables handling.',
-
-    // Pages - FAQs
-    'pages.faqs.kicker': 'Knowledge Base & Questions',
-    'pages.faqs.title': 'Operational Frequently Asked Questions',
-    'pages.faqs.desc': 'Clear answers regarding passenger procedures, baggage tracking, cargo tariffs, airline ramp handling, and airport protocol.',
-
-    // Pages - Lounge
-    'pages.lounge.kicker': 'Terminal 3 Departure Hospitality',
-    'pages.lounge.title': 'Adinkra Executive Lounge',
-    'pages.lounge.desc': 'Experience tranquility before departure. Premium Ghanaian hospitality, artisan buffet, private shower suites, and high-speed Wi-Fi.',
-    'pages.lounge.bookBtn': 'Book Lounge Pass or VIP Handling',
-    'pages.lounge.hotline': 'VIP Protocol & Charter Hotline (+233 (0) 59 381 6076)',
-    'pages.lounge.amenitiesKicker': 'Terminal 3 Departure Luxury',
-    'pages.lounge.amenitiesTitle': 'Adinkra Lounge Amenities',
-    'pages.lounge.vipKicker': 'Airside Diplomatic Discretion',
-    'pages.lounge.vipTitle': 'Aviance VIP & Charter Protocol Handling',
-    'pages.lounge.vipDesc': 'Tarmac luxury vehicle transfers, direct VIP lounge escort, customs and immigration express clearance for dignitaries, diplomats, and private aviation travelers.',
-
-    // Pages - Careers
-    'pages.careers.kicker': 'Official Careers & Recruitment',
-    'pages.careers.title': 'Join Aviance Ghana',
-    'pages.careers.desc': 'We are always interested in people who share our commitment to safety, service excellence and teamwork. Current vacancies will be published on this page. Applications should be submitted only through the stated official channel.',
-    'pages.careers.enquiriesLabel': 'For any enquiries, please email:',
-    'pages.careers.email': 'employment@avianceghana.com',
-    'pages.careers.fraudTitle': 'Fraud protection:',
-    'pages.careers.fraudNotice': 'Aviance Ghana does not charge applicants a fee at any stage of recruitment. Confirm the official application method before publication.',
-    'pages.careers.vacanciesHeading': 'Published Vacancies',
-    'pages.careers.vacanciesSub': 'Official vacancies will be published below as they open.',
-    'pages.careers.all': 'All Positions',
-    'pages.careers.fullTime': 'Full-time',
-    'pages.careers.nss': 'National Service',
-    'pages.careers.activeCount': 'Active Opportunities',
-    'pages.careers.applyBtn': 'Apply for Position',
-
-    // Pages - Cargo Details
-    'pages.cargo.submitBtn': 'Submit Air Cargo Enquiry',
-    'pages.cargo.hotline': 'Cargo Operations Desk (+233 (0) 59 381 6076)',
-    'pages.cargo.coldChainTitle': 'Cold Chain & Perishables',
-    'pages.cargo.coldChainDesc': '450m³ dual-redundant cold storage maintaining +2°C to +8°C for pharmaceuticals, fresh fruits, vegetables, and -20°C deep freeze for sea produce and specialized cargo.',
-    'pages.cargo.ra3Title': 'EU RA3 Security Screening',
-    'pages.cargo.ra3Desc': 'Regulated Agent Third Country (RA3) accredited security infrastructure. High-penetration dual-view X-ray inspection, explosive trace detection, and bonded physical escort.',
-    'pages.cargo.dgTitle': 'Dangerous Goods (IATA DGR)',
-    'pages.cargo.dgDesc': 'Certified category 6 DGR specialists for Class 1-9 dangerous goods handling, dry ice replenishment, lithium battery acceptance, and radiation monitoring.',
-
-    // Pages - Baggage / Find My Bag
-    'pages.baggage.kicker': 'Kotoka International Airport Terminal 3 · Baggage Services',
-    'pages.baggage.title': 'Find My Bag · Real-Time Baggage Tracing',
-    'pages.baggage.desc': 'Direct link into Aviance Ghana’s Baggage Services Desk and global IATA WorldTracer network. Track delayed bags, submit property irregularity reports, and arrange delivery.',
-    'pages.baggage.fileClaim': 'File Delayed Baggage Report',
-    'pages.baggage.claimHeading': 'Submit a Baggage Claim or Enquiry',
-    'pages.baggage.claimDesc': 'Our arrivals baggage resolution team is on-duty 24/7 inside Terminal 3. Submit your flight and baggage details for urgent tracing.',
-
-    // Pages - Contact Extra
-    'pages.contact.hoursTitle': 'Operating Hours',
-    'pages.contact.hoursVal': '24 Hours / 7 Days (Flight Operations)',
-    'pages.contact.stationContactsTitle': 'Station & Dispatch Desk Directory',
-
-    // Common Buttons & Labels
-    'common.fullSpecs': 'Full Specifications',
-    'common.quoteCargo': 'Quote Cargo Rates',
-    'common.requestAccess': 'Request Access',
-    'common.callDesk': 'Call Operations Desk',
-
-    // Finder & Map extra keys
-    'finder.step2': 'Step 2 · Recommended Pathways',
-    'finder.step2Desc': 'Tailored ground handling services and priority action links based on your selected profile.',
-    'map.physicalStation': 'Physical Station',
-    'map.opsHours': 'Flight Operations Hours',
-    'map.stationContact': 'Station Contact',
-    'map.dispatchEmail': 'Dispatch Desk Email',
-    'map.op247': 'Operational 24/7',
   },
 
-  tw: {
-    // Top Telemetry Bar
-    'telemetry.station': "ACC · Kotoka Amansan Gyinabea",
-    'telemetry.terminal': 'Terminal 3 (DGAA)',
-    'telemetry.isago': 'ISAGO a Wɔagye Atom',
-    'telemetry.gcaa': 'GCAA Wiemhyɛn Dwumayɛfoɔ',
-    'telemetry.occ': '24/7 OCC Dɔnhwerew:',
-    'telemetry.portal': 'Wiemhyɛnfoɔ Bea',
-    'telemetry.tracing': 'Kotokuo Hwehwɛ',
-
-    // Navigation
-    'nav.services': 'Ndwuma',
-    'nav.flightOps': 'Wiemhyɛn Dwuma',
-    'nav.cargo': 'Nnoɔma Fret',
-    'nav.findMyBag': 'Hwehwɛ Me Kotokuo',
-    'nav.lounge': 'Adinkra Ahomegyebea',
-    'nav.safety': 'Bammbɔ & Gyinapɛn',
-    'nav.careers': 'Adwuma Hwehwɛ',
-    'nav.more': 'Pii Bio',
-    'nav.about': 'Aviance Ghana Ho Asɛm',
-    'nav.management': 'Akandifoɔ Panyin',
-    'nav.documents': 'Nkrataa Bea',
-    'nav.faqs': 'Nsɛmmisa a Wɔtaa Bisa',
-    'nav.contact': 'Kasa Kyerɛ Yɛn',
-    'nav.requestHandling': 'Bisa Dwumadie',
-    'nav.admin': 'Adwumayɛfoɔ Kɛseɛ',
-    'nav.search': 'Hwehwɛ',
-    'nav.themeLight': 'Hann',
-    'nav.themeNavy': 'Kuntann',
-    'nav.menu': 'Nhyehyɛeɛ',
-    'nav.close': 'To Mu',
-    'nav.completeDirectory': 'Ndwuma Nyinaa Din',
-    'nav.servicesTitle': 'Asase So Wiemhyɛn Ndwuma Nyinaa',
-
-    // Hero Section
-    'hero.kicker': 'Aviance Ghana Limited · Wɔhyɛɛ aseɛ 1994',
-    'hero.stations': 'Nkran (KIA) · Kumase · Tamale',
-    'hero.title1': 'Asase So Dwumadie.',
-    'hero.title2': 'Pɛpɛɛpɛyɛ a Ɛkorɔn.',
-    'hero.subtitle':
-      'Wiemhyɛn asase so dwumayɛfoɔ panyin a IATA ISAGO ne Ghana Civil Aviation Authority (GCAA) agye atom. Yɛde akwantufoɔ dwumadie, wiemhyɛn bammbɔ, Nnoɔma Cargo RA3 ahobammbɔ, ne ahomegyebea pa ma akwantufoɔ ne wiemhyɛn kuo.',
-    'hero.badgeTitle': 'Aban Nkrataa:',
-    'hero.badgeDesc':
-      'Dwumadie nhyehyɛeɛ a ɛne Aviance Ghana mmara, IATA ISAGO bammbɔ, ne GCAA gyinapɛn nyinaa hyia pɛpɛɛpɛ.',
-    'hero.exploreBtn': 'Hwehwɛ Ndwuma Nyinaa',
-    'hero.baggageBtn': 'Hwehwɛ Wo Kotokuo',
-    'hero.cargoBtn': 'Nnoɔma Bea Kɛseɛ (RA3)',
-
-    // Services Mega Menu
-    'services.passenger.title': 'Akwantufoɔ Sombea',
-    'services.passenger.desc': 'Check-in, boarding ne PRM mmoa',
-    'services.ramp.title': 'Wiemhyɛn Bammbɔ & Ramp',
-    'services.ramp.desc': 'Wiemhyɛn nsakraeɛ, GPU ne pushback',
-    'services.cargo.title': 'Nnoɔma Wiemhyɛn Bea',
-    'services.cargo.desc': 'EU RA3 nwunwunbea ne nnoɔma fret',
-    'services.vip.title': 'VIP & Akwammisa Pɔtee',
-    'services.vip.desc': 'Akwantufoɔ akɛseɛ nkyia ne mmoa',
-    'services.lounge.title': 'Adinkra Ahomegyebea (T3)',
-    'services.lounge.desc': 'Akwantufoɔ ahomegyebea a ɛkorɔn',
-    'services.baggage.title': 'Kotokuo Dwumadie',
-    'services.baggage.desc': 'Kotokuo a ayera ne WorldTracer mfididwuma',
-    'services.gse.title': 'GSE & Mfididwuma Siesie',
-    'services.gse.desc': 'Airside mfididwuma ne teaseɛnam siesie',
-    'services.training.title': 'Adwumayɛfoɔ Nteteeɛ',
-    'services.training.desc': 'Ramp ahobammbɔ, DGR ne IATA AHM',
-    'services.occ.title': 'OCC - Wiemhyɛn Nhyehyɛe',
-    'services.occ.desc': 'Dɔnhwerew 24/7 wiemhyɛn akwankyerɛ',
-
-    // Stats Section
-    'stats.turnaround': 'Wiemhyɛn Berɛ Pɛpɛɛpɛ',
-    'stats.turnaroundSub': 'Pushback berɛ pɔtee a yɛdi so',
-    'stats.cargo': 'Nnoɔma Afe Kɛseɛ (Tons)',
-    'stats.cargoSub': 'RA3 nnoɔma ahobammbɔ kɛseɛ',
-    'stats.safety': 'ISAGO Ahobammbɔ Nkrataa',
-    'stats.safetySub': 'Mfomsoɔ biara nni yɛn ramp bammbɔ mu',
-    'stats.established': 'Mfeɛ a Yɛasom Wiemhyɛn',
-    'stats.establishedSub': 'Yɛsom Ghana firi afe 1994 besi nnɛ',
-
-    // Core Features
-    'features.turnaroundTitle': 'Wiemhyɛn Akwantuo Simma 50 Nsakraeɛ',
-    'features.turnaroundSubtitle':
-      'Firi berɛ a wiemhyɛn si asase so kɔsi sɛ ɛtu bio, Aviance adwumayɛfoɔ de simma biara yɛ adwuma sɛdeɛ IATA ISAGO bammbɔ mmara kyerɛ.',
-    'features.finderTitle': 'Hwehwɛ Dwumadie Pɔtee a Wuhia Ma Wiemhyɛn',
-    'features.finderSubtitle':
-      'Yi wiemhyɛn su ne gyinabea na hunu yɛn asase so mfididwuma, nteteeɛ ne mmara.',
-    'features.baggageTitle': 'Hwehwɛ Me Kotokuo · BRS Mfididwuma',
-    'features.baggageSubtitle':
-      'Kotokuo hwehwɛbea mfididwuma pɔtee wɔ Kotoka Terminal 3 Akwantufoɔ Badwam.',
-    'features.mapTitle': 'Aviance Gyinabea Ahodoɔ Wɔ Ghana',
-    'features.mapSubtitle':
-      'Gyinabea mmiɛnsa a agye atom a ɛma ramp, akwantufoɔ ne nnoɔma dwumadie a ɛkorɔn.',
-
-    // Footer
-    'footer.companyDesc':
-      'Wɔhyɛɛ aseɛ 1994, Aviance Ghana yɛ wiemhyɛn asase so dwumayɛfoɔ kɛseɛ a ɛwɔ Kotoka International Airport (Nkran), Kumase ne Tamale. Yɛde IATA ISAGO bammbɔ, Cargo RA3 ahobammbɔ, akwantufoɔ sombea ne VIP ahomegyebea ma.',
-    'footer.certTitle': 'Aban Bammbɔ & Gyinapɛn Nkrataa',
-    'footer.aviationServices': 'Wiemhyɛn Ndwuma',
-    'footer.corporateLinks': 'Adwumakuo & Nhyehyɛeɛ',
-    'footer.operationalStations': 'Gyinabea Ahodoɔ',
-    'footer.copyright': 'Aviance Ghana Limited. Mmara nyinaa yɛ GCAA & IATA ISAGO de.',
-
-    // Common
-    'common.readMore': 'Kenkan Bio',
-    'common.viewDetails': 'Hwɛ Ne Nyinaa',
-    'common.contactUs': 'Frɛ OCC Seesei',
-    'common.switchLanguage': 'Pau Kasa',
-    'common.close': 'To Mu',
-
-    // Station Trust Markers
-    'hero.trustAcc': 'ACC · Kotoka T3 & Nnoɔma Bea',
-    'hero.trustKms': 'KMS · Prempeh I Wiemhyɛn Bea Kumase',
-    'hero.trustTml': 'TML · Tamale Amansan Wiemhyɛn Bea',
-
-    // Stats Section
-    'stats.keyFactsTitle': 'Yɛn Ahoɔden & Gyinapɛn Kɛseɛ',
-    'stats.verified': 'ABAN NKRATAA PA',
-    'stats.stationsLabel': 'Amansan Gyinabea',
-    'stats.stationsDesc': 'Nkran (Kotoka T3), Kumase ne Tamale',
-    'stats.auditLabel': 'ISAGO Ahobammbɔ Nhyehyɛeɛ',
-    'stats.auditDesc': 'IATA Ground Operations Manual gyinapɛn so',
-    'stats.workforceLabel': 'Wiemhyɛn Adwumayɛfoɔ Pa',
-    'stats.workforceDesc': 'Ramp, akwantufoɔ, nnoɔma ne mfididwuma foɔ',
-    'stats.watchLabel': 'Airside Bammbɔ Daa',
-    'stats.watchDesc': 'Wiemhyɛn nsakraeɛ ne nnoɔma fret dɔnhwerew nyinaa',
-
-    // Core Bento Services
-    'bento.kicker': 'Dwumadie Nyinaa a Ɛkɔ So',
-    'bento.title': 'Asase So Wiemhyɛn Dwumadie Nhyehyɛeɛ',
-    'bento.viewAll': 'Hwɛ Wiemhyɛn Ndwuma Nyinaa',
-    'bento.rampPill': '01 · Wiemhyɛn Bammbɔ & Ramp',
-    'bento.rampCert': 'Wiemhyɛn Akɛseɛ & Nketewa Bammbɔ',
-    'bento.rampTitle': 'Wiemhyɛn Nsakraeɛ & GSE Pushback',
-    'bento.rampDesc': 'Wiemhyɛn asase so dwumadie a IATA ISAGO ahyɛ da agye atom. Pushback teaseɛnam a ɛntwe akurotoɔ, GPU (400Hz), nsuo ne ahotew mfididwuma.',
-    'bento.rampAction': 'Hwɛ Ramp Mmara',
-    'bento.cargoPill': '02 · Nnoɔma Wiemhyɛn Fret',
-    'bento.cargoTitle': 'Aviance Nnoɔma Bea Kɛseɛ & Awɔnwɔnbea',
-    'bento.cargoDesc': 'EU RA3 nnoɔma ahobammbɔ mfididwuma a ɛwɔ awɔnwɔnbea ma nnuru ne nnuane (+2°C kɔsi +8°C).',
-    'bento.cargoSpecs': 'Nnoɔma Nhyehyɛeɛ',
-    'bento.cargoQuote': 'Bisa Boɔ',
-    'bento.vipPill': '03 · VIP Ahomegyebea',
-    'bento.vipTitle': 'Adinkra Ahomegyebea Kɛseɛ',
-    'bento.vipDesc': 'Ghana ahomegyebea a ɛdi kan wɔ Kotoka Terminal 3. Wi-Fi a ɛyɛ ntɛm, aduane pa, aduarebea ne adwumayɛbea dwoodwoo.',
-    'bento.vipAmenities': 'Ahomegyebea Nnoɔma',
-    'bento.vipBook': 'Kora Bea Seesei',
-    'bento.paxPill': '04 · Akwantufoɔ Sombea',
-    'bento.paxTitle': 'Check-in, Wiemhyɛn Mu Forone PRM Mmoa',
-    'bento.paxDesc': 'DCS adwumayɛfoɔ a wɔagye atom ma check-in, biometric nkrataa hwehwɛ, ne PRM mmoa ma ayarefoɔ ne nkɔkoraa.',
-    'bento.paxDetails': 'Akwantufoɔ Sombea Ho Nsɛm',
-
-    // National Map
-    'map.kicker': 'Ɔman No Mu Baabiara',
-    'map.title': 'Aviance Gyinabea Ahodoɔ Wɔ Ghana',
-    'map.desc': 'Mia gyinabea biara so na hwɛ baabi a yɛyɛ adwuma, dɔnhwerew ne nkitahodi.',
-
-    // Safety & Governance
-    'certs.kicker': 'Bammbɔ & Nhyehyɛeɛ',
-    'certs.title': 'Amansan Bammbɔ & Gyinapɛn Nkrataa',
-    'certs.viewAll': 'Hwɛ Nkrataa Nyinaa',
-    'certs.active': 'Ɛwɔ Mu',
-
-    // Customer Airlines
-    'customers.kicker': 'Wiemhyɛn Kuo a Yɛsom Wɔn',
-    'customers.title': 'Wiemhyɛn Ahodoɔ a Yɛhwɛ Wɔn Wɔ Ghana',
-    'customers.desc': 'Wiemhyɛn akuo akɛseɛ ne amansan agye atom a Aviance Ghana hwɛ wɔn so wɔ Ghana.',
-
-    // Latest News
-    'news.kicker': 'Adwumakuo Amanneɛbɔ',
-    'news.title': 'Nkutahodie Foforɔ & Wiemhyɛn Ho Nsɛm',
-    'news.allPress': 'Amanneɛbɔ Nyinaa',
-    'news.read': 'Kenkan Asɛm No',
-    'news.minRead': 'simma akenkan',
-
-    // Final CTA
-    'cta.title': "Ka Aviance Ghana, Wiemhyɛn Panyin No Ho",
-    'cta.desc': "Sɛ woyɛ wiemhyɛn kuo foforɔ a woreba Kotoka Terminal 3, anaa nnoɔma fret, Aviance Ghana ma wo dwumadie a ɛkorɔn.",
-    'cta.contact': 'Frɛ Yɛn Tiatia',
-    'cta.vip': 'Bisa VIP / Charter Dwumadie',
-
-    // Quick Actions Menu
-    'qa.badge': 'Woankasa Dwumayɛbea Ntɛmntɛm',
-    'qa.badgeSub': 'Ndwuma a Wotumi Yɛ Seesei Ara',
-    'qa.title': 'Wiemhyɛn Bea Ndwuma Ntɛmntɛm',
-    'qa.desc': 'Hwehwɛ wo kotokuo a ayera, hwɛ nnoɔma fret awb, kora VIP ahomegyebea, anaa frɛ airside ntɛm ara.',
-    'qa.searchPlaceholder': 'Hwehwɛ dwuma (e.g. kotokuo, nnoɔma fret)...',
-    'qa.whoAmI': 'Meyɛ:',
-    'qa.tabAll': 'Ndwuma Nyinaa',
-    'qa.tabPassenger': 'Okwantuni',
-    'qa.tabCargo': 'Nnoɔma Somafoɔ',
-    'qa.tabAirline': 'Wiemhyɛn Wura',
-    'qa.tabCareers': 'Adwuma Hwehwɛfoɔ / NSS',
-    'qa.liveStatus': '24/7 ƐKƆ SO',
-    'qa.lostLuggage.title': 'Ka Kotokuo a Ayera Ho Asɛm',
-    'qa.lostLuggage.badge': 'NTƐM HWEHWƐ',
-    'qa.lostLuggage.desc': 'Fa kotokuo a ayera anaa akyɛ ho amanneɛbɔ kɔ Kotoka T3 Kotokuo Dwumayɛbea tiatia.',
-    'qa.cargoStatus.title': 'Hwɛ Nnoɔma Fret Gyinabea',
-    'qa.cargoStatus.badge': 'AWB SEESEI ARA',
-    'qa.cargoStatus.desc': 'Hwehwɛ nnoɔma fret krataa (AWB), hwɛ awɔnwɔnbea ahoɔhyɛ, na hunu customs nkrataa.',
-    'qa.findMyBag.title': 'Hwehwɛ Me Kotokuo (BRS)',
-    'qa.findMyBag.badge': 'BRS SEESEI',
-    'qa.findMyBag.desc': 'Fa wo bag tag nɔmba hwehwɛ baabi pɔtee a wo kotokuo adu wɔ aeropod mu.',
-    'qa.reserveLounge.title': 'Kora Adinkra Ahomegyebea',
-    'qa.reserveLounge.badge': 'VIP AHOMEGYE',
-    'qa.reserveLounge.desc': 'Kora ahomegyebea, aduarebea, Wi-Fi ntɛmntɛm, ne aduane pa wɔ Kotoka T3 wiemhyɛn gyinabea.',
-    'qa.cargoEnquiry.title': 'Nnoɔma Boɔ & Awɔnwɔnbea',
-    'qa.cargoEnquiry.badge': 'EU RA3',
-    'qa.cargoEnquiry.desc': 'Bisa baabi ma nnoɔma a ɛporɔw (+2°C kɔsi +8°C) anaa nnoɔma a ɛyɛ hu bammbɔ boɔ.',
-    'qa.rampTurnaround.title': 'Wiemhyɛn SGHA & Ramp Nsakraeɛ',
-    'qa.rampTurnaround.badge': 'ISAGO A WƆAGYE ATOM',
-    'qa.rampTurnaround.desc': 'Bisa IATA SGHA apam anaa pushback teaseɛnam dwumadie ma wo wiemhyɛn.',
-    'qa.careersNss.title': 'Kɔ Adwuma & NSS Nhyehyɛeɛ',
-    'qa.careersNss.badge': 'ADWUMA FOFORƆ',
-    'qa.careersNss.desc': 'Fa wo nkrataa kɔma wiemhyɛn asase so adwuma anaa Ghana National Service Scheme (NSS).',
-    'qa.dutyHotline.title': 'Dɔnhwerew 24/7 Dwumayɛfoɔ Panyin',
-    'qa.dutyHotline.badge': 'AIRSIDE OCC',
-    'qa.dutyHotline.desc': 'Frɛ airside dwumayɛfoɔ panyin seesei ma wiemhyɛn nsakraeɛ ne bammbɔ ho asɛm.',
-    'qa.act.claim': 'Fa Amanneɛbɔ Kɔ',
-    'qa.act.track': 'Hwɛ AWB',
-    'qa.act.openPortal': 'Bue Dwumayɛbea',
-    'qa.act.quote': 'Bisa Boɔ',
-    'qa.act.reserve': 'Kora Krataa',
-    'qa.act.call': 'Frɛ Tiatia',
-    'qa.resetSearch': 'Siesie Hwehwɛbea Bio',
-    'qa.noMatch': 'Dwuma biara nni hɔ a ɛne wo hwehwɛ hyia',
-    'qa.noMatchDesc': 'Sɔ hwehwɛ "kotokuo", "nnoɔma fret", anaa "ahomegyebea" bio.',
-
-    // Turnaround Timeline
-    'timeline.kicker': 'Pɛpɛɛpɛyɛ & Berɛ So Dwumadie',
-    'timeline.title': 'Wiemhyɛn Simma 50 Nsakraeɛ Kɛseɛ',
-    'timeline.subtitle': 'Firi berɛ a wiemhyɛn si fɔm kɔsi sɛ ɛtu bio, Aviance adwumayɛfoɔ de simma biara yɛ adwuma sɛdeɛ IATA ISAGO bammbɔ kyerɛ.',
-    'timeline.safetyVerif': 'Ahobammbɔ a Ɛwɔ Sɛ Yɛyɛ Pɛpɛɛpɛ',
-    'timeline.seqControls': 'Dwumadie Nhyehyɛeɛ',
-    'timeline.prev': 'Fasuo a Etwaam',
-    'timeline.next': 'Fasuo a Edi Hɔ',
-    'timeline.directive': 'Ɛne IATA AHM 900 & GCAA mmara nyinaa hyia pɛpɛɛpɛ',
-    'timeline.phase': 'Fasuo',
-    'timeline.step1.title': 'Wiemhyɛn Baso & Apron Marshalling',
-    'timeline.step1.desc': 'Wiemhyɛn si fɔm wɔ Kotoka Amansan Gyinabea. Adwumayɛfoɔ panyin de kanea kyerɛ wiemhyɛn kwan ma ɛkɔ gyinabea pɔtee. Wɔde chocks ne cones gu ho ma bammbɔ.',
-    'timeline.step2.title': 'GPU Nkitahodie & Akwantufoɔ Siane',
-    'timeline.step2.desc': 'Wɔde Anyinam Ahoɔden GPU (400Hz) fam wiemhyɛn ho ntɛm. Wɔde atwerɛ ma akwantufoɔ siane, na PRM mmoa ma ayarefoɔ.',
-    'timeline.step3.title': 'Kotokuo & Nnoɔma Fret Yiyi Firi Wiemhyɛn Mu',
-    'timeline.step3.desc': 'Mfididwuma kɛseɛ yiyi kotokuo ne fret nyinaa firi wiemhyɛn mu kɔ carousel ne Aviance Cargo Village awɔnwɔnbea.',
-    'timeline.step4.title': 'Wiemhyɛn Mu Siesie, Nsuo & Petrol Nkitahodie',
-    'timeline.step4.desc': 'Wɔsiesie nsuo tew ne ahotew aduro wɔ wiemhyɛn mu pɛpɛɛpɛ. Wɔde aduane hyɛ mu bio na petrol nso wɔhwɛ so wɔ ogya bammbɔ ase.',
-    'timeline.step5.title': 'DCS Boarding & Kotokuo a Wɔde Gu Mu Bio',
-    'timeline.step5.desc': 'Terminal 3 aboboano DCS mfididwuma gye akwantufoɔ kɔ mu. BRS hwɛ ma kotokuo biara ne ne wura hyia pɛpɛɛpɛ ansa na captain agye atom.',
-    'timeline.step6.title': 'Towbarless Pushback & Wiemhyɛn Tu',
-    'timeline.step6.desc': 'Mfididwumani no ne wiemhyɛnkafoɔ no kasa tiatia. Teaseɛnam kɛseɛ pushback no pia wiemhyɛn no kɔ baabi a ɛbɛtu, na wɔma kwan ma etu dwoodwoo.',
-
-    // Smart Service Finder
-    'finder.kicker': 'Wiemhyɛn Dwumadie Hwehwɛbea Pa',
-    'finder.title': 'Ɛdeɛn na Aviance Ghana bɛtumi ayɛ ama wo nnɛ?',
-    'finder.desc': 'Pau dwuma a wowɔ wɔ wiemhyɛn gyinabea ha na hunu mmoa pɔtee a yɛde ma wo.',
-    'finder.step1': 'Fasuo 1: Pau Wo Gyinabea',
-    'finder.pax': 'Okwantuni',
-    'finder.paxDesc': 'Woretu kwan wɔ Kotoka Terminal 3',
-    'finder.airline': 'Wiemhyɛn Kuw',
-    'finder.airlineDesc': 'Wiemhyɛn a ɛba daa anaa charter',
-    'finder.cargo': 'Nnoɔma Somafoɔ',
-    'finder.cargoDesc': 'Nnoɔma fret, awɔnwɔnbea anaa nnuane',
-    'finder.corp': 'Adwumakuo & VIP',
-    'finder.corpDesc': 'Wiemhyɛn akɛseɛ, ahomegyebea pa',
-    'finder.jobs': 'Adwuma Hwehwɛfoɔ / NSS',
-    'finder.jobsDesc': 'Wiemhyɛn adwuma ne nteteeɛ',
-    'finder.agency': 'Akwantuo & Nkitahodi',
-    'finder.agencyDesc': 'GSA, nnoɔma fret dwumayɛfoɔ',
-
-    // Baggage Tracker
-    'baggage.badge': 'Kotoka Amansan Gyinabea Terminal 3 · SITA BRS',
-    'baggage.title': 'Hwehwɛ Me Kotokuo · Mfididwuma Pa',
-    'baggage.deskInfo': 'Kotokuo Dwumayɛbea wɔ Carousel 2 Nkyɛn wɔ Baabi a Wɔsi Fɔm · Frɛ: +233 (0) 544 33 4022',
-    'baggage.inputPlaceholder': 'e.g. ACC-782910 anaa EK-451902',
-    'baggage.trackBtn': 'Hwehwɛ Kotokuo',
-    'baggage.samplePrompt': 'Sɔ nɔmba ahodoɔ yi hwɛ:',
-    'baggage.fileClaimBtn': 'Fa Amanneɛbɔ Kɔ',
-    'baggage.notFoundTitle': 'Yɛanhu Kotokuo Nkrataa Biara',
-    'baggage.notFoundDesc': 'Tag nɔmba no nni yɛn nkrataa mu seesei. Kɔ Aviance Kotokuo Dwumayɛbea wɔ Terminal 3.',
-
-    // Search Modal
-    'search.placeholder': 'Hwehwɛ ndwuma, nkrataa, gyinabea, adwumayɛfoɔ anaa wiemhyɛn...',
-    'search.categoriesAll': 'Nyinaa',
-    'search.categoriesServices': 'Ndwuma',
-    'search.categoriesDocs': 'Nkrataa',
-    'search.categoriesCareers': 'Adwuma',
-    'search.categoriesFaqs': 'Nsɛmmisa',
-    'search.categoriesStations': 'Gyinabea',
-    'search.categoriesTeam': 'Akandifoɔ',
-    'search.recent': 'Nea Wahwehwɛ Nnansa Yi',
-    'search.noResults': 'Yɛanhu hwee a ɛne yi hyia:',
-    'search.esc': 'ESC ma ɛnto mu',
-
-    // Station Network
-    'map.operationalCoverage': 'Dwumadie a Ɛkɔ So Wɔ Ghana Baabiara',
-    'map.stationProfile': 'Gyinabea Ho Nsɛm & Ahoɔden',
-    'map.operatingHours': 'Adwumayɛ Dɔnhwerew',
-    'map.runway': 'Wiemhyɛn Kwan Nhyehyɛeɛ',
-    'map.handlingCap': 'Dwumadie a Yɛtumi Yɛ',
-    'map.contactDispatch': 'Frɛ Gyinabea Panyin',
-
-    // Footer Extra
-    'footer.paxHandling': 'Akwantufoɔ Sombea & PRM',
-    'footer.rampTurnaround': 'Wiemhyɛn Ramp Nsakraeɛ',
-    'footer.cargoVillage': 'Nnoɔma Wiemhyɛn Bea (RA3)',
-    'footer.vipCharter': 'Aviance VIP & Akwammisa',
-    'footer.adinkraLounge': 'Adinkra Ahomegyebea (T3)',
-    'footer.baggageDesk': 'Kotokuo & WorldTracer',
-    'footer.findMyBag': 'Hwehwɛ Me Kotokuo Bea',
-    'footer.aboutAviance': 'Aviance Ghana Ho Asɛm',
-    'footer.opHubs': 'Gyinabea Ahodoɔ (ACC·KMS·TML)',
-    'footer.leadership': 'Akandifoɔ Panyin',
-    'footer.safetyCerts': 'Bammbɔ, Tumikrataa & Mmara',
-    'footer.newsPress': 'Amanneɛbɔ & Nsɛm Foforɔ',
-    'footer.careersNss': 'Adwuma & National Service',
-    'footer.codeOfConduct': 'Adwumakuo Mmara & Suban',
-    'footer.docCentre': 'Nkrataa Bea Kɛseɛ',
-    'footer.airlinePortal': 'Wiemhyɛnfoɔ Bea',
-    'footer.helpFaqs': 'Mmoa & Nsɛmmisa',
-    'footer.headOffice': 'Adwumakuo Panyin Nkitahodi',
-    'footer.hours': 'Adwumayɛ: Ɛdwoada–Efiada 08:00–17:00 · Wiemhyɛn Dɔnhwerew 24/7',
-    'footer.privacy': 'Kokoamsɛm Mmara',
-    'footer.terms': 'Dwumadie Mmara',
-
-    // Mobile Drawer Extra
-    'drawer.operationsHubs': 'Dwumayɛbea & Gyinabea',
-    'drawer.companyResources': 'Adwumakuo & Nhyehyɛeɛ',
-    'drawer.leadership': 'Akandifoɔ',
-    'drawer.allNews': 'Amanneɛbɔ',
-    'drawer.adminPortal': 'Adwumayɛfoɔ Panyin Portal',
-
-    // Pages - Services Directory
-    'pages.services.kicker': 'Wiemhyɛn Sombea Nhyehyɛeɛ',
-    'pages.services.title': 'Wiemhyɛn Sombea a Ɛdi Mu Nyinaa',
-    'pages.services.desc': 'Yɛyɛ adwuma wɔ Kotoka Amansan Wiemhyɛn Gyinabea (ACC), Prempeh I Kumasi (KMS), ne Tamale (TML), de bammbɔ, ntɛmntɛmyɛ, ne akwantufoɔ akwaaba pa ma.',
-    'pages.services.filterPlaceholder': 'Hwehwɛ sombea ahodoɔ...',
-    'pages.services.all': 'Nyinaa',
-
-    // Pages - About Us
-    'pages.about.kicker': 'Adwumakuo Ho Asɛm',
-    'pages.about.title': 'Aviance Ghana Limited Ho Asɛm',
-    'pages.about.desc': 'Ghana wiemhyɛn asase so dwumayɛbea nnyinasoɔ. Yɛka Atɔeɛ Afrika bom kɔ wiase nyinaa denam bammbɔ, nokwareyɛ, ne Ghanafoɔ ahohoyerɛ so.',
-    'pages.about.heritageKicker': 'Yɛn Abakɔsɛm & Ahyɛdeɛ',
-    'pages.about.heritageTitle': 'Akandifoɔ wɔ Wiemhyɛn Sombea Gyinapɛn mu wɔ Atɔeɛ Afrika',
-    'pages.about.heritageP1': 'Aviance Ghana Limited yɛ adwumakuo a Ghana Wiemhyɛn Mmara Ahemfie (GCAA) ama wɔn tumi. Yɛwɔ Kotoka Amansan Gyinabea wɔ Nkran, ne Kumasi ne Tamale, yɛsom wiemhyɛn akɛseɛ ne nnoɔma soasoafoɔ nyinaa.',
-    'pages.about.heritageP2': 'Yɛde IATA ISAGO bammbɔ mmara to yɛn anim, tete yɛn adwumayɛfoɔ daa, na yɛtɔ mfiri foforɔ de hwɛ ma wiemhyɛn tu kɔ berɛ ano pɛpɛɛpɛ a asiane biara nni ho.',
-    'pages.about.meetLeadership': 'Hunu Yɛn Akandifoɔ Panyin',
-    'pages.about.pillarsTitle': 'Yɛn Nhyehyɛeɛ Dum Titiriw',
-
-    // Pages - Contact Us
-    'pages.contact.kicker': 'Gyinabea Ahodoɔ & Nkitahodi',
-    'pages.contact.title': 'Frɛ Aviance Ghana',
-    'pages.contact.desc': 'Kasa kyerɛ gyinabea so ahwɛfoɔ, nnoɔma ho adwumayɛfoɔ, wiemhyɛn dwumayɛbea, ne mpanyimfoɔ wɔ Nkran, Kumasi, ne Tamale.',
-    'pages.contact.formTitle': 'Fa Wo Dwumadie anaa Asem Kɔ',
-    'pages.contact.formSubtitle': 'Nkrataa kɔ ntɛm kɔma gyinabea ahwɛfoɔ ne nnoɔma dwumayɛfoɔ seesei ara.',
-    'pages.contact.name': 'Wo Din Nyinaa',
-    'pages.contact.email': 'Wo Adwuma Email',
-    'pages.contact.phone': 'Telefon Nɔma',
-    'pages.contact.org': 'Wiemhyɛn Kuw / Adwumakuo',
-    'pages.contact.category': 'Nsɛm Kuw',
-    'pages.contact.subject': 'Asɛm Ti / Wiemhyɛn Nɔma',
-    'pages.contact.message': 'Asɛm a Ɛfa Ho Nyinaa',
-    'pages.contact.sendBtn': 'Soma Krataa No Seesei',
-    'pages.contact.successTitle': 'Krataa No Akɔ Yie Pa Ara',
-    'pages.contact.successMsg': 'Yɛagye wo krataa no wɔ yɛn dwumayɛbea afiri mu. Panyin bi bɛbua wo ntɛm ara.',
-    'pages.contact.submitAnother': 'Soma Krataa Foforɔ',
-
-    // Pages - Cargo Terminal
-    'pages.cargo.kicker': 'EU RA3 Agyapadeɛ & Nnoɔma Awɔ Bea',
-    'pages.cargo.title': 'Aviance Nnoɔma Kuro (Air Cargo Village)',
-    'pages.cargo.desc': 'Nnoɔma bammbɔ ne nnuru a ɛhia awɔ bea pa wɔ Kotoka Amansan Gyinabea.',
-
-    // Pages - FAQs
-    'pages.faqs.kicker': 'Nimdeɛ Bea & Nsɛmmisa',
-    'pages.faqs.title': 'Nsɛmmisa a Wɔtaa Bisa Mpɛn Pii',
-    'pages.faqs.desc': 'Mmuaeɛ pa ma akwantufoɔ kwan, kotokuo hwehwɛbea, nnoɔma tow, ne wiemhyɛn asase so sombea.',
-
-    // Pages - Lounge
-    'pages.lounge.kicker': 'Terminal 3 Akwantufoɔ Ahomegyebea',
-    'pages.lounge.title': 'Adinkra Ahomegyebea Kɛseɛ',
-    'pages.lounge.desc': 'Nya ahomegye pa ansa na woatu kwan. Aduane pa, aguarebea, ne intanɛt ntɛmntɛm.',
-    'pages.lounge.bookBtn': 'Gye Ahomegyebea Tumikrataa',
-    'pages.lounge.hotline': 'VIP Protocol & Wiemhyɛn Hotline (+233 (0) 59 381 6076)',
-    'pages.lounge.amenitiesKicker': 'Terminal 3 Ahoɔfɛ & Ahomegye',
-    'pages.lounge.amenitiesTitle': 'Adinkra Ahomegyebea Nnoɔma',
-    'pages.lounge.vipKicker': 'Diplomatic Ahobammbɔ',
-    'pages.lounge.vipTitle': 'Aviance VIP & Wiemhyɛn a Wɔabɔ Ho Paa Dwuma',
-    'pages.lounge.vipDesc': 'Kar fɛfɛ wɔ wiemhyɛn gyinabea, kwan pa ma akandifoɔ ne customs nkabom ntɛmntɛm.',
-
-    // Pages - Careers
-    'pages.careers.kicker': 'Aban Nnwuma & Adwumayɛfoɔ Foforɔ',
-    'pages.careers.title': 'Ka Aviance Ghana Ho',
-    'pages.careers.desc': 'Yɛpɛ nnipa a wɔn ho akokwaw na wɔka yɛn botaeɛ a ɛne banbɔ, dwumadie pa ne baakoyɛ ho ntam. Nnwuma a ɛda hɔ foforɔ bɛpue wɔ kratafa yi so. Fa akwan pa a yɛakyerɛ so na fa wo krataa brɛ yɛn.',
-    'pages.careers.enquiriesLabel': 'Sɛ wowɔ asɛmmisa biara a, yɛsrɛ sɛ kyerɛw email brɛ:',
-    'pages.careers.email': 'employment@avianceghana.com',
-    'pages.careers.fraudTitle': 'Kɔntompo ho Banbɔ:',
-    'pages.careers.fraudNotice': 'Aviance Ghana nnye sika biara mmfi adwumayɛfoɔ nsam wɔ adwuma a wɔbɛpɛ ho berɛ biara mu. Hwɛ yie na gye akwan soronko a yɛabue no to mu ansa.',
-    'pages.careers.vacanciesHeading': 'Nnwuma a Ɛda Hɔ',
-    'pages.careers.vacanciesSub': 'Nnwuma foforɔ bɛpue ha sɛ wɔbue ano a.',
-    'pages.careers.all': 'Adwuma Nyinaa',
-    'pages.careers.fullTime': 'Bere Nyinaa',
-    'pages.careers.nss': 'Ɔman Som (NSS)',
-    'pages.careers.activeCount': 'Nnwuma a Ɛwɔ Hɔ Seesei',
-    'pages.careers.applyBtn': 'Pɛ Adwuma Yi',
-
-    // Pages - Cargo Details
-    'pages.cargo.submitBtn': 'Bisa Nnoɔma Ho Asɛm',
-    'pages.cargo.hotline': 'Cargo Adwumayɛbea (+233 (0) 59 381 6076)',
-    'pages.cargo.coldChainTitle': 'Awɔ Dan & Nnuaba',
-    'pages.cargo.coldChainDesc': 'Awɔ dan 450m³ a ɛyɛ +2°C kɔsi +8°C ma nnuru ne nnuaba, ne -20°C ma nsuom nnoɔma.',
-    'pages.cargo.ra3Title': 'EU RA3 Bammbɔ Nhwehwɛmu',
-    'pages.cargo.ra3Desc': 'RA3 bammbɔ a wɔagye atom. X-ray nhwehwɛmu a emu yɛ den ne bammbɔfoɔ a wɔka nnoɔma ho.',
-    'pages.cargo.dgTitle': 'Nnoɔma a Asiane Wɔ Ho (IATA DGR)',
-    'pages.cargo.dgDesc': 'Adwumayɛfoɔ a wɔatete wɔn ma nnoɔma a asiane wɔ ho, dry ice, ne batere ahodoɔ.',
-
-    // Pages - Baggage / Find My Bag
-    'pages.baggage.kicker': 'Kotoka Amansan Gyinabea Terminal 3 · Kotokuo Dwumayɛbea',
-    'pages.baggage.title': 'Hwehwɛ Me Kotokuo · Ntɛmntɛm Nhwehwɛmu',
-    'pages.baggage.desc': 'Nkabom kɔ Aviance Ghana Kotokuo Adwumayɛbea ne IATA WorldTracer. Hwehwɛ kotokuo a akyɛ.',
-    'pages.baggage.fileClaim': 'Bɔ Kotokuo a Akyɛ Ho Amanneɛ',
-    'pages.baggage.claimHeading': 'Kyerɛw Kotokuo Ho Amanneɛbɔ',
-    'pages.baggage.claimDesc': 'Yɛn adwumayɛfoɔ wɔ Terminal 3 dɔnhwerew 24/7. Fa wo nkrataa kɔ ma yɛnhwehwɛ ntɛmntɛm.',
-
-    // Pages - Contact Extra
-    'pages.contact.hoursTitle': 'Adwumayɛ Dɔnhwerew',
-    'pages.contact.hoursVal': 'Dɔnhwerew 24 / Nna 7 (Wiemhyɛn Dwuma)',
-    'pages.contact.stationContactsTitle': 'Gyinabea & Dispatch Nkrataabeahodoɔ',
-
-    // Common Buttons & Labels
-    'common.fullSpecs': 'Dwumadie Nkyerɛkyerɛmu',
-    'common.quoteCargo': 'Bisa Nnoɔma Boɔ',
-    'common.requestAccess': 'Srɛ Kwan',
-    'common.callDesk': 'Frɛ Adwumayɛbea',
-
-    // Finder & Map extra keys
-    'finder.step2': 'Fa 2 · Akwan a Wɔkamfo Kyerɛ',
-    'finder.step2Desc': 'Ndwuma a wɔayɛ ama wo titiriw sɛnea wo profile teɛ.',
-    'map.physicalStation': 'Gyinabea Ankasa',
-    'map.opsHours': 'Wiemhyɛn Adwumayɛ Dɔnhwerew',
-    'map.stationContact': 'Gyinabea Telefon',
-    'map.dispatchEmail': 'Dispatch Email',
-    'map.op247': 'Yɛyɛ Adwuma Dɔnhwerew 24/7',
-  },
-
+  // ==========================================
+  // FRENCH (FRANÇAIS)
+  // ==========================================
   fr: {
     // Top Telemetry Bar
     'telemetry.station': "ACC · Kotoka Int'l",
@@ -908,19 +181,22 @@ const TRANSLATIONS: Record<string, Record<string, string>> = {
     'telemetry.tracing': 'Suivi Bagages',
 
     // Navigation
+    'nav.home': 'Accueil',
     'nav.services': 'Services',
     'nav.flightOps': 'Opérations de Vol',
     'nav.cargo': 'Fret Aérien',
     'nav.findMyBag': 'Suivre Mes Bagages',
     'nav.lounge': 'Salon Adinkra',
     'nav.safety': 'Sécurité & Normes',
+    'nav.csr': 'RSE',
+    'nav.news': 'Actualités',
     'nav.careers': 'Carrières',
+    'nav.contact': 'Contact',
     'nav.more': 'Plus',
-    'nav.about': "À Propos d'Aviance",
+    'nav.about': 'À Propos',
     'nav.management': 'Direction Générale',
     'nav.documents': 'Centre Documentaire',
     'nav.faqs': 'FAQ Opérationnelle',
-    'nav.contact': 'Contacts & Stations',
     'nav.requestHandling': "Demande d'Assistance",
     'nav.admin': 'Portail Admin',
     'nav.search': 'Rechercher',
@@ -944,6 +220,50 @@ const TRANSLATIONS: Record<string, Record<string, string>> = {
     'hero.exploreBtn': 'Explorer les Services Aériens',
     'hero.baggageBtn': 'Suivre Mon Bagage',
     'hero.cargoBtn': 'Terminal Fret (RA3)',
+
+    // Partner Radar Section
+    'partners.title': "Partenaire d'Assistance en Escale de Confiance pour Plus de 40 Compagnies Aériennes Mondiales",
+    'partners.subtitle':
+      "Des vols passagers gros-porteurs réguliers quotidiens aux avions-cargos sous chaîne du froid internationale, Aviance Ghana est l'agent d'assistance certifié de référence à Accra, Kumasi et Tamale.",
+    'partners.viewAll': 'Voir Tous les 42 Partenaires',
+    'partners.tabAll': 'Tous les Partenaires (42)',
+    'partners.tabIntl': 'Commercial International',
+    'partners.tabRegional': 'Régional & Africain',
+    'partners.tabCargo': 'Fret & Cargo',
+    'partners.tabVip': 'VIP & Vols Privés',
+
+    // Airport Stations Section
+    'stations.title': "Présent sur les Principales Portes Aériennes Commerciales du Ghana",
+    'stations.subtitle':
+      "Aviance Ghana exploite des stations d'assistance au sol certifiées, une flotte d'équipements de piste et des opérations passagers sur 3 aéroports majeurs.",
+    'stations.viewAll': 'Voir Toutes les Opérations & Carte',
+    'stations.learnMore': 'En savoir plus',
+    'stations.accName': "Aéroport International de Kotoka (ACC / DGAA) · Terminal 3 & Village Fret",
+    'stations.kmsName': "Aéroport International Prempeh I (KMS / DGSI) · Plateforme de Kumasi",
+    'stations.tmlName': "Aéroport International de Tamale (TML / DGLE) · Porte du Nord",
+
+    // Certifications Banner
+    'certBanner.eyebrow': 'Qualité, Sécurité & Accréditations Réglementaires',
+    'certBanner.title': 'Accrédité IATA ISAGO · Certificat ISAGO-ACC-24-2419',
+    'certBanner.desc':
+      "Accrédité selon l'audit de sécurité des opérations au sol de l'IATA (ISAGO) à l'aéroport international de Kotoka (ACC) jusqu'au 21 janvier 2027. Soutenu par la validation de sécurité Fret RA3 de l'Union européenne et les licences d'exploitation de la Ghana Civil Aviation Authority.",
+    'certBanner.viewCerts': 'Voir les Certifications & Audits',
+    'certBanner.codeOfConduct': 'Code de Conduite & Gouvernance',
+
+    // CSR Section
+    'csr.eyebrow': 'Durabilité & Engagement Communautaire',
+    'csr.title': 'Impact Communautaire & Durabilité',
+    'csr.subtitle': "Lauréat du Prix d'Excellence en RSE aux Ghana Shippers' Authority Awards 2025.",
+    'csr.readStory': "Lire l'Histoire",
+    'csr.exploreAll': "Explorer Tous les Programmes RSE & Rapports d'Impact",
+
+    // News Section
+    'news.eyebrow': 'Actualités & Communiqués Officiels',
+    'news.title': "Dernières Nouvelles d'Aviance Ghana",
+    'news.allPress': 'Tous les Articles & Communiqués',
+    'news.readFull': "Lire l'Article Complet",
+    'news.mediaRelease': 'Communiqué de Presse',
+    'news.minRead': 'min de lecture',
 
     // Services Mega Menu
     'services.passenger.title': 'Services Passagers',
@@ -975,28 +295,14 @@ const TRANSLATIONS: Record<string, Record<string, string>> = {
     'stats.established': 'Années d’Excellence Aéronautique',
     'stats.establishedSub': 'Au service du ciel ghanéen depuis 1994',
 
-    // Core Features
-    'features.turnaroundTitle': 'La Rotation Avion en 50 Minutes Chrono',
-    'features.turnaroundSubtitle':
-      "Du poser des roues au décollage, chaque seconde est orchestrée selon les standards stricts de l'IATA ISAGO par les équipes d'Aviance.",
-    'features.finderTitle': 'Trouvez la Solution d’Assistance pour Vos Vols',
-    'features.finderSubtitle':
-      'Sélectionnez le type d’aéronef et l’escale pour découvrir nos capacités matérielles, SLAs et équipements spécialisés.',
-    'features.baggageTitle': 'Suivre Mon Bagage · Traçabilité Automatisée',
-    'features.baggageSubtitle':
-      'Comptoir de rapprochement bagages situé au hall des arrivées du Terminal 3 de Kotoka.',
-    'features.mapTitle': 'Réseau d’Escales Aviance au Ghana',
-    'features.mapSubtitle':
-      'Trois escales certifiées assurant des prestations standardisées en piste, passagers et fret.',
-
     // Footer
     'footer.companyDesc':
-      "Fondée en 1994, Aviance Ghana est l’opérateur leader d’assistance aéroportuaire à l'Aéroport International de Kotoka (Accra), Kumasi et Tamale. Certifié IATA ISAGO, UE RA3, avec salon VIP exécutif.",
-    'footer.certTitle': 'Certifications & Agréments Officiels',
-    'footer.aviationServices': 'Prestations Aéronautiques',
-    'footer.corporateLinks': 'Gouvernance & Documents',
-    'footer.operationalStations': 'Escales Opérationnelles',
-    'footer.copyright': 'Tous droits réservés. Aviance Ghana Limited. Régulé par la GCAA et IATA ISAGO.',
+      "Fondé en 1994, Aviance Ghana est un prestataire complet d'assistance aéroportuaire en escale opérant à l'aéroport international de Kotoka (Accra), Kumasi et Tamale. Assistance en piste certifiée IATA ISAGO, fret sécurisé RA3, services passagers et salons exécutifs.",
+    'footer.certTitle': 'Certifications Officielles & Normes',
+    'footer.aviationServices': 'Services Aéronautiques',
+    'footer.corporateLinks': 'Entreprise & Gouvernance',
+    'footer.operationalStations': 'Stations Opérationnelles',
+    'footer.copyright': 'Tous droits réservés. Aviance Ghana Limited. Régulé par la GCAA & IATA ISAGO.',
 
     // Common
     'common.readMore': 'En savoir plus',
@@ -1004,338 +310,671 @@ const TRANSLATIONS: Record<string, Record<string, string>> = {
     'common.contactUs': 'Contacter le CCO',
     'common.switchLanguage': 'Choisir la langue',
     'common.close': 'Fermer',
+  },
 
-    // Station Trust Markers
-    'hero.trustAcc': 'ACC · Kotoka T3 & Terminal Fret',
-    'hero.trustKms': 'KMS · Aéroport Prempeh I Kumasi',
-    'hero.trustTml': 'TML · Aéroport International Tamale',
+  // ==========================================
+  // SPANISH (ESPAÑOL)
+  // ==========================================
+  es: {
+    'telemetry.station': "ACC · Kotoka Int'l",
+    'telemetry.terminal': 'Terminal 3 (DGAA)',
+    'telemetry.isago': 'Registrado en ISAGO',
+    'telemetry.gcaa': 'Operador Autorizado GCAA',
+    'telemetry.occ': 'CCO 24/7:',
+    'telemetry.portal': 'Portal de Aerolíneas',
+    'telemetry.tracing': 'Rastreo de Equipaje',
 
-    // Stats Section
-    'stats.keyFactsTitle': 'Performances Opérationnelles & Références Escale',
-    'stats.verified': 'OFFICIELLEMENT VÉRIFIÉ',
-    'stats.stationsLabel': 'Escales Internationales',
-    'stats.stationsDesc': 'Accra (Kotoka T3), Kumasi & Tamale',
-    'stats.auditLabel': 'Conformité d’Audit ISAGO',
-    'stats.auditDesc': 'Standard IATA Ground Operations Manual',
-    'stats.workforceLabel': 'Professionnels de l’Aérien',
-    'stats.workforceDesc': 'Personnel piste, passagers, fret et technique',
-    'stats.watchLabel': 'Veille Piste Active 24/7',
-    'stats.watchDesc': 'Rotations continues & dédouanement de fret',
+    'nav.home': 'Inicio',
+    'nav.services': 'Servicios',
+    'nav.flightOps': 'Operaciones de Vuelo',
+    'nav.cargo': 'Carga Aérea',
+    'nav.findMyBag': 'Rastrear Mi Maleta',
+    'nav.lounge': 'Sala Adinkra',
+    'nav.safety': 'Seguridad y Normas',
+    'nav.csr': 'RSC',
+    'nav.news': 'Noticias',
+    'nav.careers': 'Empleo',
+    'nav.contact': 'Contacto',
+    'nav.more': 'Más',
+    'nav.about': 'Quiénes Somos',
+    'nav.management': 'Liderazgo Ejecutivo',
+    'nav.documents': 'Centro Documental',
+    'nav.faqs': 'Preguntas Frecuentes',
+    'nav.requestHandling': 'Solicitar Asistencia',
+    'nav.admin': 'Portal Admin',
+    'nav.search': 'Buscar',
+    'nav.themeLight': 'Claro',
+    'nav.themeNavy': 'Azul Marino',
+    'nav.menu': 'Menú',
+    'nav.close': 'Cerrar',
+    'nav.completeDirectory': 'Directorio Completo',
+    'nav.servicesTitle': 'Servicios Aeroportuarios y Asistencia en Tierra',
 
-    // Core Bento Services
-    'bento.kicker': 'Capacités Opérationnelles Globales',
-    'bento.title': 'Solutions Complètes d’Assistance en Escale',
-    'bento.viewAll': 'Tous les Services Opérationnels',
-    'bento.rampPill': '01 · Assistance en Piste & Rotation',
-    'bento.rampCert': 'Certifié Gros & Moyen-Courriers',
-    'bento.rampTitle': 'Rotation Aéronef & Repoussage Tracté GSE',
-    'bento.rampDesc': 'Assistance airside intégrale sous normes IATA ISAGO. Tracteurs pushback sans barre, Groupes de Puissance (GPU 400Hz), démarreurs d’air, tapis à bagages et vidange/eau potable.',
-    'bento.rampAction': 'Voir le Protocole Piste',
-    'bento.cargoPill': '02 · Fret Aérien',
-    'bento.cargoTitle': 'Terminal de Fret Aviance & Chaîne du Froid',
-    'bento.cargoDesc': 'Logistique de fret aérien certifiée UE RA3 avec chambres froides pharmaceutiques et périssables monitorées (+2°C à +8°C).',
-    'bento.cargoSpecs': 'Spécifications Fret',
-    'bento.cargoQuote': 'Tarifs Fret',
-    'bento.vipPill': '03 · Hospitalité VIP',
-    'bento.vipTitle': 'Salon Exécutif Adinkra',
-    'bento.vipDesc': 'Le salon d’honneur de référence au Terminal 3 de Kotoka. Wi-Fi haut débit, restauration gastronomique, douches privées et espaces affaires.',
-    'bento.vipAmenities': 'Prestations du Salon',
-    'bento.vipBook': 'Réserver l’Accès',
-    'bento.paxPill': '04 · Accueil & Passagers',
-    'bento.paxTitle': 'Enregistrement, Embarquement & Assistance PMR',
-    'bento.paxDesc': 'Agents certifiés DCS pour l’enregistrement, contrôle biométrique d’embarquement, correspondances et ambulifts PMR.',
-    'bento.paxDetails': 'Détails Services Passagers',
+    'hero.kicker': 'Aviance Ghana Limited · Fundada en 1994',
+    'hero.stations': 'Accra (KIA) · Kumasi · Tamale',
+    'hero.title1': 'Asistencia en Tierra.',
+    'hero.title2': 'Elevada a la Precisión.',
+    'hero.subtitle':
+      'Proveedor integral de asistencia aeroportuaria en tierra certificado y regulado por IATA ISAGO y la Autoridad de Aviación Civil de Ghana (GCAA). Servicios de pasajeros, rampa, carga segura RA3 y salas ejecutivas.',
+    'hero.badgeTitle': 'Identidad Corporativa Oficial:',
+    'hero.badgeDesc':
+      'Plataforma digital sincronizada con las operaciones comerciales certificadas de Aviance Ghana, normas IATA ISAGO y regulaciones GCAA.',
+    'hero.exploreBtn': 'Explorar Servicios de Aviación',
+    'hero.baggageBtn': 'Rastrear Maleta de Llegada',
+    'hero.cargoBtn': 'Terminal de Carga (RA3)',
 
-    // National Map
-    'map.kicker': 'Réseau National',
-    'map.title': 'Présence Stratégique sur les Aérodromes du Ghana',
-    'map.desc': 'Cliquez sur une escale pour consulter les capacités d’assistance, les horaires et les contacts du régulateur.',
+    'partners.title': 'Socio de Asistencia en Tierra de Confianza para Más de 40 Aerolíneas Globales',
+    'partners.subtitle':
+      'Desde vuelos diarios regulares de pasajeros de fuselaje ancho hasta cargueros internacionales con cadena de frío, Aviance Ghana es el agente de asistencia certificado de elección en Accra, Kumasi y Tamale.',
+    'partners.viewAll': 'Ver los 42 Socios',
+    'partners.tabAll': 'Todos los Socios (42)',
+    'partners.tabIntl': 'Comercial Internacional',
+    'partners.tabRegional': 'Regional y Africano',
+    'partners.tabCargo': 'Carga y Flete',
+    'partners.tabVip': 'VIP y Chárter',
 
-    // Safety & Governance
-    'certs.kicker': 'Gouvernance & Sécurité',
-    'certs.title': 'Normes Opérationnelles Auditées Internationalement',
-    'certs.viewAll': 'Voir Tous les Certificats',
-    'certs.active': 'Actif',
+    'stations.title': 'Operando en las Principales Puertas Aéreas Comerciales de Ghana',
+    'stations.subtitle':
+      'Aviance Ghana mantiene estaciones certificadas de asistencia en tierra, flota de equipos de rampa y operaciones de pasajeros en 3 aeropuertos principales.',
+    'stations.viewAll': 'Ver Operaciones Completas y Mapa',
+    'stations.learnMore': 'Más información',
+    'stations.accName': 'Aeropuerto Internacional Kotoka (ACC / DGAA) · Terminal 3 y Ciudad de Carga',
+    'stations.kmsName': 'Aeropuerto Internacional Prempeh I (KMS / DGSI) · Centro de Kumasi',
+    'stations.tmlName': 'Aeropuerto Internacional de Tamale (TML / DGLE) · Puerta Norte',
 
-    // Customer Airlines
-    'customers.kicker': 'Compagnies Clientes Officielles',
-    'customers.title': 'Transporteurs Traités au Ghana',
-    'customers.desc': 'Compagnies aériennes et alliances mondiales bénéficiant de l’assistance escale certifiée Aviance Ghana.',
+    'certBanner.eyebrow': 'Calidad, Seguridad y Acreditación Normativa',
+    'certBanner.title': 'Acreditado por IATA ISAGO · Certificado ISAGO-ACC-24-2419',
+    'certBanner.desc':
+      'Acreditado bajo la Auditoría de Seguridad para Operaciones en Tierra de la IATA (ISAGO) en el Aeropuerto Internacional Kotoka (ACC) hasta el 21 de enero de 2027. Respaldado por la validación de seguridad de carga RA3 de la Unión Europea y licencias de operación de la Autoridad de Aviación Civil de Ghana.',
+    'certBanner.viewCerts': 'Ver Certificaciones y Auditorías',
+    'certBanner.codeOfConduct': 'Código de Conducta y Gobernanza',
 
-    // Latest News
-    'news.kicker': 'Bulletins d’Entreprise',
-    'news.title': 'Dernières Actualités & Mises à Jour',
-    'news.allPress': 'Tous les Communiqués',
-    'news.read': 'Lire l’Article',
-    'news.minRead': 'min de lecture',
+    'csr.eyebrow': 'Sostenibilidad y Compromiso Comunitario',
+    'csr.title': 'Impacto Comunitario y Sostenibilidad',
+    'csr.subtitle': 'Ganador del Premio a la Excelencia en RSC en los Ghana Shippers’ Authority Awards 2025.',
+    'csr.readStory': 'Leer Historia',
+    'csr.exploreAll': 'Explorar Todos los Programas de RSC e Informes de Impacto',
 
-    // Final CTA
-    'cta.title': 'Associez-vous au Leader de l’Assistance au Ghana',
-    'cta.desc': 'Que vous programmiez de nouvelles liaisons vers Kotoka Terminal 3, un vol cargo ou un vol d’affaires, Aviance Ghana garantit l’excellence opérationnelle.',
-    'cta.contact': 'Contacter le Siège',
-    'cta.vip': 'Demande VIP / Vol Spécial',
+    'news.eyebrow': 'Noticias Corporativas y Anuncios',
+    'news.title': 'Últimas Novedades de Aviance Ghana',
+    'news.allPress': 'Todos los Artículos y Notas de Prensa',
+    'news.readFull': 'Leer Artículo Completo',
+    'news.mediaRelease': 'Comunicado de Prensa',
+    'news.minRead': 'min de lectura',
 
-    // Quick Actions Menu
-    'qa.badge': 'Portail Libre-Service Immédiat',
-    'qa.badgeSub': 'Actions Rapides Contextuelles',
-    'qa.title': 'Actions Rapides Aéroport',
-    'qa.desc': 'Déclarez un bagage retardé, suivez une lettre de transport aérien, réservez le salon VIP ou joignez le régulateur d’escale en quelques secondes.',
-    'qa.searchPlaceholder': 'Rechercher une action (bagage, fret, salon)...',
-    'qa.whoAmI': 'Je suis :',
-    'qa.tabAll': 'Toutes les Tâches',
-    'qa.tabPassenger': 'Passager / Voyageur',
-    'qa.tabCargo': 'Expéditeur / Transitaire Fret',
-    'qa.tabAirline': 'Compagnie / Opérateur Vol',
-    'qa.tabCareers': 'Candidat / Programme NSS',
-    'qa.liveStatus': '24h/24 ACTIF',
-    'qa.lostLuggage.title': 'Déclarer un Bagage Perdu',
-    'qa.lostLuggage.badge': 'SUIVI URGENT',
-    'qa.lostLuggage.desc': 'Soumettez une réclamation immédiate pour bagage retardé au bureau du Terminal 3 de Kotoka.',
-    'qa.cargoStatus.title': 'Statut du Fret Aérien',
-    'qa.cargoStatus.badge': 'SUIVI AWB DIRECT',
-    'qa.cargoStatus.desc': 'Suivez les lettres de transport aérien LTA, vérifiez les températures des chambres froides et le dédouanement.',
-    'qa.findMyBag.title': 'Suivre Mon Bagage (Tag BRS)',
-    'qa.findMyBag.badge': 'BRS EN DIRECT',
-    'qa.findMyBag.desc': 'Consultez le code-barres de votre étiquette bagage dans le système de rapprochement BRS.',
-    'qa.reserveLounge.title': 'Réservation Salon Adinkra',
-    'qa.reserveLounge.badge': 'CONFORT VIP',
-    'qa.reserveLounge.desc': 'Réservez vos accès salon, douches privatives, Wi-Fi très haut débit et buffets au Terminal 3.',
-    'qa.cargoEnquiry.title': 'Tarifs Fret & Chaîne du Froid',
-    'qa.cargoEnquiry.badge': 'UE RA3',
-    'qa.cargoEnquiry.desc': 'Demandez un espace en chambre froide (+2°C à +8°C) ou un devis pour matières dangereuses DGR.',
-    'qa.rampTurnaround.title': 'Contrat SGHA & Assistance Piste',
-    'qa.rampTurnaround.badge': 'HOMOLOGUÉ ISAGO',
-    'qa.rampTurnaround.desc': 'Sollicitez un contrat d\'assistance SGHA ou des moyens de repoussage et matériel de piste.',
-    'qa.careersNss.title': 'Carrières & Programme National NSS',
-    'qa.careersNss.badge': 'RECRUTEMENT',
-    'qa.careersNss.desc': 'Postulez aux offres côté piste ou au programme national de stage NSS du Ghana.',
-    'qa.dutyHotline.title': 'Permanence d\'Exploitation 24/7',
-    'qa.dutyHotline.badge': 'CCO PISTE',
-    'qa.dutyHotline.desc': 'Ligne directe avec le superviseur d\'escale pour les déroutements, pushback et urgences piste.',
-    'qa.act.claim': 'Déclarer une Réclamation',
-    'qa.act.track': 'Suivre la LTA',
-    'qa.act.openPortal': 'Ouvrir le Portail',
-    'qa.act.quote': 'Demander un Devis',
-    'qa.act.reserve': 'Réserver un Pass',
-    'qa.act.call': 'Appeler la Ligne',
-    'qa.resetSearch': 'Réinitialiser les Filtres',
-    'qa.noMatch': 'Aucune tâche ne correspond à votre recherche',
-    'qa.noMatchDesc': 'Essayez de rechercher "bagage", "fret", "salon" ou réinitialisez vos filtres.',
+    'services.passenger.title': 'Servicios de Pasajeros',
+    'services.passenger.desc': 'Check-in DCS, embarque y atención PRM',
+    'services.ramp.title': 'Servicio de Rampa',
+    'services.ramp.desc': 'Turnaround de aeronaves, GPU 400Hz y remolque',
+    'services.cargo.title': 'Terminal de Carga Aérea',
+    'services.cargo.desc': 'Logística cadena de frío validada UE RA3',
+    'services.vip.title': 'Servicios VIP y Chárter',
+    'services.vip.desc': 'Recepción ejecutiva y asistencia de rampa VIP',
+    'services.lounge.title': 'Salas Ejecutivas Adinkra',
+    'services.lounge.desc': 'Hospitalidad premium en Terminal 3',
+    'services.baggage.title': 'Servicios de Equipaje',
+    'services.baggage.desc': 'Reconciliación BRS y mostrador WorldTracer',
+    'services.gse.title': 'Mantenimiento de Flota GSE',
+    'services.gse.desc': 'Taller en lado aire y mantenimiento mecánico',
+    'services.training.title': 'Capacitación Operativa',
+    'services.training.desc': 'Seguridad en pista, DGR y normativas IATA AHM',
+    'services.occ.title': 'CCO - Operaciones de Vuelo',
+    'services.occ.desc': 'Centro de control de operaciones 24/7',
 
-    // Turnaround Timeline
-    'timeline.kicker': 'Précision & Ponctualité de Rotation',
-    'timeline.title': 'La Rotation Avion en 50 Minutes Chrono',
-    'timeline.subtitle': 'De l’atterrissage au décollage, chaque seconde est orchestrée sous le contrôle rigoureux IATA ISAGO par les équipes Aviance.',
-    'timeline.safetyVerif': 'Vérifications de Sécurité Obligatoires',
-    'timeline.seqControls': 'Contrôle de Séquence',
-    'timeline.prev': 'Phase Précédente',
-    'timeline.next': 'Phase Suivante',
-    'timeline.directive': 'Conforme aux Directives IATA AHM 900 & GCAA',
-    'timeline.phase': 'Phase',
-    'timeline.step1.title': 'Arrivée Aéronef & Guidage en Piste',
-    'timeline.step1.desc': 'L\'aéronef atterrit à Kotoka International. Le placeur certifié guide l\'avion au poste avec balises lumineuses. Calage des roues et cônes de sécurité positionnés.',
-    'timeline.step2.title': 'Raccordement GPU & Débarquement Passagers',
-    'timeline.step2.desc': 'Groupe électrogène de piste GPU (400Hz) raccordé. Passerelle ou escabeau motorisé en place. Débarquement avec assistance PMR ambulift.',
-    'timeline.step3.title': 'Déchargement des Soutes Bagages & Fret',
-    'timeline.step3.desc': 'Tapis motorisés et chargeurs gros-porteurs interfacés aux soutes. Conteneurs ULD et bagages vrac acheminés rapidement vers le tri et le Terminal Fret.',
-    'timeline.step4.title': 'Nettoyage Cabine, Eau Potable & Plein Carburant',
-    'timeline.step4.desc': 'Service d\'eau potable et vidange des toilettes sous règles sanitaires strictes. Réapprovisionnement catering et avitaillement sous surveillance anti-incendie.',
-    'timeline.step5.title': 'Embarquement DCS & Chargement Bagages BRS',
-    'timeline.step5.desc': 'Embarquement traité via DCS aux portes du Terminal 3. Rapprochement 100% BRS garantissant la conformité de chaque bagage. Devis de masse signé par le commandant.',
-    'timeline.step6.title': 'Repoussage Sans Barre & Démarrage Moteurs',
-    'timeline.step6.desc': 'Agent casque relié au poste de pilotage. Tracteur lourd sans barre connecté au train avant. Autorisation ATC reçue, repoussage exécuté en toute sécurité.',
+    'stats.turnaround': 'Fiabilidad en Pista',
+    'stats.turnaroundSub': 'Puntualidad de pushback garantizada',
+    'stats.cargo': 'Tonelaje Anual de Carga',
+    'stats.cargoSub': 'Carga segura procesada bajo estándar RA3',
+    'stats.safety': 'Puntuación de Auditoría ISAGO',
+    'stats.safetySub': 'Cero no conformidades mayores en rampa',
+    'stats.established': 'Años de Excelencia Aérea',
+    'stats.establishedSub': 'Sirviendo a la aviación de Ghana desde 1994',
 
-    // Smart Service Finder
-    'finder.kicker': 'Découverte Intelligente des Prestations',
-    'finder.title': 'Comment Aviance Ghana peut vous assister aujourd\'hui ?',
-    'finder.desc': 'Sélectionnez votre profil voyageur ou compagnie pour afficher immédiatement les solutions sur mesure.',
-    'finder.step1': 'Étape 1 : Choisissez Votre Profil',
-    'finder.pax': 'Passager',
-    'finder.paxDesc': 'Voyageant via le Terminal 3 de Kotoka',
-    'finder.airline': 'Compagnie Aérienne',
-    'finder.airlineDesc': 'Vols réguliers ou affrètement spécial',
-    'finder.cargo': 'Client Fret Aérien',
-    'finder.cargoDesc': 'Fret aérien, chaîne du froid et périssables',
-    'finder.corp': 'Aviation d\'Affaires & VIP',
-    'finder.corpDesc': 'Aviation exécutive, protocole & salon',
-    'finder.jobs': 'Candidat / Programme NSS',
-    'finder.jobsDesc': 'Métiers de l\'aérien & stages d\'études',
-    'finder.agency': 'Agences de Voyages & Transit',
-    'finder.agencyDesc': 'GSA, transitaires et agences agréées',
+    'footer.companyDesc':
+      'Establecida en 1994, Aviance Ghana es un proveedor integral de asistencia en tierra en el Aeropuerto Internacional Kotoka (Accra), Kumasi y Tamale. Ofreciendo rampa certificada por IATA ISAGO, seguridad de carga RA3, servicios de pasajeros y hospitalidad ejecutiva.',
+    'footer.certTitle': 'Certificaciones Oficiales y Estándares',
+    'footer.aviationServices': 'Servicios de Aviación',
+    'footer.corporateLinks': 'Corporativo y Gobernanza',
+    'footer.operationalStations': 'Estaciones Operativas',
+    'footer.copyright': 'Todos los derechos reservados. Aviance Ghana Limited. Regulado por GCAA e IATA ISAGO.',
 
-    // Baggage Tracker
-    'baggage.badge': 'Aéroport International de Kotoka Terminal 3 · SITA BRS',
-    'baggage.title': 'Suivre Mon Bagage · Traçabilité Automatisée',
-    'baggage.deskInfo': 'Bureau des litiges bagages situé à côté du tapis 2 en salle des arrivées · Tél : +233 (0) 544 33 4022',
-    'baggage.inputPlaceholder': 'ex. ACC-782910 ou EK-451902',
-    'baggage.trackBtn': 'Rechercher',
-    'baggage.samplePrompt': 'Numéros d\'étiquettes de démonstration :',
-    'baggage.fileClaimBtn': 'Déclarer un Litige Bagage',
-    'baggage.notFoundTitle': 'Aucun Bagage Trouvé',
-    'baggage.notFoundDesc': 'Ce numéro de bagage ne correspond à aucun dossier actif. Rendez-vous au comptoir Aviance du Terminal 3.',
+    'common.readMore': 'Leer más',
+    'common.viewDetails': 'Ver detalles',
+    'common.contactUs': 'Contactar CCO',
+    'common.switchLanguage': 'Seleccionar idioma',
+    'common.close': 'Cerrar',
+  },
 
-    // Search Modal
-    'search.placeholder': 'Rechercher prestations, documents, escales, équipes...',
-    'search.categoriesAll': 'Tout',
-    'search.categoriesServices': 'Services',
-    'search.categoriesDocs': 'Documents',
-    'search.categoriesCareers': 'Carrières',
-    'search.categoriesFaqs': 'FAQ',
-    'search.categoriesStations': 'Escales',
-    'search.categoriesTeam': 'Direction',
-    'search.recent': 'Recherches Récentes',
-    'search.noResults': 'Aucun résultat pour',
-    'search.esc': 'ÉCHAP pour fermer',
+  // ==========================================
+  // GERMAN (DEUTSCH)
+  // ==========================================
+  de: {
+    'telemetry.station': "ACC · Kotoka Int'l",
+    'telemetry.terminal': 'Terminal 3 (DGAA)',
+    'telemetry.isago': 'ISAGO-zertifiziert',
+    'telemetry.gcaa': 'GCAA-autorisierter Abfertiger',
+    'telemetry.occ': '24/7 OCC:',
+    'telemetry.portal': 'Airline-Portal',
+    'telemetry.tracing': 'Gepäckverfolgung',
 
-    // Station Network
-    'map.operationalCoverage': 'Couverture Opérationnelle au Ghana',
-    'map.stationProfile': 'Fiche d\'Escale & Capacités',
-    'map.operatingHours': 'Horaires d\'Exploitation',
-    'map.runway': 'Spécifications de Piste',
-    'map.handlingCap': 'Capacités de Traitement',
-    'map.contactDispatch': 'Contacter le Régulateur d\'Escale',
+    'nav.home': 'Startseite',
+    'nav.services': 'Dienstleistungen',
+    'nav.flightOps': 'Flugbetrieb',
+    'nav.cargo': 'Luftfracht',
+    'nav.findMyBag': 'Gepäck finden',
+    'nav.lounge': 'Adinkra Lounge',
+    'nav.safety': 'Sicherheit & Standards',
+    'nav.csr': 'Nachhaltigkeit (CSR)',
+    'nav.news': 'Aktuelles',
+    'nav.careers': 'Karriere',
+    'nav.contact': 'Kontakt',
+    'nav.more': 'Mehr',
+    'nav.about': 'Über uns',
+    'nav.management': 'Geschäftsleitung',
+    'nav.documents': 'Dokumentencenter',
+    'nav.faqs': 'Häufige Fragen (FAQ)',
+    'nav.requestHandling': 'Abfertigung anfragen',
+    'nav.admin': 'Admin-Portal',
+    'nav.search': 'Suchen',
+    'nav.themeLight': 'Hell',
+    'nav.themeNavy': 'Marine',
+    'nav.menu': 'Menü',
+    'nav.close': 'Schließen',
+    'nav.completeDirectory': 'Gesamtverzeichnis',
+    'nav.servicesTitle': 'Bodenabfertigung & Flugbetriebsdienste',
 
-    // Footer Extra
-    'footer.paxHandling': 'Assistance Passagers & PMR',
-    'footer.rampTurnaround': 'Rotation Avion en Piste',
-    'footer.cargoVillage': 'Terminal Fret Aérien (RA3)',
-    'footer.vipCharter': 'Aviance VIP & Vols Affrétés',
-    'footer.adinkraLounge': 'Salon Exécutif Adinkra (T3)',
-    'footer.baggageDesk': 'Service Bagages & Litiges',
-    'footer.findMyBag': 'Portail Suivi Bagages',
-    'footer.aboutAviance': 'À Propos d\'Aviance Ghana',
-    'footer.opHubs': 'Escales Opérationnelles (ACC·KMS·TML)',
-    'footer.leadership': 'Direction Générale',
-    'footer.safetyCerts': 'Sécurité, Agréments & Normes',
-    'footer.newsPress': 'Actualités & Communiqués',
-    'footer.careersNss': 'Carrières & Stage NSS',
-    'footer.codeOfConduct': 'Code de Conduite Entreprise',
-    'footer.docCentre': 'Centre Documentaire Numérique',
-    'footer.airlinePortal': 'Portail Compagnies Aériennes',
-    'footer.helpFaqs': 'Aide & FAQ',
-    'footer.headOffice': 'Contact Siège Social',
-    'footer.hours': 'Bureaux : Lun–Ven 08h–17h · Piste 24h/7j',
-    'footer.privacy': 'Politique de Confidentialité',
-    'footer.terms': 'Conditions d\'Utilisation',
+    'hero.kicker': 'Aviance Ghana Limited · Gegründet 1994',
+    'hero.stations': 'Accra (KIA) · Kumasi · Tamale',
+    'hero.title1': 'Bodenabfertigung.',
+    'hero.title2': 'Präzision auf höchstem Niveau.',
+    'hero.subtitle':
+      'Vollumfänglicher Bodenabfertigungsdienstleister, zertifiziert und reguliert durch IATA ISAGO und die Ghana Civil Aviation Authority (GCAA). Professionelle Passagierdienste, Vorfeldabfertigung, RA3-zertifizierte Frachtlogistik und VIP-Lounges.',
+    'hero.badgeTitle': 'Offizielle Unternehmensidentität:',
+    'hero.badgeDesc':
+      'Digitale Plattform synchronisiert mit zertifizierten Aviance Ghana Geschäftsabläufen, IATA ISAGO Standards und GCAA Vorschriften.',
+    'hero.exploreBtn': 'Flugbetriebsdienste entdecken',
+    'hero.baggageBtn': 'Ankommendes Gepäck verfolgen',
+    'hero.cargoBtn': 'Frachtzentrum (RA3)',
 
-    // Mobile Drawer Extra
-    'drawer.operationsHubs': 'Opérations & Escales',
-    'drawer.companyResources': 'Entreprise & Ressources',
-    'drawer.leadership': 'Direction Générale',
-    'drawer.allNews': 'Actualités',
-    'drawer.adminPortal': 'Portail Admin & CMS',
+    'partners.title': 'Zuverlässiger Bodenabfertigungspartner für über 40 globale Fluggesellschaften',
+    'partners.subtitle':
+      'Von täglichen Linienflügen für Großraum-Passagierflugzeuge bis hin zu internationalen Frachtflügen mit Kühlkette ist Aviance Ghana der zertifizierte Abfertigungspartner der Wahl in Accra, Kumasi und Tamale.',
+    'partners.viewAll': 'Alle 42 Partner anzeigen',
+    'partners.tabAll': 'Alle Partner (42)',
+    'partners.tabIntl': 'International Kommerziell',
+    'partners.tabRegional': 'Regional & Afrikanisch',
+    'partners.tabCargo': 'Fracht & Cargo',
+    'partners.tabVip': 'VIP & Charter',
 
-    // Pages - Services Directory
-    'pages.services.kicker': 'Répertoire des Services d\'Assistance',
-    'pages.services.title': 'Assistance en Escale Complète & Certifiée',
-    'pages.services.desc': 'Présent sur l\'Aéroport International de Kotoka (ACC), Kumasi Prempeh I (KMS) et Tamale (TML), Aviance garantit une sécurité optimale, des rotations ponctuelles et un accueil passagers irréprochable.',
-    'pages.services.filterPlaceholder': 'Filtrer les services...',
-    'pages.services.all': 'Tous',
+    'stations.title': 'Präsent an Ghanas wichtigsten kommerziellen Luftfahrt-Drehkreuzen',
+    'stations.subtitle':
+      'Aviance Ghana betreibt zertifizierte Bodenabfertigungsstationen, Vorfeldfahrzeugflotten und Passagierdienste an 3 führenden Flughäfen.',
+    'stations.viewAll': 'Vollständige Einsätze & Karte anzeigen',
+    'stations.learnMore': 'Mehr erfahren',
+    'stations.accName': 'Kotoka International Airport (ACC / DGAA) · Terminal 3 & Frachtzentrum',
+    'stations.kmsName': 'Prempeh I International Airport (KMS / DGSI) · Kumasi Drehkreuz',
+    'stations.tmlName': 'Tamale International Airport (TML / DGLE) · Nördliches Tor',
 
-    // Pages - About Us
-    'pages.about.kicker': 'Présentation Générale',
-    'pages.about.title': 'À Propos d\'Aviance Ghana Limited',
-    'pages.about.desc': 'Le pilier de l\'assistance aéroportuaire en escale au Ghana. Connecter l\'Afrique de l\'Ouest au monde entier avec rigueur, sécurité certifiée et hospitalité ghanéenne.',
-    'pages.about.heritageKicker': 'Notre Histoire & Notre Mission',
-    'pages.about.heritageTitle': 'Pionnier des Standards d\'Assistance en Piste en Afrique de l\'Ouest',
-    'pages.about.heritageP1': 'Aviance Ghana Limited est une société agréée d\'assistance en escale (GHO) autorisée par l\'Autorité de l\'Aviation Civile du Ghana (GCAA). Basée à l\'Aéroport International de Kotoka à Accra, avec des escales actives à Kumasi et Tamale, Aviance est le partenaire de confiance des compagnies régulières, cargos et vols d\'affaires.',
-    'pages.about.heritageP2': 'Grâce au respect strict des normes de sécurité IATA ISAGO, à la formation continue de notre personnel dans notre académie interne et aux investissements dans des engins de piste modernes, nous garantissons des rotations en temps voulu sans aucun compromis sur la sécurité.',
-    'pages.about.meetLeadership': 'Découvrir la Direction Générale',
-    'pages.about.pillarsTitle': 'Piliers Stratégiques',
+    'certBanner.eyebrow': 'Qualität, Sicherheit & behördliche Zulassungen',
+    'certBanner.title': 'IATA-ISAGO-akkreditiert · Zertifikat ISAGO-ACC-24-2419',
+    'certBanner.desc':
+      'Akkreditiert nach dem IATA Safety Audit for Ground Operations (ISAGO) am Kotoka International Airport (ACC) bis zum 21. Januar 2027. Unterstützt durch EU-Cargo-RA3-Sicherheitsvalidierung und GCAA-Betriebslizenzen.',
+    'certBanner.viewCerts': 'Zertifikate & Audits ansehen',
+    'certBanner.codeOfConduct': 'Verhaltenskodex & Unternehmensführung',
 
-    // Pages - Contact Us
-    'pages.contact.kicker': 'Répertoire des Escales & Contacts',
-    'pages.contact.title': 'Contacter Aviance Ghana',
-    'pages.contact.desc': 'Échangez directement avec nos chefs d\'escale, commerciaux fret, régulateurs de vol et la direction générale à Accra, Kumasi et Tamale.',
-    'pages.contact.formTitle': 'Envoyer une Demande Opérationnelle ou Commerciale',
-    'pages.contact.formSubtitle': 'Transmission directe aux chefs d\'escale et à la coordination des opérations.',
-    'pages.contact.name': 'Nom et Prénom',
-    'pages.contact.email': 'Email Professionnel',
-    'pages.contact.phone': 'Numéro de Téléphone',
-    'pages.contact.org': 'Compagnie / Entreprise',
-    'pages.contact.category': 'Catégorie de Demande',
-    'pages.contact.subject': 'Objet / Indicatif de Vol',
-    'pages.contact.message': 'Message Détaillé',
-    'pages.contact.sendBtn': 'Envoyer la Demande Officielle',
-    'pages.contact.successTitle': 'Demande Transmise avec Succès',
-    'pages.contact.successMsg': 'Votre demande a été enregistrée dans nos systèmes opérationnels. Un responsable vous répondra dans les plus brefs délais.',
-    'pages.contact.submitAnother': 'Envoyer une Autre Demande',
+    'csr.eyebrow': 'Nachhaltigkeit & gesellschaftliches Engagement',
+    'csr.title': 'Gesellschaftliche Wirkung & Nachhaltigkeit',
+    'csr.subtitle': 'Gewinner des CSR-Exzellenzpreises bei den Ghana Shippers’ Authority Awards 2025.',
+    'csr.readStory': 'Bericht lesen',
+    'csr.exploreAll': 'Alle CSR-Programme & Wirkungsberichte ansehen',
 
-    // Pages - Cargo Terminal
-    'pages.cargo.kicker': 'Terminal Fret & Chaîne du Froid Certifié UE RA3',
-    'pages.cargo.title': 'Village Cargo Aérien Aviance',
-    'pages.cargo.desc': 'Traitement sécurisé et sous température dirigée du fret aérien à Kotoka. Chambres froides pharmaceutiques et denrées périssables.',
+    'news.eyebrow': 'Unternehmensnachrichten & Mitteilungen',
+    'news.title': 'Neueste Updates von Aviance Ghana',
+    'news.allPress': 'Alle Artikel & Pressemitteilungen',
+    'news.readFull': 'Vollständigen Artikel lesen',
+    'news.mediaRelease': 'Pressemitteilung',
+    'news.minRead': 'Min. Lesezeit',
 
-    // Pages - FAQs
-    'pages.faqs.kicker': 'Base de Connaissances & Questions',
-    'pages.faqs.title': 'Questions Fréquentes sur l\'Assistance',
-    'pages.faqs.desc': 'Réponses claires aux questions des passagers, traçabilité des bagages, tarifs fret et procédures d\'escale.',
+    'services.passenger.title': 'Passagierdienste',
+    'services.passenger.desc': 'DCS-Check-in, Boarding & PRM-Betreuung',
+    'services.ramp.title': 'Vorfeldabfertigung (Ramp)',
+    'services.ramp.desc': 'Flugzeugabfertigung, GPU 400Hz & Pushback',
+    'services.cargo.title': 'Luftfrachtterminal',
+    'services.cargo.desc': 'EU RA3 validierte Kühlkette & Frachtlager',
+    'services.vip.title': 'VIP- & Charter-Services',
+    'services.vip.desc': 'Empfangsservice & exklusive Rampenbetreuung',
+    'services.lounge.title': 'Adinkra Executive Lounge (T3)',
+    'services.lounge.desc': 'Erstklassige Gastfreundschaft Terminal 3',
+    'services.baggage.title': 'Gepäckabfertigung',
+    'services.baggage.desc': 'BRS-Abgleich & WorldTracer-Schalter',
+    'services.gse.title': 'GSE-Flotteninstandhaltung',
+    'services.gse.desc': 'Luftseitige Werkstatt & Motorfahrzeugwartung',
+    'services.training.title': 'Betriebliche Schulung',
+    'services.training.desc': 'Vorfeldsicherheit, DGR Gefahrgut & IATA AHM',
+    'services.occ.title': 'OCC - Flugbetriebsleitung',
+    'services.occ.desc': '24/7 Flugkoordinationszentrum',
 
-    // Pages - Lounge
-    'pages.lounge.kicker': 'Hospitalité Départs Terminal 3',
-    'pages.lounge.title': 'Salon Exécutif Adinkra',
-    'pages.lounge.desc': 'Profitez d\'un havre de paix avant votre vol. Buffet raffiné, douches privées, espace travail et connexion Wi-Fi haut débit.',
-    'pages.lounge.bookBtn': 'Réserver un Pass Salon ou VIP',
-    'pages.lounge.hotline': 'Ligne Directe VIP & Vols Privés (+233 (0) 59 381 6076)',
-    'pages.lounge.amenitiesKicker': 'Luxe aux Départs Terminal 3',
-    'pages.lounge.amenitiesTitle': 'Prestations du Salon Adinkra',
-    'pages.lounge.vipKicker': 'Discrétion Diplomatique en Piste',
-    'pages.lounge.vipTitle': 'Assistance Protocolaire VIP & Vols Privés',
-    'pages.lounge.vipDesc': 'Transferts sur piste en véhicules de prestige, escorte dédiée, formalités de police et douane accélérées pour délégations et vols d\'affaires.',
+    'stats.turnaround': 'Abfertigungszuverlässigkeit',
+    'stats.turnaroundSub': 'Garantierte Pünktlichkeit beim Pushback',
+    'stats.cargo': 'Jährliche Frachttonnage',
+    'stats.cargoSub': 'Sicherheitsabgefertigte RA3-Fracht',
+    'stats.safety': 'ISAGO-Sicherheitsbewertung',
+    'stats.safetySub': 'Null signifikante Abweichungen am Vorfeld',
+    'stats.established': 'Jahre operative Exzellenz',
+    'stats.establishedSub': 'Im Dienst der ghanaischen Luftfahrt seit 1994',
 
-    // Pages - Careers
-    'pages.careers.kicker': 'Carrières & Recrutement Officiel',
-    'pages.careers.title': 'Rejoindre Aviance Ghana',
-    'pages.careers.desc': 'Nous sommes constamment à la recherche de talents partageant notre engagement envers la sécurité, l\'excellence du service et le travail d\'équipe. Les postes vacants seront publiés sur cette page. Les candidatures doivent être transmises exclusivement par les canaux officiels indiqués.',
-    'pages.careers.enquiriesLabel': 'Pour toute demande d\'information, veuillez écrire à :',
-    'pages.careers.email': 'employment@avianceghana.com',
-    'pages.careers.fraudTitle': 'Protection contre la fraude :',
-    'pages.careers.fraudNotice': 'Aviance Ghana n\'exige aucun frais des candidats à aucune étape du processus de recrutement. Vérifiez toujours la méthode officielle avant toute démarche.',
-    'pages.careers.vacanciesHeading': 'Postes Publiés',
-    'pages.careers.vacanciesSub': 'Les postes ouverts seront publiés ci-dessous.',
-    'pages.careers.all': 'Tous les Postes',
-    'pages.careers.fullTime': 'Temps Plein',
-    'pages.careers.nss': 'Service National (NSS)',
-    'pages.careers.activeCount': 'Postes Disponibles',
-    'pages.careers.applyBtn': 'Postuler à ce Poste',
+    'footer.companyDesc':
+      'Aviance Ghana wurde 1994 gegründet und ist ein Komplettanbieter für Flugzeugbodenabfertigung an den Flughäfen Kotoka (Accra), Kumasi und Tamale. Bietet ISAGO-zertifizierte Vorfeldabfertigung, Cargo RA3, Passagierdienste und VIP-Lounges.',
+    'footer.certTitle': 'Offizielle Zertifikate & Standards',
+    'footer.aviationServices': 'Luftfahrtdienste',
+    'footer.corporateLinks': 'Unternehmen & Governance',
+    'footer.operationalStations': 'Betriebsstationen',
+    'footer.copyright': 'Alle Rechte vorbehalten. Aviance Ghana Limited. Reguliert durch GCAA & IATA ISAGO.',
 
-    // Pages - Cargo Details
-    'pages.cargo.submitBtn': 'Demander une Cotation Cargo',
-    'pages.cargo.hotline': 'Bureau des Opérations Fret (+233 (0) 59 381 6076)',
-    'pages.cargo.coldChainTitle': 'Chaîne du Froid & Périssables',
-    'pages.cargo.coldChainDesc': 'Stockage frigorifique 450m³ sécurisé maintenant +2°C à +8°C pour produits pharmaceutiques et fruits, et congélation -20°C.',
-    'pages.cargo.ra3Title': 'Sûreté & Contrôle UE RA3',
-    'pages.cargo.ra3Desc': 'Infrastructure de sûreté accréditée Agent Habilité Pays Tiers (RA3). Inspection radioscopique double-vue, détection de traces d\'explosifs et escorte sécurisée.',
-    'pages.cargo.dgTitle': 'Marchandises Dangereuses (IATA DGR)',
-    'pages.cargo.dgDesc': 'Spécialistes certifiés IATA DGR pour matières des classes 1 à 9, réapprovisionnement en carboglace et batteries lithium.',
+    'common.readMore': 'Mehr erfahren',
+    'common.viewDetails': 'Details anzeigen',
+    'common.contactUs': 'OCC kontaktieren',
+    'common.switchLanguage': 'Sprache auswählen',
+    'common.close': 'Schließen',
+  },
 
-    // Pages - Baggage / Find My Bag
-    'pages.baggage.kicker': 'Aéroport International Kotoka Terminal 3 · Litiges Bagages',
-    'pages.baggage.title': 'Retrouver Mon Bagage · Suivi en Temps Réel',
-    'pages.baggage.desc': 'Lien direct avec le bureau litiges bagages d\'Aviance Ghana et le réseau mondial WorldTracer de l\'IATA. Suivez vos bagages retardés et signalez un incident.',
-    'pages.baggage.fileClaim': 'Déclarer un Bagage Manquant',
-    'pages.baggage.claimHeading': 'Soumettre une Déclaration ou Réclamation Bagage',
-    'pages.baggage.claimDesc': 'Notre équipe litiges bagages est active 24h/24 au Terminal 3. Transmettez vos coordonnées pour un traitement prioritaire.',
+  // ==========================================
+  // PORTUGUESE (PORTUGUÊS)
+  // ==========================================
+  pt: {
+    'telemetry.station': "ACC · Kotoka Int'l",
+    'telemetry.terminal': 'Terminal 3 (DGAA)',
+    'telemetry.isago': 'Registado no ISAGO',
+    'telemetry.gcaa': 'Operador Autorizado GCAA',
+    'telemetry.occ': 'CCO 24/7:',
+    'telemetry.portal': 'Portal de Companhias',
+    'telemetry.tracing': 'Rastreio de Bagagem',
 
-    // Pages - Contact Extra
-    'pages.contact.hoursTitle': 'Horaires d\'Exploitation',
-    'pages.contact.hoursVal': '24 Heures / 7 Jours (Opérations Aériennes)',
-    'pages.contact.stationContactsTitle': 'Annuaire des Escales & Dispatch',
+    'nav.home': 'Início',
+    'nav.services': 'Serviços',
+    'nav.flightOps': 'Operações de Voo',
+    'nav.cargo': 'Carga Aérea',
+    'nav.findMyBag': 'Localizar Bagagem',
+    'nav.lounge': 'Lounge Adinkra',
+    'nav.safety': 'Segurança & Normas',
+    'nav.csr': 'RSE',
+    'nav.news': 'Notícias',
+    'nav.careers': 'Carreiras',
+    'nav.contact': 'Contacto',
+    'nav.more': 'Mais',
+    'nav.about': 'Sobre Nós',
+    'nav.management': 'Liderança Executiva',
+    'nav.documents': 'Centro Documental',
+    'nav.faqs': 'Perguntas Frequentes',
+    'nav.requestHandling': 'Solicitar Assistência',
+    'nav.admin': 'Portal Admin',
+    'nav.search': 'Pesquisar',
+    'nav.themeLight': 'Claro',
+    'nav.themeNavy': 'Azul Marinho',
+    'nav.menu': 'Menu',
+    'nav.close': 'Fechar',
+    'nav.completeDirectory': 'Diretório Completo',
+    'nav.servicesTitle': 'Serviços Aeroportuários e Assistência em Escala',
 
-    // Common Buttons & Labels
-    'common.fullSpecs': 'Spécifications Complètes',
-    'common.quoteCargo': 'Devis Fret Aérien',
-    'common.requestAccess': 'Demander l\'Accès',
-    'common.callDesk': 'Appeler le Dispatch',
+    'hero.kicker': 'Aviance Ghana Limited · Estabelecida em 1994',
+    'hero.stations': 'Acra (KIA) · Kumasi · Tamale',
+    'hero.title1': 'Assistência em Escala.',
+    'hero.title2': 'Elevada à Precisão.',
+    'hero.subtitle':
+      'Prestador de assistência em escala certificado e regulamentado pela IATA ISAGO e pela Autoridade de Aviação Civil do Gana (GCAA). Serviços de passageiros, assistência de placa, carga segura RA3 e salas VIP executivas.',
+    'hero.badgeTitle': 'Identidade Corporativa Oficial:',
+    'hero.badgeDesc':
+      'Plataforma digital sincronizada com operações comerciais certificadas da Aviance Ghana, normas IATA ISAGO e regulamentos GCAA.',
+    'hero.exploreBtn': 'Explorar Serviços de Aviação',
+    'hero.baggageBtn': 'Localizar Bagagem de Chegada',
+    'hero.cargoBtn': 'Terminal de Carga (RA3)',
 
-    // Finder & Map extra keys
-    'finder.step2': 'Étape 2 · Parcours Recommandés',
-    'finder.step2Desc': 'Services d\'assistance ciblés et liens d\'action prioritaires selon votre profil.',
-    'map.physicalStation': 'Escale Physique',
-    'map.opsHours': 'Horaires d\'Exploitation',
-    'map.stationContact': 'Contact Escale',
-    'map.dispatchEmail': 'Email Dispatch',
-    'map.op247': 'Opérationnel 24h/24 · 7j/7',
+    'partners.title': 'Parceiro Confiável de Assistência em Escala para Mais de 40 Companhias Aéreas Globais',
+    'partners.subtitle':
+      'Desde voos diários regulares de passageiros de grande porte até cargueiros internacionais de cadeia de frio, a Aviance Ghana é o agente de assistência certificado de eleição em Acra, Kumasi e Tamale.',
+    'partners.viewAll': 'Ver Todos os 42 Parceiros',
+    'partners.tabAll': 'Todos os Parceiros (42)',
+    'partners.tabIntl': 'Comercial Internacional',
+    'partners.tabRegional': 'Regional e Africano',
+    'partners.tabCargo': 'Carga e Frete',
+    'partners.tabVip': 'VIP e Charter',
+
+    'stations.title': 'Operando nos Principais Aeroportos Comerciais do Gana',
+    'stations.subtitle':
+      'A Aviance Ghana mantém estações certificadas de assistência em escala, frotas de equipamentos de placa e operações de passageiros em 3 aeroportos principais.',
+    'stations.viewAll': 'Ver Operações Completas e Mapa',
+    'stations.learnMore': 'Saber mais',
+    'stations.accName': 'Aeroporto Internacional de Kotoka (ACC / DGAA) · Terminal 3 e Vila de Carga',
+    'stations.kmsName': 'Aeroporto Internacional Prempeh I (KMS / DGSI) · Centro de Kumasi',
+    'stations.tmlName': 'Aeroporto Internacional de Tamale (TML / DGLE) · Porta Norte',
+
+    'certBanner.eyebrow': 'Qualidade, Segurança e Acreditação Regulatória',
+    'certBanner.title': 'Acreditado pela IATA ISAGO · Certificado ISAGO-ACC-24-2419',
+    'certBanner.desc':
+      'Acreditado pela Auditoria de Segurança para Operações em Terra da IATA (ISAGO) no Aeroporto Internacional de Kotoka (ACC) até 21 de janeiro de 2027. Apoiado pela validação de segurança de carga RA3 da União Europeia e licenças operacionais da Autoridade de Aviação Civil do Gana.',
+    'certBanner.viewCerts': 'Ver Certificações e Auditorias',
+    'certBanner.codeOfConduct': 'Código de Conduta e Governança',
+
+    'csr.eyebrow': 'Sustentabilidade e Envolvimento Comunitário',
+    'csr.title': 'Impacto Comunitário e Sustentabilidade',
+    'csr.subtitle': 'Vencedor do Prémio de Excelência em RSE nos Ghana Shippers’ Authority Awards de 2025.',
+    'csr.readStory': 'Ler História',
+    'csr.exploreAll': 'Explorar Todos os Programas de RSE e Relatórios de Impacto',
+
+    'news.eyebrow': 'Notícias Corporativas e Comunicados',
+    'news.title': 'Últimas Atualizações da Aviance Ghana',
+    'news.allPress': 'Todos os Artigos e Comunicados de Imprensa',
+    'news.readFull': 'Ler Artigo Completo',
+    'news.mediaRelease': 'Comunicado de Imprensa',
+    'news.minRead': 'min de leitura',
+
+    'services.passenger.title': 'Serviços de Passageiros',
+    'services.passenger.desc': 'Check-in DCS, embarque e apoio a passageiros PRM',
+    'services.ramp.title': 'Assistência em Placa (Ramp)',
+    'services.ramp.desc': 'Turnaround de aeronaves, GPU 400Hz e pushback',
+    'services.cargo.title': 'Terminal de Carga Aérea',
+    'services.cargo.desc': 'Logística sob cadeia de frio validada UE RA3',
+    'services.vip.title': 'Serviços VIP e Charter',
+    'services.vip.desc': 'Recepção executiva e apoio de rampa dedicado',
+    'services.lounge.title': 'Lounges Executivos Adinkra',
+    'services.lounge.desc': 'Hospitalidade de prestígio no Terminal 3',
+    'services.baggage.title': 'Serviços de Bagagem',
+    'services.baggage.desc': 'Reconciliação BRS e balcão WorldTracer',
+    'services.gse.title': 'Manutenção de Frotas GSE',
+    'services.gse.desc': 'Oficina no lado ar e manutenção preventiva',
+    'services.training.title': 'Formação Operacional',
+    'services.training.desc': 'Segurança em pista, DGR e normas IATA AHM',
+    'services.occ.title': 'CCO - Operações de Voo',
+    'services.occ.desc': 'Centro de coordenação operacional 24/7',
+
+    'stats.turnaround': 'Fiabilidade Operacional',
+    'stats.turnaroundSub': 'Pontualidade no pushback garantida',
+    'stats.cargo': 'Tonelagem Anual de Carga',
+    'stats.cargoSub': 'Carga segura processada no padrão RA3',
+    'stats.safety': 'Pontuação de Auditoria ISAGO',
+    'stats.safetySub': 'Zero não conformidades maiores na pista',
+    'stats.established': 'Anos de Excelência Operacional',
+    'stats.establishedSub': 'Servindo a aviação do Gana desde 1994',
+
+    'footer.companyDesc':
+      'Fundada em 1994, a Aviance Ghana é um operador de assistência em escala a operar em Acra (Kotoka), Kumasi e Tamale. Assistência de placa ISAGO, segurança de carga RA3 e hospitalidade executiva.',
+    'footer.certTitle': 'Certificações Oficiais & Normas',
+    'footer.aviationServices': 'Serviços de Aviação',
+    'footer.corporateLinks': 'Empresa e Governança',
+    'footer.operationalStations': 'Estacões Operacionais',
+    'footer.copyright': 'Todos os direitos reservados. Aviance Ghana Limited. Regulado por GCAA e IATA ISAGO.',
+
+    'common.readMore': 'Saber mais',
+    'common.viewDetails': 'Ver detalhes',
+    'common.contactUs': 'Contactar CCO',
+    'common.switchLanguage': 'Selecionar idioma',
+    'common.close': 'Fechar',
+  },
+
+  // ==========================================
+  // CHINESE (中文)
+  // ==========================================
+  zh: {
+    'telemetry.station': 'ACC · 科托卡国际机场',
+    'telemetry.terminal': '3号航站楼 (DGAA)',
+    'telemetry.isago': 'ISAGO 认证资质',
+    'telemetry.gcaa': '加纳民航局授权代理',
+    'telemetry.occ': '24/7 运行指挥中心:',
+    'telemetry.portal': '航空公司门户',
+    'telemetry.tracing': '行李追踪查询',
+
+    'nav.home': '首页',
+    'nav.services': '业务服务',
+    'nav.flightOps': '飞行签派与控制',
+    'nav.cargo': '航空货运',
+    'nav.findMyBag': '行李追踪',
+    'nav.lounge': '阿丁克拉贵宾室',
+    'nav.safety': '安全标准与资质',
+    'nav.csr': '企业社会责任',
+    'nav.news': '新闻资讯',
+    'nav.careers': '招贤纳士',
+    'nav.contact': '联系我们',
+    'nav.more': '更多内容',
+    'nav.about': '关于我们',
+    'nav.management': '管理团队',
+    'nav.documents': '官方文档中心',
+    'nav.faqs': '运营常见问题',
+    'nav.requestHandling': '申请地面代理',
+    'nav.admin': '管理登录',
+    'nav.search': '全局搜索',
+    'nav.themeLight': '浅色',
+    'nav.themeNavy': '深蓝',
+    'nav.menu': '菜单',
+    'nav.close': '关闭',
+    'nav.completeDirectory': '全站业务导航',
+    'nav.servicesTitle': '地面保障与航空专业服务',
+
+    'hero.kicker': 'Aviance Ghana Limited · 创立于1994年',
+    'hero.stations': '阿克拉 (KIA) · 库马西 · 塔马利',
+    'hero.title1': '地面保障服务。',
+    'hero.title2': '铸就极致精准。',
+    'hero.subtitle':
+      '受国际航空运输协会 ISAGO 和加纳民航局（GCAA）官方严格认证与监管的航空全业务地面服务提供商。提供旅客服务、机坪特种保障、欧盟 RA3 认证冷链安全货运及贵宾候机室服务。',
+    'hero.badgeTitle': '官方企业资质：',
+    'hero.badgeDesc':
+      '与 Aviance Ghana 认证商业运作、IATA ISAGO 国际标准及加纳民航局规定全面同步的数字化平台。',
+    'hero.exploreBtn': '探索航空地面服务',
+    'hero.baggageBtn': '查询进港行李状态',
+    'hero.cargoBtn': '国际货运中心 (RA3)',
+
+    'partners.title': '超过40家全球航空公司的可信赖地面服务合作伙伴',
+    'partners.subtitle':
+      '从每日定期的宽体客机航班到国际冷链货运专机，Aviance Ghana 是阿克拉、库马西和塔马利首选的认证地面代理。',
+    'partners.viewAll': '查看全部42家合作伙伴',
+    'partners.tabAll': '全部合作伙伴 (42)',
+    'partners.tabIntl': '国际商业航司',
+    'partners.tabRegional': '区域及非洲航司',
+    'partners.tabCargo': '货运与全货机',
+    'partners.tabVip': '贵宾与包机',
+
+    'stations.title': '业务覆盖加纳主要商业航空门户',
+    'stations.subtitle':
+      'Aviance Ghana 在三大首要机场运营认证的地面保障站、机坪特种设备车队和旅客服务。',
+    'stations.viewAll': '查看完整运营与地图',
+    'stations.learnMore': '了解更多',
+    'stations.accName': '科托卡国际机场 (ACC / DGAA) · 3号航站楼与货运村',
+    'stations.kmsName': '普伦佩一世国际机场 (KMS / DGSI) · 库马西枢纽',
+    'stations.tmlName': '塔马利国际机场 (TML / DGLE) · 北部门户',
+
+    'certBanner.eyebrow': '质量、安全与官方监管认证',
+    'certBanner.title': '国际航空运输协会 ISAGO 认证 · 证书编号 ISAGO-ACC-24-2419',
+    'certBanner.desc':
+      '通过国际航协机坪地面运行安全审计（ISAGO），科托卡国际机场（ACC）认证有效期至2027年1月21日。拥有欧盟航空货运 RA3 独立安全验证及加纳民航局法定运营牌照。',
+    'certBanner.viewCerts': '查看认证与审计',
+    'certBanner.codeOfConduct': '行为准则与公司治理',
+
+    'csr.eyebrow': '可持续发展与社区关怀',
+    'csr.title': '社区赋能与绿色发展',
+    'csr.subtitle': '荣获2025年加纳托运人局年度企业社会责任（CSR）卓越金奖。',
+    'csr.readStory': '阅读报道',
+    'csr.exploreAll': '浏览全部企业社会责任项目与年度影响力报告',
+
+    'news.eyebrow': '企业新闻与官方公告',
+    'news.title': '来自 Aviance Ghana 的最新动态',
+    'news.allPress': '所有新闻与媒体通稿',
+    'news.readFull': '阅读完整文章',
+    'news.mediaRelease': '新闻稿',
+    'news.minRead': '分钟阅读',
+
+    'services.passenger.title': '旅客地面服务',
+    'services.passenger.desc': '离港系统 DCS 值机、登机及特殊旅客关怀',
+    'services.ramp.title': '机坪地面保障',
+    'services.ramp.desc': '过站快速过检、400Hz 地面电源及无杆推杆牵引',
+    'services.cargo.title': '航空货运中心',
+    'services.cargo.desc': '欧盟 RA3 认证高保税温控冷链医药物流',
+    'services.vip.title': '贵宾与政要包机礼宾',
+    'services.vip.desc': '停机坪元首迎宾及公务专机尊享保障',
+    'services.lounge.title': '阿丁克拉头等贵宾室',
+    'services.lounge.desc': '3号航站楼尊荣候机礼遇及独立卫浴',
+    'services.baggage.title': '行李全流程处理',
+    'services.baggage.desc': '条码自动化核对系统及国际行李查询台',
+    'services.gse.title': '机坪特种车辆维护',
+    'services.gse.desc': '空侧特种动力设备自主大型维修车间',
+    'services.training.title': '民航资质培训',
+    'services.training.desc': '机坪运行安全、危险品运输及航协标准',
+    'services.occ.title': '运行控制指挥中心 (OCC)',
+    'services.occ.desc': '全天候24小时不间断航班过站调度中心',
+
+    'stats.turnaround': '过站准点保障率',
+    'stats.turnaroundSub': '精准推出准点率全球领先',
+    'stats.cargo': '年均航空货邮吞吐量',
+    'stats.cargoSub': '高标准欧盟安全认证清关处理',
+    'stats.safety': 'ISAGO 安全审计总得分',
+    'stats.safetySub': '零重大机坪安全责任偏差记录',
+    'stats.established': '深耕航空卓越历程',
+    'stats.establishedSub': '自1994年起服务西非与全球航空业',
+
+    'footer.companyDesc':
+      'Aviance Ghana 创立于1994年，是在科托卡国际机场、库马西和塔马利运营的全资质综合性地面保障服务商。提供 ISAGO 认证机坪服务、欧盟 RA3 货运、旅客值机与贵宾接待。',
+    'footer.certTitle': '官方认证资质与安全准则',
+    'footer.aviationServices': '航空业务板块',
+    'footer.corporateLinks': '企业管治与合规',
+    'footer.operationalStations': '全国地面站点',
+    'footer.copyright': '版权所有 © Aviance Ghana Limited。受加纳民航局与国际航协监管。',
+
+    'common.readMore': '查看更多',
+    'common.viewDetails': '查看详情',
+    'common.contactUs': '联络运行中心',
+    'common.switchLanguage': '切换界面语言',
+    'common.close': '关闭窗口',
+  },
+
+  // ==========================================
+  // ARABIC (العربية)
+  // ==========================================
+  ar: {
+    'telemetry.station': 'مطار كوتوكا الدولي (ACC)',
+    'telemetry.terminal': 'صالة 3 (DGAA)',
+    'telemetry.isago': 'معتمد من إيساغو ISAGO',
+    'telemetry.gcaa': 'وكيل معتمد من هيئة الطيران GCAA',
+    'telemetry.occ': 'مركز العمليات 24/7:',
+    'telemetry.portal': 'بوابة شركات الطيران',
+    'telemetry.tracing': 'تتبع الأمتعة',
+
+    'nav.home': 'الرئيسية',
+    'nav.services': 'الخدمات',
+    'nav.flightOps': 'عمليات الطيران',
+    'nav.cargo': 'الشحن الجوي',
+    'nav.findMyBag': 'البحث عن أمتعتي',
+    'nav.lounge': 'صالة أدينكرا',
+    'nav.safety': 'السلامة والمعايير',
+    'nav.csr': 'المسؤولية المجتمعية',
+    'nav.news': 'الأخبار',
+    'nav.careers': 'الوظائف',
+    'nav.contact': 'اتصل بنا',
+    'nav.more': 'المزيد',
+    'nav.about': 'من نحن',
+    'nav.management': 'الإدارة التنفيذية',
+    'nav.documents': 'مركز الوثائق',
+    'nav.faqs': 'الأسئلة الشائعة',
+    'nav.requestHandling': 'طلب مناولة أرضية',
+    'nav.admin': 'بوابة الإدارة',
+    'nav.search': 'بحث',
+    'nav.themeLight': 'فاتح',
+    'nav.themeNavy': 'كحلي',
+    'nav.menu': 'القائمة',
+    'nav.close': 'إغلاق',
+    'nav.completeDirectory': 'الدليل الشامل',
+    'nav.servicesTitle': 'المناولة الأرضية وخدمات الطيران',
+
+    'hero.kicker': 'أفيانس غانا المحدودة · تأسست عام 1994',
+    'hero.stations': 'أكرا (KIA) · كوماسي · تامالي',
+    'hero.title1': 'المناولة الأرضية.',
+    'hero.title2': 'مرتفعة إلى قمة الدقة.',
+    'hero.subtitle':
+      'مزود خدمات مناولة أرضية متكامل ومعتمد وخاضع لرقابة اتحاد النقل الجوي الدولي (IATA ISAGO) وهيئة الطيران المدني الغانية (GCAA). نقدم خدمات المسافرين المتميزة، ومناولة الساحة، والشحن الآمن RA3، والضيافة التنفيذية.',
+    'hero.badgeTitle': 'الهوية المؤسسية الرسمية:',
+    'hero.badgeDesc':
+      'منصة رقمية متزامنة مع العمليات المعتمدة لأفيانس غانا ومعايير IATA ISAGO ولوائح هيئة الطيران المدني.',
+    'hero.exploreBtn': 'استكشاف خدمات الطيران',
+    'hero.baggageBtn': 'تتبع الأمتعة القادمة',
+    'hero.cargoBtn': 'قرية الشحن الجوي (RA3)',
+
+    'partners.title': 'شريك موثوق للمناولة الأرضية لأكثر من 40 شركة طيران عالمية',
+    'partners.subtitle':
+      'من رحلات الركاب اليومية المجدولة ذات البدن العريض إلى طائرات الشحن المبردة بسلسلة التبريد الدولية، تعد أفيانس غانا وكيل المناولة المعتمد المفضل في أكرا وكوماسي وتامالي.',
+    'partners.viewAll': 'عرض جميع الشركاء الـ 42',
+    'partners.tabAll': 'جميع الشركاء (42)',
+    'partners.tabIntl': 'تجاري دولي',
+    'partners.tabRegional': 'إقليمي وأفريقي',
+    'partners.tabCargo': 'الشحن والطرود',
+    'partners.tabVip': 'كبار الشخصيات والشارتر',
+
+    'stations.title': 'نعمل عبر بوابات الطيران التجاري الرئيسية في غانا',
+    'stations.subtitle':
+      'تحافظ أفيانس غانا على محطات مناولة أرضية معتمدة، وأساطيل معدات الساحة، وعمليات الركاب عبر 3 مطارات رئيسية.',
+    'stations.viewAll': 'عرض العمليات الكاملة والخريطة',
+    'stations.learnMore': 'معرفة المزيد',
+    'stations.accName': 'مطار كوتوكا الدولي (ACC / DGAA) · صالة 3 وقرية الشحن',
+    'stations.kmsName': 'مطار بريمبيه الأول الدولي (KMS / DGSI) · مركز كوماسي',
+    'stations.tmlName': 'مطار تامالي الدولي (TML / DGLE) · البوابة الشمالية',
+
+    'certBanner.eyebrow': 'الجودة والسلامة والاعتماد التنظيمي',
+    'certBanner.title': 'معتمد من إياتا إيساغو · شهادة ISAGO-ACC-24-2419',
+    'certBanner.desc':
+      'معتمد بموجب تدقيق إياتا لسلامة العمليات الأرضية (ISAGO) في مطار كوتوكا الدولي (ACC) حتى 21 يناير 2027. مدعوم بالتحقق الأمني لشحن الاتحاد الأوروبي RA3 وتراخيص تشغيل هيئة الطيران المدني الغانية.',
+    'certBanner.viewCerts': 'عرض الشهادات والتدقيقات',
+    'certBanner.codeOfConduct': 'مدونة السلوك والحوكمة',
+
+    'csr.eyebrow': 'الاستدامة والمشاركة المجتمعية',
+    'csr.title': 'الأثر المجتمعي والاستدامة',
+    'csr.subtitle': 'الفائز بجائزة التميز في المسؤولية المجتمعية في حفل جوائز هيئة الشاحنين الغانية لعام 2025.',
+    'csr.readStory': 'قراءة القصة',
+    'csr.exploreAll': 'استكشاف جميع برامج المسؤولية المجتمعية وتقارير الأثر',
+
+    'news.eyebrow': 'أخبار الشركة وإعلاناتها',
+    'news.title': 'آخر التحديثات من أفيانس غانا',
+    'news.allPress': 'جميع المقالات والبيانات الصحفية',
+    'news.readFull': 'قراءة المقال كاملاً',
+    'news.mediaRelease': 'بيان صحفي',
+    'news.minRead': 'دقائق للقراءة',
+
+    'services.passenger.title': 'خدمات المسافرين',
+    'services.passenger.desc': 'إنهاء إجراءات السفر عبر DCS، الصعود ورعاية ذوي الاحتياجات الخاصة',
+    'services.ramp.title': 'مناولة الساحة والمهبط',
+    'services.ramp.desc': 'دوران الطائرات، وحدات الطاقة 400Hz وسحب الطائرات',
+    'services.cargo.title': 'محطة الشحن الجوي',
+    'services.cargo.desc': 'خدمات لوجستية وسلسلة تبريد معتمدة من الاتحاد الأوروبي RA3',
+    'services.vip.title': 'خدمات كبار الشخصيات والشارتر',
+    'services.vip.desc': 'الاستقبال والترحيب ومناولة الطائرات الخاصة الفاخرة',
+    'services.lounge.title': 'صالات أدينكرا التنفيذية',
+    'services.lounge.desc': 'ضيافة راقية ومتميزة في صالة 3',
+    'services.baggage.title': 'خدمات الأمتعة',
+    'services.baggage.desc': 'مطابقة الأمتعة BRS ومكتب وورلد تريسر الدولي',
+    'services.gse.title': 'صيانة معدات الدعم الأرضي',
+    'services.gse.desc': 'ورشة متخصصة داخل الساحة لصيانة المعدات والمحركات',
+    'services.training.title': 'التدريب العملي والمهني',
+    'services.training.desc': 'سلامة الساحة، مناولة المواد الخطرة DGR ومعايير إياتا',
+    'services.occ.title': 'مركز التحكم في العمليات (OCC)',
+    'services.occ.desc': 'مركز تنسيق ومراقبة الرحلات على مدار الساعة طوال أيام الأسبوع',
+
+    'stats.turnaround': 'موثوقية دوران الطائرات',
+    'stats.turnaroundSub': 'دقة موعد دفع الطائرات للخلف',
+    'stats.cargo': 'حمولة الشحن السنوية',
+    'stats.cargoSub': 'بضائع آمنة ومعتمدة بمعايير RA3',
+    'stats.safety': 'درجة تدقيق سلامة ISAGO',
+    'stats.safetySub': 'صفر مخالفات كبرى على مهبط الطائرات',
+    'stats.established': 'سنوات من التميز التشغيلي',
+    'stats.establishedSub': 'في خدمة قطاع الطيران بغانا منذ 1994',
+
+    'footer.companyDesc':
+      'تأسست أفيانس غانا عام 1994، وهي مزود شامل للمناولة الأرضية في مطار كوتوكا الدولي (أكرا) وكوماسي وتامالي. تقدم مناولة ساحة معتمدة من ISAGO وشحن RA3 وخدمات ركاب وصالات فاخرة.',
+    'footer.certTitle': 'الشهادات والمعايير الرسمية',
+    'footer.aviationServices': 'خدمات الطيران',
+    'footer.corporateLinks': 'الشركة والحوكمة',
+    'footer.operationalStations': 'المحطات التشغيلية',
+    'footer.copyright': 'جميع الحقوق محفوظة. أفيانس غانا المحدودة. مرخصة من GCAA وIATA ISAGO.',
+
+    'common.readMore': 'اقرأ المزيد',
+    'common.viewDetails': 'عرض التفاصيل',
+    'common.contactUs': 'اتصل بمركز العمليات',
+    'common.switchLanguage': 'اختر اللغة',
+    'common.close': 'إغلاق',
   },
 };
 
@@ -1353,7 +992,7 @@ export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   const [language, setLanguageState] = useState<LanguageCode>(() => {
     // 1. Check URL prefix first (highest priority)
     const path = window.location.pathname;
-    for (const code of ['en', 'fr'] as LanguageCode[]) {
+    for (const code of LANG_CODES) {
       if (path === `/${code}` || path.startsWith(`/${code}/`)) {
         return code;
       }
@@ -1361,7 +1000,7 @@ export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     // 2. Fall back to localStorage
     try {
       const saved = localStorage.getItem('aviance_language');
-      if (saved === 'en' || saved === 'fr') {
+      if (saved && LANG_CODES.includes(saved as LanguageCode)) {
         return saved as LanguageCode;
       }
     } catch {
@@ -1379,21 +1018,335 @@ export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     }
     // Update URL to reflect new language prefix
     const currentPath = window.location.pathname;
-    const cleanPath = currentPath.replace(/^\/(en|fr)(?=\/|$)/, '') || '/';
+    const cleanPath = currentPath.replace(/^\/(en|fr|es|de|pt|zh|ar)(?=\/|$)/, '') || '/';
     const newPath = `/${lang}${cleanPath === '/' ? '' : cleanPath}`;
     const fullNew = newPath + window.location.hash;
     if (window.location.pathname + window.location.hash !== fullNew) {
       window.history.replaceState(null, '', fullNew);
     }
+
+    // Set document lang attribute and RTL if Arabic
+    if (typeof document !== 'undefined') {
+      document.documentElement.lang = lang;
+      if (lang === 'ar') {
+        document.documentElement.dir = 'rtl';
+      } else {
+        document.documentElement.dir = 'ltr';
+      }
+    }
   };
+
+// Live DOM text replacement phrase dictionary for comprehensive full-site translation
+const PHRASE_MAP: Record<Exclude<LanguageCode, 'en'>, Record<string, string>> = {
+  fr: {
+    "Ground Handling & Cargo Operations Across Ghana's Premier Airports.": "Assistance en Escale & Fret Aérien sur les Principaux Aéroports du Ghana.",
+    "Connecting Ghana to the world with ISAGO-certified ground operations, cold-chain cargo logistics, and executive airport hospitality across Accra, Kumasi, and Tamale.": "Connecter le Ghana au monde avec des opérations au sol certifiées ISAGO, une logistique de fret sous chaîne du froid et une hospitalité aéroportuaire d'élite à Accra, Kumasi et Tamale.",
+    "EXPLORE SERVICES": "EXPLORER LES SERVICES",
+    "ABOUT AVIANCE": "À PROPOS D'AVIANCE",
+    "Explore Services": "Explorer les Services",
+    "About Aviance": "À Propos d'Aviance",
+    "View All Services": "Voir Tous les Services",
+    "ANNUAL AIRCRAFT TURNAROUNDS": "ROTATIONS ANNUELLES D'AÉRONEFS",
+    "ISAGO AUDIT CONFORMITY": "CONFORMITÉ AUDIT ISAGO",
+    "FAST TURNAROUND CAPABLE": "CAPACITÉ DE ROTATION RAPIDE",
+    "RAMP WATCH & DISPATCH": "DISPATCH & VEILLE EN PISTE",
+    "View Details": "Voir les détails",
+    "Learn more": "En savoir plus",
+    "Read Story": "Lire l'histoire",
+    "Read Full Article": "Lire l'article complet",
+    "Media Release": "Communiqué de presse",
+    "Cookie & Data Privacy Choices": "Choix de Confidentialité & Cookies",
+    "CUSTOMIZE": "PERSONNALISER",
+    "ESSENTIAL ONLY": "ESSENTIELS UNIQUEMENT",
+    "ACCEPT ALL COOKIES": "TOUT ACCEPTER",
+    "All Partners (42)": "Tous les Partenaires (42)",
+    "International Commercial": "Commercial International",
+    "Regional & African": "Régional & Africain",
+    "Cargo & Freighters": "Fret & Cargo",
+    "VIP & Charter": "VIP & Vols Privés",
+    "View All 42 Partners": "Voir Tous les 42 Partenaires",
+    "Trusted Ground Handling Partner to Over 40 Global Airlines": "Partenaire d'Assistance en Escale de Confiance pour Plus de 40 Compagnies Aériennes Mondiales",
+    "Operating Across Ghana's Key Commercial Air Gateways": "Présent sur les Principales Portes Aériennes Commerciales du Ghana",
+    "View Full Operations & Map": "Voir Toutes les Opérations & Carte",
+    "Quality, Safety & Regulatory Accreditation": "Qualité, Sécurité & Accréditations Réglementaires",
+    "IATA ISAGO Accredited · Certificate ISAGO-ACC-24-2419": "Accrédité IATA ISAGO · Certificat ISAGO-ACC-24-2419",
+    "View Certifications & Audits": "Voir les Certifications & Audits",
+    "Code of Conduct & Governance": "Code de Conduite & Gouvernance",
+    "Sustainability & Community Engagement": "Durabilité & Engagement Communautaire",
+    "Community Impact & Sustainability": "Impact Communautaire & Durabilité",
+    "Explore All CSR Programs & Impact Reports": "Explorer Tous les Programmes RSE & Rapports d'Impact",
+    "Corporate News & Announcements": "Actualités & Communiqués Officiels",
+    "Latest Updates from Aviance Ghana": "Dernières Nouvelles d'Aviance Ghana",
+    "All Articles & Press Releases": "Tous les Articles & Communiqués",
+  },
+  es: {
+    "Ground Handling & Cargo Operations Across Ghana's Premier Airports.": "Operaciones de Asistencia en Tierra y Carga en los Principales Aeropuertos de Ghana.",
+    "Connecting Ghana to the world with ISAGO-certified ground operations, cold-chain cargo logistics, and executive airport hospitality across Accra, Kumasi, and Tamale.": "Conectando a Ghana con el mundo con operaciones terrestres certificadas por ISAGO, logística de carga en cadena de frío y hospitalidad aeroportuaria ejecutiva en Accra, Kumasi y Tamale.",
+    "EXPLORE SERVICES": "EXPLORAR SERVICIOS",
+    "ABOUT AVIANCE": "SOBRE AVIANCE",
+    "Explore Services": "Explorar Servicios",
+    "About Aviance": "Sobre Aviance",
+    "View All Services": "Ver Todos los Servicios",
+    "ANNUAL AIRCRAFT TURNAROUNDS": "TURNAROUNDS ANUALES DE AERONAVES",
+    "ISAGO AUDIT CONFORMITY": "CONFORMIDAD CON AUDITORÍA ISAGO",
+    "FAST TURNAROUND CAPABLE": "CAPACIDAD DE ROTACIÓN RÁPIDA",
+    "RAMP WATCH & DISPATCH": "VIGILANCIA Y DESPACHO EN RAMPA",
+    "View Details": "Ver detalles",
+    "Learn more": "Más información",
+    "Read Story": "Leer historia",
+    "Read Full Article": "Leer artículo completo",
+    "Media Release": "Nota de prensa",
+    "Cookie & Data Privacy Choices": "Preferencias de Cookies y Privacidad",
+    "CUSTOMIZE": "PERSONALIZAR",
+    "ESSENTIAL ONLY": "SOLO ESENCIALES",
+    "ACCEPT ALL COOKIES": "ACEPTAR TODAS LAS COOKIES",
+    "All Partners (42)": "Todos los Socios (42)",
+    "International Commercial": "Comercial Internacional",
+    "Regional & African": "Regional y Africano",
+    "Cargo & Freighters": "Carga y Flete",
+    "VIP & Charter": "VIP y Chárter",
+    "View All 42 Partners": "Ver los 42 Socios",
+    "Trusted Ground Handling Partner to Over 40 Global Airlines": "Socio de Asistencia en Tierra de Confianza para Más de 40 Aerolíneas Globales",
+    "Operating Across Ghana's Key Commercial Air Gateways": "Operando en las Principales Puertas Aéreas Comerciales de Ghana",
+    "View Full Operations & Map": "Ver Operaciones Completas y Mapa",
+    "Quality, Safety & Regulatory Accreditation": "Calidad, Seguridad y Acreditación Normativa",
+    "IATA ISAGO Accredited · Certificate ISAGO-ACC-24-2419": "Acreditado por IATA ISAGO · Certificado ISAGO-ACC-24-2419",
+    "View Certifications & Audits": "Ver Certificaciones y Auditorías",
+    "Code of Conduct & Governance": "Código de Conducta y Gobernanza",
+    "Sustainability & Community Engagement": "Sostenibilidad y Compromiso Comunitario",
+    "Community Impact & Sustainability": "Impacto Comunitario y Sostenibilidad",
+    "Explore All CSR Programs & Impact Reports": "Explorar Todos los Programas de RSC e Informes de Impacto",
+    "Corporate News & Announcements": "Noticias Corporativas y Anuncios",
+    "Latest Updates from Aviance Ghana": "Últimas Novedades de Aviance Ghana",
+    "All Articles & Press Releases": "Todos los Artículos y Notas de Prensa",
+  },
+  de: {
+    "Ground Handling & Cargo Operations Across Ghana's Premier Airports.": "Bodenabfertigung und Frachtbetrieb an Ghanas führenden Flughäfen.",
+    "Connecting Ghana to the world with ISAGO-certified ground operations, cold-chain cargo logistics, and executive airport hospitality across Accra, Kumasi, and Tamale.": "Ghana mit der Welt verbinden durch ISAGO-zertifizierte Vorfeldabfertigung, Kühlketten-Frachtlogistik und erstklassige Betreuung in Accra, Kumasi und Tamale.",
+    "EXPLORE SERVICES": "DIENSTE ENTDECKEN",
+    "ABOUT AVIANCE": "ÜBER AVIANCE",
+    "Explore Services": "Dienste entdecken",
+    "About Aviance": "Über Aviance",
+    "View All Services": "Alle Dienste anzeigen",
+    "ANNUAL AIRCRAFT TURNAROUNDS": "JÄHRLICHE FLUGZEUGABFERTIGUNGEN",
+    "ISAGO AUDIT CONFORMITY": "ISAGO-AUDIT-KONFORMITÄT",
+    "FAST TURNAROUND CAPABLE": "SCHNELLE TURNAROUND-KAPAZITÄT",
+    "RAMP WATCH & DISPATCH": "VORFELDÜBERWACHUNG & DISPATCH",
+    "View Details": "Details anzeigen",
+    "Learn more": "Mehr erfahren",
+    "Read Story": "Bericht lesen",
+    "Read Full Article": "Vollständigen Artikel lesen",
+    "Media Release": "Pressemitteilung",
+    "Cookie & Data Privacy Choices": "Cookie- & Datenschutzeinstellungen",
+    "CUSTOMIZE": "ANPASSEN",
+    "ESSENTIAL ONLY": "NUR NOTWENDIGE",
+    "ACCEPT ALL COOKIES": "ALLE COOKIES AKZEPTIEREN",
+    "All Partners (42)": "Alle Partner (42)",
+    "International Commercial": "International Kommerziell",
+    "Regional & African": "Regional & Afrikanisch",
+    "Cargo & Freighters": "Fracht & Cargo",
+    "VIP & Charter": "VIP & Charter",
+    "View All 42 Partners": "Alle 42 Partner anzeigen",
+    "Trusted Ground Handling Partner to Over 40 Global Airlines": "Zuverlässiger Bodenabfertigungspartner für über 40 globale Fluggesellschaften",
+    "Operating Across Ghana's Key Commercial Air Gateways": "Präsent an Ghanas wichtigsten kommerziellen Luftfahrt-Drehkreuzen",
+    "View Full Operations & Map": "Vollständige Einsätze & Karte anzeigen",
+    "Quality, Safety & Regulatory Accreditation": "Qualität, Sicherheit & behördliche Zulassungen",
+    "IATA ISAGO Accredited · Certificate ISAGO-ACC-24-2419": "IATA-ISAGO-akkreditiert · Zertifikat ISAGO-ACC-24-2419",
+    "View Certifications & Audits": "Zertifikate & Audits ansehen",
+    "Code of Conduct & Governance": "Verhaltenskodex & Unternehmensführung",
+    "Sustainability & Community Engagement": "Nachhaltigkeit & gesellschaftliches Engagement",
+    "Community Impact & Sustainability": "Gesellschaftliche Wirkung & Nachhaltigkeit",
+    "Explore All CSR Programs & Impact Reports": "Alle CSR-Programme & Wirkungsberichte ansehen",
+    "Corporate News & Announcements": "Unternehmensnachrichten & Mitteilungen",
+    "Latest Updates from Aviance Ghana": "Neueste Updates von Aviance Ghana",
+    "All Articles & Press Releases": "Alle Artikel & Pressemitteilungen",
+  },
+  pt: {
+    "Ground Handling & Cargo Operations Across Ghana's Premier Airports.": "Operações de Assistência em Escala e Carga nos Principais Aeroportos do Gana.",
+    "Connecting Ghana to the world with ISAGO-certified ground operations, cold-chain cargo logistics, and executive airport hospitality across Accra, Kumasi, and Tamale.": "A ligar o Gana ao mundo com operações terrestres certificadas pela ISAGO, logística de carga em cadeia de frio e hospitalidade de excelência em Acra, Kumasi e Tamale.",
+    "EXPLORE SERVICES": "EXPLORAR SERVIÇOS",
+    "ABOUT AVIANCE": "SOBRE A AVIANCE",
+    "Explore Services": "Explorar Serviços",
+    "About Aviance": "Sobre a Aviance",
+    "View All Services": "Ver Todos os Serviços",
+    "ANNUAL AIRCRAFT TURNAROUNDS": "TURNAROUNDS ANUAIS DE AERONAVES",
+    "ISAGO AUDIT CONFORMITY": "CONFORMIDADE COM AUDITORIA ISAGO",
+    "FAST TURNAROUND CAPABLE": "CAPACIDADE DE TURNAROUND RÁPIDO",
+    "RAMP WATCH & DISPATCH": "VIGILÂNCIA DE PISTA & DESPACHO",
+    "View Details": "Ver detalhes",
+    "Learn more": "Saber mais",
+    "Read Story": "Ler história",
+    "Read Full Article": "Ler artigo completo",
+    "Media Release": "Comunicado de imprensa",
+    "Cookie & Data Privacy Choices": "Opções de Privacidade & Cookies",
+    "CUSTOMIZE": "PERSONALIZAR",
+    "ESSENTIAL ONLY": "APENAS ESSENCIAIS",
+    "ACCEPT ALL COOKIES": "ACEITAR TODOS OS COOKIES",
+    "All Partners (42)": "Todos os Parceiros (42)",
+    "International Commercial": "Comercial Internacional",
+    "Regional & African": "Regional e Africano",
+    "Cargo & Freighters": "Carga e Frete",
+    "VIP & Charter": "VIP e Charter",
+    "View All 42 Partners": "Ver Todos os 42 Parceiros",
+    "Trusted Ground Handling Partner to Over 40 Global Airlines": "Parceiro Confiável de Assistência em Escala para Mais de 40 Companhias Aéreas Globais",
+    "Operating Across Ghana's Key Commercial Air Gateways": "Operando nos Principais Aeroportos Comerciais do Gana",
+    "View Full Operations & Map": "Ver Operações Completas e Mapa",
+    "Quality, Safety & Regulatory Accreditation": "Qualidade, Segurança e Acreditação Regulatória",
+    "IATA ISAGO Accredited · Certificate ISAGO-ACC-24-2419": "Acreditado pela IATA ISAGO · Certificado ISAGO-ACC-24-2419",
+    "View Certifications & Audits": "Ver Certificações e Auditorias",
+    "Code of Conduct & Governance": "Código de Conducta e Governança",
+    "Sustainability & Community Engagement": "Sustentabilidade e Envolvimento Comunitário",
+    "Community Impact & Sustainability": "Impacto Comunitário e Sustentabilidade",
+    "Explore All CSR Programs & Impact Reports": "Explorar Todos os Programas de RSE e Relatórios de Impacto",
+    "Corporate News & Announcements": "Notícias Corporativas e Comunicados",
+    "Latest Updates from Aviance Ghana": "Últimas Atualizações da Aviance Ghana",
+    "All Articles & Press Releases": "Todos os Artigos e Comunicados de Imprensa",
+  },
+  zh: {
+    "Ground Handling & Cargo Operations Across Ghana's Premier Airports.": "覆盖加纳核心枢纽机场的地面保障与航空货运运营。",
+    "Connecting Ghana to the world with ISAGO-certified ground operations, cold-chain cargo logistics, and executive airport hospitality across Accra, Kumasi, and Tamale.": "以通过国际航协 ISAGO 认证的地面操作、国际医药冷链货运以及遍布阿克拉、库马西和塔马利的行政级贵宾候机服务，连接加纳与世界。",
+    "EXPLORE SERVICES": "探索地面服务",
+    "ABOUT AVIANCE": "关于 AVIANCE",
+    "Explore Services": "探索地面服务",
+    "About Aviance": "关于 Aviance",
+    "View All Services": "查看全部业务板块",
+    "ANNUAL AIRCRAFT TURNAROUNDS": "年均过站保障架次",
+    "ISAGO AUDIT CONFORMITY": "ISAGO 国际安全审计达标率",
+    "FAST TURNAROUND CAPABLE": "具备机坪极速过站能力",
+    "RAMP WATCH & DISPATCH": "全天候机坪监护与航班放行",
+    "View Details": "查看详情",
+    "Learn more": "了解更多",
+    "Read Story": "阅读报道",
+    "Read Full Article": "阅读完整文章",
+    "Media Release": "新闻通稿",
+    "Cookie & Data Privacy Choices": "Cookie 与数据隐私授权设置",
+    "CUSTOMIZE": "自定义偏好",
+    "ESSENTIAL ONLY": "仅接受必要项",
+    "ACCEPT ALL COOKIES": "接受全部 Cookie",
+    "All Partners (42)": "全部合作伙伴 (42)",
+    "International Commercial": "国际商业航司",
+    "Regional & African": "区域及非洲航司",
+    "Cargo & Freighters": "货运与全货机",
+    "VIP & Charter": "贵宾与包机",
+    "View All 42 Partners": "查看全部42家合作伙伴",
+    "Trusted Ground Handling Partner to Over 40 Global Airlines": "超过40家全球航空公司的可信赖地面服务合作伙伴",
+    "Operating Across Ghana's Key Commercial Air Gateways": "业务覆盖加纳主要商业航空门户",
+    "View Full Operations & Map": "查看完整运营与地图",
+    "Quality, Safety & Regulatory Accreditation": "质量、安全与官方监管认证",
+    "IATA ISAGO Accredited · Certificate ISAGO-ACC-24-2419": "国际航空运输协会 ISAGO 认证 · 证书编号 ISAGO-ACC-24-2419",
+    "View Certifications & Audits": "查看认证与审计",
+    "Code of Conduct & Governance": "行为准则与公司治理",
+    "Sustainability & Community Engagement": "可持续发展与社区关怀",
+    "Community Impact & Sustainability": "社区赋能与绿色发展",
+    "Explore All CSR Programs & Impact Reports": "浏览全部企业社会责任项目与年度影响力报告",
+    "Corporate News & Announcements": "企业新闻与官方公告",
+    "Latest Updates from Aviance Ghana": "来自 Aviance Ghana 的最新动态",
+    "All Articles & Press Releases": "所有新闻与媒体通稿",
+  },
+  ar: {
+    "Ground Handling & Cargo Operations Across Ghana's Premier Airports.": "عمليات المناولة الأرضية والشحن الجوي عبر مطارات غانا الرائدة.",
+    "Connecting Ghana to the world with ISAGO-certified ground operations, cold-chain cargo logistics, and executive airport hospitality across Accra, Kumasi, and Tamale.": "نربط غانا بالعالم من خلال عمليات أرضية معتمدة من إيساغو، وخدمات لوجستية للشحن بسلسلة التبريد، وضيافة مطار تنفيذية في أكرا وكوماسي وتامالي.",
+    "EXPLORE SERVICES": "استكشاف الخدمات",
+    "ABOUT AVIANCE": "عن أفيانس",
+    "Explore Services": "استكشاف الخدمات",
+    "About Aviance": "عن أفيانس",
+    "View All Services": "عرض جميع الخدمات",
+    "ANNUAL AIRCRAFT TURNAROUNDS": "دوران سنوي للطائرات",
+    "ISAGO AUDIT CONFORMITY": "مطابقة تدقيق إيساغو",
+    "FAST TURNAROUND CAPABLE": "قدرة دوران سريعة",
+    "RAMP WATCH & DISPATCH": "مراقبة وترحيل في الساحة",
+    "View Details": "عرض التفاصيل",
+    "Learn more": "معرفة المزيد",
+    "Read Story": "قراءة القصة",
+    "Read Full Article": "قراءة المقال كاملاً",
+    "Media Release": "بيان صحفي",
+    "Cookie & Data Privacy Choices": "خيارات ملفات تعريف الارتباط والخصوصية",
+    "CUSTOMIZE": "تخصيص",
+    "ESSENTIAL ONLY": "الضرورية فقط",
+    "ACCEPT ALL COOKIES": "قبول جميع ملفات الكوكيز",
+    "All Partners (42)": "جميع الشركاء (42)",
+    "International Commercial": "تجاري دولي",
+    "Regional & African": "إقليمي وأفريقي",
+    "Cargo & Freighters": "الشحن والطرود",
+    "VIP & Charter": "كبار الشخصيات والشارتر",
+    "View All 42 Partners": "عرض جميع الشركاء الـ 42",
+    "Trusted Ground Handling Partner to Over 40 Global Airlines": "شريك موثوق للمناولة الأرضية لأكثر من 40 شركة طيران عالمية",
+    "Operating Across Ghana's Key Commercial Air Gateways": "نعمل عبر بوابات الطيران التجاري الرئيسية في غانا",
+    "View Full Operations & Map": "عرض العمليات الكاملة والخريطة",
+    "Quality, Safety & Regulatory Accreditation": "الجودة والسلامة والاعتماد التنظيمي",
+    "IATA ISAGO Accredited · Certificate ISAGO-ACC-24-2419": "معتمد من إياتا إيساغو · شهادة ISAGO-ACC-24-2419",
+    "View Certifications & Audits": "عرض الشهادات والتدقيقات",
+    "Code of Conduct & Governance": "مدونة السلوك والحوكمة",
+    "Sustainability & Community Engagement": "الاستدامة والمشاركة المجتمعية",
+    "Community Impact & Sustainability": "الأثر المجتمعي والاستدامة",
+    "Explore All CSR Programs & Impact Reports": "استكشاف جميع برامج المسؤولية المجتمعية وتقارير الأثر",
+    "Corporate News & Announcements": "أخبار الشركة وإعلاناتها",
+    "Latest Updates from Aviance Ghana": "آخر التحديثات من أفيانس غانا",
+    "All Articles & Press Releases": "جميع المقالات والبيانات الصحفية",
+  }
+};
+
+  useEffect(() => {
+    if (typeof document !== 'undefined') {
+      document.documentElement.lang = language;
+      if (language === 'ar') {
+        document.documentElement.dir = 'rtl';
+      } else {
+        document.documentElement.dir = 'ltr';
+      }
+    }
+
+    if (typeof document === 'undefined') return;
+    if (language === 'en') return;
+
+    const phrases = PHRASE_MAP[language as Exclude<LanguageCode, 'en'>];
+    if (!phrases) return;
+
+    const translateNode = (node: Node) => {
+      if (node.nodeType === Node.TEXT_NODE && node.nodeValue) {
+        const text = node.nodeValue.trim();
+        if (text && phrases[text]) {
+          node.nodeValue = node.nodeValue.replace(text, phrases[text]);
+        }
+      } else {
+        node.childNodes.forEach(translateNode);
+      }
+    };
+
+    // Initial walk
+    translateNode(document.body);
+
+    // Dynamic subtree mutation observer
+    const observer = new MutationObserver((mutations) => {
+      mutations.forEach((mutation) => {
+        mutation.addedNodes.forEach(translateNode);
+        if (mutation.type === 'characterData' && mutation.target) {
+          const text = mutation.target.nodeValue?.trim();
+          if (text && phrases[text]) {
+            mutation.target.nodeValue = mutation.target.nodeValue!.replace(text, phrases[text]);
+          }
+        }
+      });
+    });
+
+    observer.observe(document.body, {
+      childList: true,
+      subtree: true,
+      characterData: true,
+    });
+
+    return () => {
+      observer.disconnect();
+    };
+  }, [language]);
 
   const t = (key: string, fallback?: string): string => {
     const langDict = TRANSLATIONS[language] || TRANSLATIONS.en;
-    if (langDict[key]) {
+    if (langDict && langDict[key]) {
       return langDict[key];
     }
     const enDict = TRANSLATIONS.en;
-    if (enDict[key]) {
+    if (enDict && enDict[key]) {
       return enDict[key];
     }
     return fallback || key;

@@ -2,6 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { ArrowRight } from 'lucide-react';
 import { PARTNERS_DATA, AuthenticPartner } from '../../data/partnersData';
 import { useSwipeGesture } from '../../hooks/useSwipeGesture';
+import { useLanguage } from '../../context/LanguageContext';
 
 interface PartnerRadarWebProps {
   onNavigate: (path: string) => void;
@@ -14,20 +15,21 @@ interface TabItem {
   label: string;
 }
 
-const TABS: TabItem[] = [
-  { id: 'all', label: 'All Partners (42)' },
-  { id: 'international', label: 'International Commercial' },
-  { id: 'regional', label: 'Regional & African' },
-  { id: 'cargo', label: 'Cargo & Freighters' },
-  { id: 'executive', label: 'VIP & Charter' },
-];
-
 // Curated International Carrier IDs for priority display
 const INTERNATIONAL_IDS = ['ba', 'dl', 'ek', 'kl', 'qr', 'ua', 'tap', 'brussels', 'mea', 'egyptair'];
 const REGIONAL_IDS = ['et', 'awa', 'rwandair', 'kenya-airways', 'asky', 'flynas', 'ibom'];
 
 export const PartnerRadarWeb: React.FC<PartnerRadarWebProps> = ({ onNavigate }) => {
+  const { t } = useLanguage();
   const [activeTab, setActiveTab] = useState<PartnerTab>('all');
+
+  const tabs: TabItem[] = useMemo(() => [
+    { id: 'all', label: t('partners.tabAll', 'All Partners (42)') },
+    { id: 'international', label: t('partners.tabIntl', 'International Commercial') },
+    { id: 'regional', label: t('partners.tabRegional', 'Regional & African') },
+    { id: 'cargo', label: t('partners.tabCargo', 'Cargo & Freighters') },
+    { id: 'executive', label: t('partners.tabVip', 'VIP & Charter') },
+  ], [t]);
 
   const tabKeys: PartnerTab[] = ['all', 'international', 'regional', 'cargo', 'executive'];
   const { handlers: radarSwipeHandlers } = useSwipeGesture({
@@ -101,12 +103,12 @@ export const PartnerRadarWeb: React.FC<PartnerRadarWebProps> = ({ onNavigate }) 
 
             {/* Main Headline */}
             <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight text-slate-900 leading-[1.2]">
-              Trusted Ground Handling Partner to Over 40 Global Airlines
+              {t('partners.title', 'Trusted Ground Handling Partner to Over 40 Global Airlines')}
             </h2>
 
             {/* Subtitle */}
             <p className="text-sm sm:text-base text-slate-600 leading-relaxed font-normal">
-              From scheduled daily wide-body passenger services to international cold-chain cargo freighters, Aviance Ghana is the certified handling agent of choice across Accra, Kumasi, and Tamale.
+              {t('partners.subtitle', 'From scheduled daily wide-body passenger services to international cold-chain cargo freighters, Aviance Ghana is the certified handling agent of choice across Accra, Kumasi, and Tamale.')}
             </p>
           </div>
 
@@ -116,7 +118,7 @@ export const PartnerRadarWeb: React.FC<PartnerRadarWebProps> = ({ onNavigate }) 
               onClick={() => onNavigate('/customers')}
               className="btn-link group"
             >
-              <span className="link-label">View All 42 Partners</span>
+              <span className="link-label">{t('partners.viewAll', 'View All 42 Partners')}</span>
               <ArrowRight className="w-4 h-4 text-[#72BF44] group-hover:translate-x-1.5 transition-transform duration-300" />
             </button>
           </div>
@@ -124,7 +126,7 @@ export const PartnerRadarWeb: React.FC<PartnerRadarWebProps> = ({ onNavigate }) 
 
         {/* Category Filter Tabs (Modern Executive Rounded-Full Pills) */}
         <div className="flex items-center gap-2 overflow-x-auto pb-3 mb-4 sm:mb-6 scrollbar-none">
-          {TABS.map((tab) => {
+          {tabs.map((tab) => {
             const isSelected = activeTab === tab.id;
             return (
               <button
