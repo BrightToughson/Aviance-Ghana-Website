@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import { PHRASE_MAP } from '../constants/phraseMaps';
 
 export type LanguageCode = 'en' | 'fr' | 'es' | 'de' | 'pt' | 'zh' | 'ar';
 
@@ -1036,256 +1037,6 @@ export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     }
   };
 
-// Live DOM text replacement phrase dictionary for comprehensive full-site translation
-const PHRASE_MAP: Record<Exclude<LanguageCode, 'en'>, Record<string, string>> = {
-  fr: {
-    "Ground Handling & Cargo Operations Across Ghana's Premier Airports.": "Assistance en Escale & Fret Aérien sur les Principaux Aéroports du Ghana.",
-    "Connecting Ghana to the world with ISAGO-certified ground operations, cold-chain cargo logistics, and executive airport hospitality across Accra, Kumasi, and Tamale.": "Connecter le Ghana au monde avec des opérations au sol certifiées ISAGO, une logistique de fret sous chaîne du froid et une hospitalité aéroportuaire d'élite à Accra, Kumasi et Tamale.",
-    "EXPLORE SERVICES": "EXPLORER LES SERVICES",
-    "ABOUT AVIANCE": "À PROPOS D'AVIANCE",
-    "Explore Services": "Explorer les Services",
-    "About Aviance": "À Propos d'Aviance",
-    "View All Services": "Voir Tous les Services",
-    "ANNUAL AIRCRAFT TURNAROUNDS": "ROTATIONS ANNUELLES D'AÉRONEFS",
-    "ISAGO AUDIT CONFORMITY": "CONFORMITÉ AUDIT ISAGO",
-    "FAST TURNAROUND CAPABLE": "CAPACITÉ DE ROTATION RAPIDE",
-    "RAMP WATCH & DISPATCH": "DISPATCH & VEILLE EN PISTE",
-    "View Details": "Voir les détails",
-    "Learn more": "En savoir plus",
-    "Read Story": "Lire l'histoire",
-    "Read Full Article": "Lire l'article complet",
-    "Media Release": "Communiqué de presse",
-    "Cookie & Data Privacy Choices": "Choix de Confidentialité & Cookies",
-    "CUSTOMIZE": "PERSONNALISER",
-    "ESSENTIAL ONLY": "ESSENTIELS UNIQUEMENT",
-    "ACCEPT ALL COOKIES": "TOUT ACCEPTER",
-    "All Partners (42)": "Tous les Partenaires (42)",
-    "International Commercial": "Commercial International",
-    "Regional & African": "Régional & Africain",
-    "Cargo & Freighters": "Fret & Cargo",
-    "VIP & Charter": "VIP & Vols Privés",
-    "View All 42 Partners": "Voir Tous les 42 Partenaires",
-    "Trusted Ground Handling Partner to Over 40 Global Airlines": "Partenaire d'Assistance en Escale de Confiance pour Plus de 40 Compagnies Aériennes Mondiales",
-    "Operating Across Ghana's Key Commercial Air Gateways": "Présent sur les Principales Portes Aériennes Commerciales du Ghana",
-    "View Full Operations & Map": "Voir Toutes les Opérations & Carte",
-    "Quality, Safety & Regulatory Accreditation": "Qualité, Sécurité & Accréditations Réglementaires",
-    "IATA ISAGO Accredited · Certificate ISAGO-ACC-24-2419": "Accrédité IATA ISAGO · Certificat ISAGO-ACC-24-2419",
-    "View Certifications & Audits": "Voir les Certifications & Audits",
-    "Code of Conduct & Governance": "Code de Conduite & Gouvernance",
-    "Sustainability & Community Engagement": "Durabilité & Engagement Communautaire",
-    "Community Impact & Sustainability": "Impact Communautaire & Durabilité",
-    "Explore All CSR Programs & Impact Reports": "Explorer Tous les Programmes RSE & Rapports d'Impact",
-    "Corporate News & Announcements": "Actualités & Communiqués Officiels",
-    "Latest Updates from Aviance Ghana": "Dernières Nouvelles d'Aviance Ghana",
-    "All Articles & Press Releases": "Tous les Articles & Communiqués",
-  },
-  es: {
-    "Ground Handling & Cargo Operations Across Ghana's Premier Airports.": "Operaciones de Asistencia en Tierra y Carga en los Principales Aeropuertos de Ghana.",
-    "Connecting Ghana to the world with ISAGO-certified ground operations, cold-chain cargo logistics, and executive airport hospitality across Accra, Kumasi, and Tamale.": "Conectando a Ghana con el mundo con operaciones terrestres certificadas por ISAGO, logística de carga en cadena de frío y hospitalidad aeroportuaria ejecutiva en Accra, Kumasi y Tamale.",
-    "EXPLORE SERVICES": "EXPLORAR SERVICIOS",
-    "ABOUT AVIANCE": "SOBRE AVIANCE",
-    "Explore Services": "Explorar Servicios",
-    "About Aviance": "Sobre Aviance",
-    "View All Services": "Ver Todos los Servicios",
-    "ANNUAL AIRCRAFT TURNAROUNDS": "TURNAROUNDS ANUALES DE AERONAVES",
-    "ISAGO AUDIT CONFORMITY": "CONFORMIDAD CON AUDITORÍA ISAGO",
-    "FAST TURNAROUND CAPABLE": "CAPACIDAD DE ROTACIÓN RÁPIDA",
-    "RAMP WATCH & DISPATCH": "VIGILANCIA Y DESPACHO EN RAMPA",
-    "View Details": "Ver detalles",
-    "Learn more": "Más información",
-    "Read Story": "Leer historia",
-    "Read Full Article": "Leer artículo completo",
-    "Media Release": "Nota de prensa",
-    "Cookie & Data Privacy Choices": "Preferencias de Cookies y Privacidad",
-    "CUSTOMIZE": "PERSONALIZAR",
-    "ESSENTIAL ONLY": "SOLO ESENCIALES",
-    "ACCEPT ALL COOKIES": "ACEPTAR TODAS LAS COOKIES",
-    "All Partners (42)": "Todos los Socios (42)",
-    "International Commercial": "Comercial Internacional",
-    "Regional & African": "Regional y Africano",
-    "Cargo & Freighters": "Carga y Flete",
-    "VIP & Charter": "VIP y Chárter",
-    "View All 42 Partners": "Ver los 42 Socios",
-    "Trusted Ground Handling Partner to Over 40 Global Airlines": "Socio de Asistencia en Tierra de Confianza para Más de 40 Aerolíneas Globales",
-    "Operating Across Ghana's Key Commercial Air Gateways": "Operando en las Principales Puertas Aéreas Comerciales de Ghana",
-    "View Full Operations & Map": "Ver Operaciones Completas y Mapa",
-    "Quality, Safety & Regulatory Accreditation": "Calidad, Seguridad y Acreditación Normativa",
-    "IATA ISAGO Accredited · Certificate ISAGO-ACC-24-2419": "Acreditado por IATA ISAGO · Certificado ISAGO-ACC-24-2419",
-    "View Certifications & Audits": "Ver Certificaciones y Auditorías",
-    "Code of Conduct & Governance": "Código de Conducta y Gobernanza",
-    "Sustainability & Community Engagement": "Sostenibilidad y Compromiso Comunitario",
-    "Community Impact & Sustainability": "Impacto Comunitario y Sostenibilidad",
-    "Explore All CSR Programs & Impact Reports": "Explorar Todos los Programas de RSC e Informes de Impacto",
-    "Corporate News & Announcements": "Noticias Corporativas y Anuncios",
-    "Latest Updates from Aviance Ghana": "Últimas Novedades de Aviance Ghana",
-    "All Articles & Press Releases": "Todos los Artículos y Notas de Prensa",
-  },
-  de: {
-    "Ground Handling & Cargo Operations Across Ghana's Premier Airports.": "Bodenabfertigung und Frachtbetrieb an Ghanas führenden Flughäfen.",
-    "Connecting Ghana to the world with ISAGO-certified ground operations, cold-chain cargo logistics, and executive airport hospitality across Accra, Kumasi, and Tamale.": "Ghana mit der Welt verbinden durch ISAGO-zertifizierte Vorfeldabfertigung, Kühlketten-Frachtlogistik und erstklassige Betreuung in Accra, Kumasi und Tamale.",
-    "EXPLORE SERVICES": "DIENSTE ENTDECKEN",
-    "ABOUT AVIANCE": "ÜBER AVIANCE",
-    "Explore Services": "Dienste entdecken",
-    "About Aviance": "Über Aviance",
-    "View All Services": "Alle Dienste anzeigen",
-    "ANNUAL AIRCRAFT TURNAROUNDS": "JÄHRLICHE FLUGZEUGABFERTIGUNGEN",
-    "ISAGO AUDIT CONFORMITY": "ISAGO-AUDIT-KONFORMITÄT",
-    "FAST TURNAROUND CAPABLE": "SCHNELLE TURNAROUND-KAPAZITÄT",
-    "RAMP WATCH & DISPATCH": "VORFELDÜBERWACHUNG & DISPATCH",
-    "View Details": "Details anzeigen",
-    "Learn more": "Mehr erfahren",
-    "Read Story": "Bericht lesen",
-    "Read Full Article": "Vollständigen Artikel lesen",
-    "Media Release": "Pressemitteilung",
-    "Cookie & Data Privacy Choices": "Cookie- & Datenschutzeinstellungen",
-    "CUSTOMIZE": "ANPASSEN",
-    "ESSENTIAL ONLY": "NUR NOTWENDIGE",
-    "ACCEPT ALL COOKIES": "ALLE COOKIES AKZEPTIEREN",
-    "All Partners (42)": "Alle Partner (42)",
-    "International Commercial": "International Kommerziell",
-    "Regional & African": "Regional & Afrikanisch",
-    "Cargo & Freighters": "Fracht & Cargo",
-    "VIP & Charter": "VIP & Charter",
-    "View All 42 Partners": "Alle 42 Partner anzeigen",
-    "Trusted Ground Handling Partner to Over 40 Global Airlines": "Zuverlässiger Bodenabfertigungspartner für über 40 globale Fluggesellschaften",
-    "Operating Across Ghana's Key Commercial Air Gateways": "Präsent an Ghanas wichtigsten kommerziellen Luftfahrt-Drehkreuzen",
-    "View Full Operations & Map": "Vollständige Einsätze & Karte anzeigen",
-    "Quality, Safety & Regulatory Accreditation": "Qualität, Sicherheit & behördliche Zulassungen",
-    "IATA ISAGO Accredited · Certificate ISAGO-ACC-24-2419": "IATA-ISAGO-akkreditiert · Zertifikat ISAGO-ACC-24-2419",
-    "View Certifications & Audits": "Zertifikate & Audits ansehen",
-    "Code of Conduct & Governance": "Verhaltenskodex & Unternehmensführung",
-    "Sustainability & Community Engagement": "Nachhaltigkeit & gesellschaftliches Engagement",
-    "Community Impact & Sustainability": "Gesellschaftliche Wirkung & Nachhaltigkeit",
-    "Explore All CSR Programs & Impact Reports": "Alle CSR-Programme & Wirkungsberichte ansehen",
-    "Corporate News & Announcements": "Unternehmensnachrichten & Mitteilungen",
-    "Latest Updates from Aviance Ghana": "Neueste Updates von Aviance Ghana",
-    "All Articles & Press Releases": "Alle Artikel & Pressemitteilungen",
-  },
-  pt: {
-    "Ground Handling & Cargo Operations Across Ghana's Premier Airports.": "Operações de Assistência em Escala e Carga nos Principais Aeroportos do Gana.",
-    "Connecting Ghana to the world with ISAGO-certified ground operations, cold-chain cargo logistics, and executive airport hospitality across Accra, Kumasi, and Tamale.": "A ligar o Gana ao mundo com operações terrestres certificadas pela ISAGO, logística de carga em cadeia de frio e hospitalidade de excelência em Acra, Kumasi e Tamale.",
-    "EXPLORE SERVICES": "EXPLORAR SERVIÇOS",
-    "ABOUT AVIANCE": "SOBRE A AVIANCE",
-    "Explore Services": "Explorar Serviços",
-    "About Aviance": "Sobre a Aviance",
-    "View All Services": "Ver Todos os Serviços",
-    "ANNUAL AIRCRAFT TURNAROUNDS": "TURNAROUNDS ANUAIS DE AERONAVES",
-    "ISAGO AUDIT CONFORMITY": "CONFORMIDADE COM AUDITORIA ISAGO",
-    "FAST TURNAROUND CAPABLE": "CAPACIDADE DE TURNAROUND RÁPIDO",
-    "RAMP WATCH & DISPATCH": "VIGILÂNCIA DE PISTA & DESPACHO",
-    "View Details": "Ver detalhes",
-    "Learn more": "Saber mais",
-    "Read Story": "Ler história",
-    "Read Full Article": "Ler artigo completo",
-    "Media Release": "Comunicado de imprensa",
-    "Cookie & Data Privacy Choices": "Opções de Privacidade & Cookies",
-    "CUSTOMIZE": "PERSONALIZAR",
-    "ESSENTIAL ONLY": "APENAS ESSENCIAIS",
-    "ACCEPT ALL COOKIES": "ACEITAR TODOS OS COOKIES",
-    "All Partners (42)": "Todos os Parceiros (42)",
-    "International Commercial": "Comercial Internacional",
-    "Regional & African": "Regional e Africano",
-    "Cargo & Freighters": "Carga e Frete",
-    "VIP & Charter": "VIP e Charter",
-    "View All 42 Partners": "Ver Todos os 42 Parceiros",
-    "Trusted Ground Handling Partner to Over 40 Global Airlines": "Parceiro Confiável de Assistência em Escala para Mais de 40 Companhias Aéreas Globais",
-    "Operating Across Ghana's Key Commercial Air Gateways": "Operando nos Principais Aeroportos Comerciais do Gana",
-    "View Full Operations & Map": "Ver Operações Completas e Mapa",
-    "Quality, Safety & Regulatory Accreditation": "Qualidade, Segurança e Acreditação Regulatória",
-    "IATA ISAGO Accredited · Certificate ISAGO-ACC-24-2419": "Acreditado pela IATA ISAGO · Certificado ISAGO-ACC-24-2419",
-    "View Certifications & Audits": "Ver Certificações e Auditorias",
-    "Code of Conduct & Governance": "Código de Conducta e Governança",
-    "Sustainability & Community Engagement": "Sustentabilidade e Envolvimento Comunitário",
-    "Community Impact & Sustainability": "Impacto Comunitário e Sustentabilidade",
-    "Explore All CSR Programs & Impact Reports": "Explorar Todos os Programas de RSE e Relatórios de Impacto",
-    "Corporate News & Announcements": "Notícias Corporativas e Comunicados",
-    "Latest Updates from Aviance Ghana": "Últimas Atualizações da Aviance Ghana",
-    "All Articles & Press Releases": "Todos os Artigos e Comunicados de Imprensa",
-  },
-  zh: {
-    "Ground Handling & Cargo Operations Across Ghana's Premier Airports.": "覆盖加纳核心枢纽机场的地面保障与航空货运运营。",
-    "Connecting Ghana to the world with ISAGO-certified ground operations, cold-chain cargo logistics, and executive airport hospitality across Accra, Kumasi, and Tamale.": "以通过国际航协 ISAGO 认证的地面操作、国际医药冷链货运以及遍布阿克拉、库马西和塔马利的行政级贵宾候机服务，连接加纳与世界。",
-    "EXPLORE SERVICES": "探索地面服务",
-    "ABOUT AVIANCE": "关于 AVIANCE",
-    "Explore Services": "探索地面服务",
-    "About Aviance": "关于 Aviance",
-    "View All Services": "查看全部业务板块",
-    "ANNUAL AIRCRAFT TURNAROUNDS": "年均过站保障架次",
-    "ISAGO AUDIT CONFORMITY": "ISAGO 国际安全审计达标率",
-    "FAST TURNAROUND CAPABLE": "具备机坪极速过站能力",
-    "RAMP WATCH & DISPATCH": "全天候机坪监护与航班放行",
-    "View Details": "查看详情",
-    "Learn more": "了解更多",
-    "Read Story": "阅读报道",
-    "Read Full Article": "阅读完整文章",
-    "Media Release": "新闻通稿",
-    "Cookie & Data Privacy Choices": "Cookie 与数据隐私授权设置",
-    "CUSTOMIZE": "自定义偏好",
-    "ESSENTIAL ONLY": "仅接受必要项",
-    "ACCEPT ALL COOKIES": "接受全部 Cookie",
-    "All Partners (42)": "全部合作伙伴 (42)",
-    "International Commercial": "国际商业航司",
-    "Regional & African": "区域及非洲航司",
-    "Cargo & Freighters": "货运与全货机",
-    "VIP & Charter": "贵宾与包机",
-    "View All 42 Partners": "查看全部42家合作伙伴",
-    "Trusted Ground Handling Partner to Over 40 Global Airlines": "超过40家全球航空公司的可信赖地面服务合作伙伴",
-    "Operating Across Ghana's Key Commercial Air Gateways": "业务覆盖加纳主要商业航空门户",
-    "View Full Operations & Map": "查看完整运营与地图",
-    "Quality, Safety & Regulatory Accreditation": "质量、安全与官方监管认证",
-    "IATA ISAGO Accredited · Certificate ISAGO-ACC-24-2419": "国际航空运输协会 ISAGO 认证 · 证书编号 ISAGO-ACC-24-2419",
-    "View Certifications & Audits": "查看认证与审计",
-    "Code of Conduct & Governance": "行为准则与公司治理",
-    "Sustainability & Community Engagement": "可持续发展与社区关怀",
-    "Community Impact & Sustainability": "社区赋能与绿色发展",
-    "Explore All CSR Programs & Impact Reports": "浏览全部企业社会责任项目与年度影响力报告",
-    "Corporate News & Announcements": "企业新闻与官方公告",
-    "Latest Updates from Aviance Ghana": "来自 Aviance Ghana 的最新动态",
-    "All Articles & Press Releases": "所有新闻与媒体通稿",
-  },
-  ar: {
-    "Ground Handling & Cargo Operations Across Ghana's Premier Airports.": "عمليات المناولة الأرضية والشحن الجوي عبر مطارات غانا الرائدة.",
-    "Connecting Ghana to the world with ISAGO-certified ground operations, cold-chain cargo logistics, and executive airport hospitality across Accra, Kumasi, and Tamale.": "نربط غانا بالعالم من خلال عمليات أرضية معتمدة من إيساغو، وخدمات لوجستية للشحن بسلسلة التبريد، وضيافة مطار تنفيذية في أكرا وكوماسي وتامالي.",
-    "EXPLORE SERVICES": "استكشاف الخدمات",
-    "ABOUT AVIANCE": "عن أفيانس",
-    "Explore Services": "استكشاف الخدمات",
-    "About Aviance": "عن أفيانس",
-    "View All Services": "عرض جميع الخدمات",
-    "ANNUAL AIRCRAFT TURNAROUNDS": "دوران سنوي للطائرات",
-    "ISAGO AUDIT CONFORMITY": "مطابقة تدقيق إيساغو",
-    "FAST TURNAROUND CAPABLE": "قدرة دوران سريعة",
-    "RAMP WATCH & DISPATCH": "مراقبة وترحيل في الساحة",
-    "View Details": "عرض التفاصيل",
-    "Learn more": "معرفة المزيد",
-    "Read Story": "قراءة القصة",
-    "Read Full Article": "قراءة المقال كاملاً",
-    "Media Release": "بيان صحفي",
-    "Cookie & Data Privacy Choices": "خيارات ملفات تعريف الارتباط والخصوصية",
-    "CUSTOMIZE": "تخصيص",
-    "ESSENTIAL ONLY": "الضرورية فقط",
-    "ACCEPT ALL COOKIES": "قبول جميع ملفات الكوكيز",
-    "All Partners (42)": "جميع الشركاء (42)",
-    "International Commercial": "تجاري دولي",
-    "Regional & African": "إقليمي وأفريقي",
-    "Cargo & Freighters": "الشحن والطرود",
-    "VIP & Charter": "كبار الشخصيات والشارتر",
-    "View All 42 Partners": "عرض جميع الشركاء الـ 42",
-    "Trusted Ground Handling Partner to Over 40 Global Airlines": "شريك موثوق للمناولة الأرضية لأكثر من 40 شركة طيران عالمية",
-    "Operating Across Ghana's Key Commercial Air Gateways": "نعمل عبر بوابات الطيران التجاري الرئيسية في غانا",
-    "View Full Operations & Map": "عرض العمليات الكاملة والخريطة",
-    "Quality, Safety & Regulatory Accreditation": "الجودة والسلامة والاعتماد التنظيمي",
-    "IATA ISAGO Accredited · Certificate ISAGO-ACC-24-2419": "معتمد من إياتا إيساغو · شهادة ISAGO-ACC-24-2419",
-    "View Certifications & Audits": "عرض الشهادات والتدقيقات",
-    "Code of Conduct & Governance": "مدونة السلوك والحوكمة",
-    "Sustainability & Community Engagement": "الاستدامة والمشاركة المجتمعية",
-    "Community Impact & Sustainability": "الأثر المجتمعي والاستدامة",
-    "Explore All CSR Programs & Impact Reports": "استكشاف جميع برامج المسؤولية المجتمعية وتقارير الأثر",
-    "Corporate News & Announcements": "أخبار الشركة وإعلاناتها",
-    "Latest Updates from Aviance Ghana": "آخر التحديثات من أفيانس غانا",
-    "All Articles & Press Releases": "جميع المقالات والبيانات الصحفية",
-  }
-};
-
   useEffect(() => {
     if (typeof document !== 'undefined') {
       document.documentElement.lang = language;
@@ -1305,8 +1056,15 @@ const PHRASE_MAP: Record<Exclude<LanguageCode, 'en'>, Record<string, string>> = 
     const translateNode = (node: Node) => {
       if (node.nodeType === Node.TEXT_NODE && node.nodeValue) {
         const text = node.nodeValue.trim();
-        if (text && phrases[text]) {
+        if (!text) return;
+        if (phrases[text]) {
           node.nodeValue = node.nodeValue.replace(text, phrases[text]);
+        } else {
+          // Check without trailing punctuation or colons
+          const clean = text.replace(/[\.\:\;\,\s]+$/, '');
+          if (phrases[clean]) {
+            node.nodeValue = node.nodeValue.replace(clean, phrases[clean]);
+          }
         }
       } else {
         node.childNodes.forEach(translateNode);
@@ -1322,8 +1080,15 @@ const PHRASE_MAP: Record<Exclude<LanguageCode, 'en'>, Record<string, string>> = 
         mutation.addedNodes.forEach(translateNode);
         if (mutation.type === 'characterData' && mutation.target) {
           const text = mutation.target.nodeValue?.trim();
-          if (text && phrases[text]) {
-            mutation.target.nodeValue = mutation.target.nodeValue!.replace(text, phrases[text]);
+          if (text) {
+            if (phrases[text]) {
+              mutation.target.nodeValue = mutation.target.nodeValue!.replace(text, phrases[text]);
+            } else {
+              const clean = text.replace(/[\.\:\;\,\s]+$/, '');
+              if (phrases[clean]) {
+                mutation.target.nodeValue = mutation.target.nodeValue!.replace(clean, phrases[clean]);
+              }
+            }
           }
         }
       });

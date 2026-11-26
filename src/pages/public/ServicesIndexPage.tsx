@@ -8,6 +8,7 @@ import {
 } from 'lucide-react';
 import { Service } from '../../types';
 import { ScrollReveal } from '../../components/ui/ScrollReveal';
+import { useLanguage } from '../../context/LanguageContext';
 
 // Authentic Official Aviance Images
 import PASSENGER_IMG from '../../assets/aviance_images/services/vip_charter.jpg'; // Frontline DCS check-in agent at Kotoka T3
@@ -33,6 +34,7 @@ export const ServicesIndexPage: React.FC<ServicesIndexPageProps> = ({
   onOpenCargoModal,
   onOpenVipModal: _onOpenVipModal,
 }) => {
+  const { language: _language } = useLanguage();
   // Primary 8 Official Capabilities Matching Authentic Aviance Ghana Layout
   const officialServices = [
     {
